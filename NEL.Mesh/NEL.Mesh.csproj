@@ -19,7 +19,7 @@
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageLicenseExpression></PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/TowerHamletsCCG/MeshClient</PackageProjectUrl>
-		<PackageLicenseFile>license.txt</PackageLicenseFile>
+		<PackageLicenseFile>License.txt</PackageLicenseFile>
 		<RepositoryUrl>https://github.com/TowerHamletsCCG/MeshClient</RepositoryUrl>
 		<RepositoryType>Github</RepositoryType>
 		<PackageTags>.NET Client MESH Messaging</PackageTags>
