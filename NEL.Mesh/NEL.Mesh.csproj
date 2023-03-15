@@ -27,7 +27,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="NEL.Mesh.Tests.Unit" />
+		<InternalsVisibleTo Include="NEL.MESH.Tests.Unit" />
 	</ItemGroup>
 
 </Project>

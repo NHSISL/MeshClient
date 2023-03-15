@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33417.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEL.Mesh", "NEL.Mesh\NEL.Mesh.csproj", "{1A553B8B-F4E1-4ABA-98EE-8213EED4EA03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEL.MESH", "NEL.MESH\NEL.MESH.csproj", "{1A553B8B-F4E1-4ABA-98EE-8213EED4EA03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEL.Mesh.Tests.Unit", "NEL.Mesh.Tests.Unit\NEL.Mesh.Tests.Unit.csproj", "{5BF68B80-AF49-4763-9675-B25F8F84ABAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEL.MESH.Tests.Unit", "NEL.MESH.Tests.Unit\NEL.MESH.Tests.Unit.csproj", "{5BF68B80-AF49-4763-9675-B25F8F84ABAA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
