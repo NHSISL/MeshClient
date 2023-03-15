@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<Title>MESH Client</Title>
+		<Authors>Christo du Toit | David Cunliffe</Authors>
+		<Company>NEL ICB</Company>
+		<Description> .NET Client To Send And Recieve MESH messages </Description>
+		<Copyright>Copyright (c) NEL ICB</Copyright>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<PackageIcon>Mesh.png</PackageIcon>
+		<PackageIconUrl />
+		<Version>1.0</Version>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<PackageLicenseExpression></PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/TowerHamletsCCG/MeshClient</PackageProjectUrl>
+		<PackageLicenseFile>license.txt</PackageLicenseFile>
+		<RepositoryUrl>https://github.com/TowerHamletsCCG/MeshClient</RepositoryUrl>
+		<RepositoryType>Github</RepositoryType>
+		<PackageTags>.NET Client MESH Messaging</PackageTags>
+		<PackageReleaseNotes>Added A .NET Client To Send And Recieve MESH messages</PackageReleaseNotes>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="NEL.Mesh.Tests.Unit" />
+	</ItemGroup>
+
+</Project>
