@@ -3,7 +3,9 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using NEL.MESH.Brokers.Mesh;
@@ -76,5 +78,17 @@ namespace NEL.MESH.Tests.Integration.Brokers
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
+
+        private Dictionary<string, List<string>> GetHeaders(HttpResponseHeaders headers)
+        {
+            var dictionary = new Dictionary<string, List<string>>();
+
+            foreach (var header in headers)
+            {
+                dictionary.Add(header.Key, header.Value.ToList());
+            }
+
+            return dictionary;
+        }
     }
 }

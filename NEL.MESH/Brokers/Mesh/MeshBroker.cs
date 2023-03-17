@@ -3,8 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -27,30 +29,84 @@ namespace NEL.MESH.Brokers.Mesh
         public async Task<HttpResponseMessage> HandshakeAsync()
         {
             string path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}";
-
-            HttpResponseMessage response =
-                await httpClient.GetAsync($"/messageexchange/{this.MeshApiConfiguration.MailboxId}");
+            var request = new HttpRequestMessage(HttpMethod.Get, path);
+            request.Headers.Add("Authorization", GenerateAuthorisationHeader());
+            var response = await this.httpClient.SendAsync(request);
 
             return response;
         }
 
-        public Task<HttpResponseMessage> SendMessageAsync(string message, string mailboxTo, string workflowId) =>
-            throw new NotImplementedException();
+        public async Task<HttpResponseMessage> SendMessageAsync(string message, string mailboxTo, string workflowId)
+        {
+            var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/outbox";
+            var request = new HttpRequestMessage(HttpMethod.Post, path);
+            request.Headers.Add("Authorization", GenerateAuthorisationHeader());
+            request.Content = new StringContent(message);
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            request.Content.Headers.Add("Mex-From", this.MeshApiConfiguration.MailboxId);
+            request.Content.Headers.Add("Mex-To", mailboxTo);
+            request.Content.Headers.Add("Mex-WorkflowID", workflowId);
+            request.Content.Headers.Add("Mex-LocalID", Guid.NewGuid().ToString());
+            var response = await this.httpClient.SendAsync(request);
 
-        public Task<HttpResponseMessage> SendFileAsync(byte[] fileContents, string mailboxTo, string workflowId) =>
-            throw new NotImplementedException();
+            return response;
+        }
 
-        public Task<HttpResponseMessage> TrackMessageAsync(string messageId) =>
-            throw new NotImplementedException();
+        public async Task<HttpResponseMessage> SendFileAsync(byte[] fileContents, string mailboxTo, string workflowId)
+        {
+            var stream = new MemoryStream(fileContents);
+            var content = new ByteArrayContent(stream.ToArray());
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            content.Headers.Add("Mex-From", this.MeshApiConfiguration.MailboxId);
+            content.Headers.Add("Mex-To", mailboxTo);
+            content.Headers.Add("Mex-WorkflowID", workflowId);
+            content.Headers.Add("Mex-LocalID", Guid.NewGuid().ToString());
 
-        public Task<HttpResponseMessage> AcknowledgeMessageAsync(string messageId) =>
-            throw new NotImplementedException();
+            var response = await this.httpClient
+                .PostAsync($"/messageexchange/{this.MeshApiConfiguration.MailboxId}/outbox", content);
 
-        public Task<HttpResponseMessage> GetMessageAsync(string messageId) =>
-            throw new NotImplementedException();
+            return response;
+        }
 
-        public Task<HttpResponseMessage> GetMessagesAsync() =>
-            throw new NotImplementedException();
+        public async Task<HttpResponseMessage> TrackMessageAsync(string messageId)
+        {
+            var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/outbox/tracking?messageID={messageId}";
+            var request = new HttpRequestMessage(HttpMethod.Get, path);
+            request.Headers.Add("Authorization", GenerateAuthorisationHeader());
+            var response = await this.httpClient.SendAsync(request);
+
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> GetMessagesAsync()
+        {
+            var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/inbox";
+            var request = new HttpRequestMessage(HttpMethod.Get, path);
+            request.Headers.Add("Authorization", GenerateAuthorisationHeader());
+            var response = await this.httpClient.SendAsync(request);
+
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> GetMessageAsync(string messageId)
+        {
+            var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/inbox/{messageId}";
+            var request = new HttpRequestMessage(HttpMethod.Get, path);
+            request.Headers.Add("Authorization", GenerateAuthorisationHeader());
+            var response = await this.httpClient.SendAsync(request);
+
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> AcknowledgeMessageAsync(string messageId)
+        {
+            var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/inbox/{messageId}/status/acknowledged";
+            var request = new HttpRequestMessage(HttpMethod.Put, path);
+            request.Headers.Add("Authorization", GenerateAuthorisationHeader());
+            var response = await this.httpClient.SendAsync(request);
+
+            return response;
+        }
 
 
         private HttpClient SetupHttpClient()
