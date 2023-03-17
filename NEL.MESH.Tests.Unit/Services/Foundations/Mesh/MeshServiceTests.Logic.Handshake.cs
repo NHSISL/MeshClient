@@ -16,22 +16,27 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldDoHandshakeAsync()
         {
             // given
-            var expectedResult = true;
-
             HttpResponseMessage response = new HttpResponseMessage
             {
                 StatusCode = System.Net.HttpStatusCode.OK
             };
+
+            bool expectedResult = response.IsSuccessStatusCode;
 
             this.meshBrokerMock.Setup(broker =>
                 broker.HandshakeAsync())
                     .ReturnsAsync(response);
 
             // when
-            var actualResult = this.meshService.HandshakeAsync();
+            var actualResult = await this.meshService.HandshakeAsync();
 
             // then
-            actualResult.Should().BeEquivalentTo(expectedResult);
+            actualResult.Should().Be(expectedResult);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.HandshakeAsync(),
+                    Times.Once);
+
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
     }
