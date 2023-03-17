@@ -5,7 +5,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
-using NEL.MESH.Models.Mesh;
+using NEL.MESH.Models.Foundations.Mesh.ExternalModeld;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -22,7 +22,7 @@ namespace NEL.MESH.Tests.Integration.Brokers
             string workflowId = GetRandomString();
 
             HttpResponseMessage sendMessageResponse =
-                await this.meshBroker.SendMessageAsync(message, mailboxTo, workflowId);
+                await this.meshBroker.SendMessageAsync(mailboxTo, workflowId, message);
 
             var sendMessageResponseBody = await sendMessageResponse.Content.ReadAsStringAsync();
             string messageId = (JsonConvert.DeserializeObject<SendMessageResponse>(sendMessageResponseBody)).MessageId;

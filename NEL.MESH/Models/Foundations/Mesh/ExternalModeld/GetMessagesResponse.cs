@@ -2,13 +2,14 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace NEL.MESH.Models.Mesh
+namespace NEL.MESH.Models.Foundations.Mesh.ExternalModeld
 {
-    internal class HandshakeResponse
+    internal class GetMessagesResponse
     {
-        [JsonProperty(propertyName: "mailboxId")]
-        public string MailboxId { get; set; }
+        [JsonProperty(propertyName: "messages")]
+        public List<string> Messages { get; set; }
     }
 }

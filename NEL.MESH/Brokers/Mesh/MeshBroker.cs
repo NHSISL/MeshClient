@@ -20,13 +20,13 @@ namespace NEL.MESH.Brokers.Mesh
         private readonly IMeshApiConfiguration MeshApiConfiguration;
         private readonly HttpClient httpClient;
 
-        public MeshBroker(IMeshApiConfiguration meshApiConfiguration)
+        internal MeshBroker(IMeshApiConfiguration meshApiConfiguration)
         {
             this.MeshApiConfiguration = meshApiConfiguration;
             this.httpClient = SetupHttpClient();
         }
 
-        public async Task<HttpResponseMessage> HandshakeAsync()
+        public async ValueTask<HttpResponseMessage> HandshakeAsync()
         {
             string path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
@@ -36,7 +36,7 @@ namespace NEL.MESH.Brokers.Mesh
             return response;
         }
 
-        public async Task<HttpResponseMessage> SendMessageAsync(string message, string mailboxTo, string workflowId)
+        public async ValueTask<HttpResponseMessage> SendMessageAsync(string message, string mailboxTo, string workflowId)
         {
             var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/outbox";
             var request = new HttpRequestMessage(HttpMethod.Post, path);
@@ -52,7 +52,7 @@ namespace NEL.MESH.Brokers.Mesh
             return response;
         }
 
-        public async Task<HttpResponseMessage> SendFileAsync(byte[] fileContents, string mailboxTo, string workflowId)
+        public async ValueTask<HttpResponseMessage> SendFileAsync(string mailboxTo, string workflowId, byte[] fileContents)
         {
             var stream = new MemoryStream(fileContents);
             var content = new ByteArrayContent(stream.ToArray());
@@ -68,7 +68,7 @@ namespace NEL.MESH.Brokers.Mesh
             return response;
         }
 
-        public async Task<HttpResponseMessage> TrackMessageAsync(string messageId)
+        public async ValueTask<HttpResponseMessage> TrackMessageAsync(string messageId)
         {
             var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/outbox/tracking?messageID={messageId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
@@ -78,7 +78,7 @@ namespace NEL.MESH.Brokers.Mesh
             return response;
         }
 
-        public async Task<HttpResponseMessage> GetMessagesAsync()
+        public async ValueTask<HttpResponseMessage> GetMessagesAsync()
         {
             var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/inbox";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
@@ -88,7 +88,7 @@ namespace NEL.MESH.Brokers.Mesh
             return response;
         }
 
-        public async Task<HttpResponseMessage> GetMessageAsync(string messageId)
+        public async ValueTask<HttpResponseMessage> GetMessageAsync(string messageId)
         {
             var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/inbox/{messageId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
@@ -98,7 +98,7 @@ namespace NEL.MESH.Brokers.Mesh
             return response;
         }
 
-        public async Task<HttpResponseMessage> AcknowledgeMessageAsync(string messageId)
+        public async ValueTask<HttpResponseMessage> AcknowledgeMessageAsync(string messageId)
         {
             var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/inbox/{messageId}/status/acknowledged";
             var request = new HttpRequestMessage(HttpMethod.Put, path);
