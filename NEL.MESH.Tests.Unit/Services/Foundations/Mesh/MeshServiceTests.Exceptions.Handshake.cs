@@ -111,7 +111,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new FailedMeshServiceException(httpRequestException);
 
             var expectedMeshServiceException =
-                new MeshServiceException(failedMeshServiceException.InnerException as Xeption);
+                new MeshServiceException(failedMeshServiceException as Xeption);
 
             // when
             ValueTask<bool> handshakeTask =
