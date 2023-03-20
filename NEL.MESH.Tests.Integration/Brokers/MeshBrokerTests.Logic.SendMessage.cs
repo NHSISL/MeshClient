@@ -20,11 +20,11 @@ namespace NEL.MESH.Tests.Integration.Brokers
             string message = GetRandomString();
             string mailboxTo = this.meshApiConfiguration.MailboxId;
             string workflowId = GetRandomString();
+            string contentType = GetRandomString();
 
             // when
             HttpResponseMessage sendMessageResponse =
-                await this.meshBroker.SendMessageAsync(mailboxTo, workflowId, message);
-            await this.meshBroker.SendMessageAsync(mailboxTo, workflowId, message);
+                await this.meshBroker.SendMessageAsync(mailboxTo, workflowId, message, contentType);
 
             var sendMessageResponseBody = await sendMessageResponse.Content.ReadAsStringAsync();
             var headers = GetHeaders(sendMessageResponse.Headers);

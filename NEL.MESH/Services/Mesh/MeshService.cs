@@ -10,7 +10,7 @@ using NEL.MESH.Models.Foundations.Mesh;
 
 namespace NEL.MESH.Services.Mesh
 {
-    internal class MeshService : IMeshService
+    internal partial class MeshService : IMeshService
     {
         private readonly IMeshBroker meshBroker;
 
@@ -19,16 +19,14 @@ namespace NEL.MESH.Services.Mesh
             this.meshBroker = meshBroker;
         }
 
-        public async ValueTask<bool> HandshakeAsync()
-        {
-            HttpResponseMessage response = await this.meshBroker.HandshakeAsync();
-            if (response.IsSuccessStatusCode)
+        public ValueTask<bool> HandshakeAsync() =>
+            TryCatch(async () =>
             {
-                return true;
-            }
+                HttpResponseMessage response = await this.meshBroker.HandshakeAsync();
+                ValidateResponse(response);
 
-            return false;
-        }
+                return true;
+            });
 
         public ValueTask<Message> SendMessageAsync(Message message) =>
                 throw new System.NotImplementedException();
@@ -42,10 +40,10 @@ namespace NEL.MESH.Services.Mesh
         public ValueTask<Message> GetMessageAsync(string messageId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<HttpResponseMessage> TrackMessageAsync(string messageId) =>
+        public ValueTask<Message> TrackMessageAsync(string messageId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<HttpResponseMessage> AcknowledgeMessageAsync(string messageId) =>
+        public ValueTask<Message> AcknowledgeMessageAsync(string messageId) =>
             throw new System.NotImplementedException();
     }
 }

@@ -36,7 +36,11 @@ namespace NEL.MESH.Brokers.Mesh
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> SendMessageAsync(string message, string mailboxTo, string workflowId)
+        public async ValueTask<HttpResponseMessage> SendMessageAsync(
+            string mailboxTo,
+            string workflowId,
+            string message,
+            string contentType)
         {
             var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/outbox";
             var request = new HttpRequestMessage(HttpMethod.Post, path);
@@ -47,12 +51,19 @@ namespace NEL.MESH.Brokers.Mesh
             request.Content.Headers.Add("Mex-To", mailboxTo);
             request.Content.Headers.Add("Mex-WorkflowID", workflowId);
             request.Content.Headers.Add("Mex-LocalID", Guid.NewGuid().ToString());
+            request.Content.Headers.Add("Content-Type", contentType);
+
             var response = await this.httpClient.SendAsync(request);
 
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> SendFileAsync(string mailboxTo, string workflowId, byte[] fileContents)
+        public async ValueTask<HttpResponseMessage> SendFileAsync(
+            string mailboxTo,
+            string workflowId,
+            string contentType,
+            byte[] fileContents,
+            string fileName)
         {
             var stream = new MemoryStream(fileContents);
             var content = new ByteArrayContent(stream.ToArray());
@@ -61,6 +72,8 @@ namespace NEL.MESH.Brokers.Mesh
             content.Headers.Add("Mex-To", mailboxTo);
             content.Headers.Add("Mex-WorkflowID", workflowId);
             content.Headers.Add("Mex-LocalID", Guid.NewGuid().ToString());
+            content.Headers.Add("Mex-FileName", fileName);
+            content.Headers.Add("Content-Type", contentType);
 
             var response = await this.httpClient
                 .PostAsync($"/messageexchange/{this.MeshApiConfiguration.MailboxId}/outbox", content);
