@@ -15,7 +15,10 @@ namespace NEL.MESH.Brokers.Mesh
             string mailboxTo,
             string workflowId,
             string message,
-            string contentType);
+            string contentType,
+            string localId,
+            string subject,
+            string contentEncrypted);
 
         ValueTask<HttpResponseMessage> SendFileAsync(
             string mailboxTo,
