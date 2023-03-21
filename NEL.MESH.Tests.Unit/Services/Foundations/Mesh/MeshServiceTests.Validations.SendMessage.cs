@@ -22,20 +22,20 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             var nullMessageException =
                 new NullMessageException();
 
-            var expectedMessageValidationException =
-                new MessageValidationException(nullMessageException);
+            var expectedMeshValidationException =
+                new MeshValidationException(nullMessageException);
 
             // when
             ValueTask<Message> addMessageTask =
                 this.meshService.SendMessageAsync(nullMessage);
 
-            MessageValidationException actualMessageValidationException =
-                await Assert.ThrowsAsync<MessageValidationException>(() =>
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
                     addMessageTask.AsTask());
 
             // then
-            actualMessageValidationException.Should()
-                .BeEquivalentTo(expectedMessageValidationException);
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
 
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(

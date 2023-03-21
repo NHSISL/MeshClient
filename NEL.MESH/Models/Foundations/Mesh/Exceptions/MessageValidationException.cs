@@ -6,11 +6,11 @@ using Xeptions;
 
 namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
 {
-    internal class MessageValidationException : Xeption
+    internal class MeshValidationException : Xeption
     {
         private const string validationMessage = "Message validation errors occurred, please try again.";
 
-        public MessageValidationException(Xeption innerException, string validationSummary = "")
+        public MeshValidationException(Xeption innerException, string validationSummary = "")
             : base(
                   message: validationSummary.Length > 0
                     ? $"{validationMessage}  Validation errors: {validationSummary}"
