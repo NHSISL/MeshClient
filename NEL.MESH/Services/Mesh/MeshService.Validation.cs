@@ -39,6 +39,7 @@ namespace NEL.MESH.Services.Mesh
         private static void ValidateMeshMessageOnSendMessage(Message message)
         {
             ValidateMessageIsNotNull(message);
+            ValidateHeadersIsNotNull(message);
         }
 
         private static void ValidateMessageIsNotNull(Message message)
@@ -46,6 +47,14 @@ namespace NEL.MESH.Services.Mesh
             if (message is null)
             {
                 throw new NullMessageException();
+            }
+        }
+
+        private static void ValidateHeadersIsNotNull(Message message)
+        {
+            if (message.Headers is null)
+            {
+                throw new NullHeadersException();
             }
         }
     }
