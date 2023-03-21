@@ -29,6 +29,7 @@
 	<ItemGroup>
 		<InternalsVisibleTo Include="NEL.MESH.Tests.Unit" />
 		<InternalsVisibleTo Include="NEL.MESH.Tests.Integration" />
+		<InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -48,6 +49,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	  <PackageReference Include="Xeption" Version="2.5.0" />
 	</ItemGroup>
 
 </Project>

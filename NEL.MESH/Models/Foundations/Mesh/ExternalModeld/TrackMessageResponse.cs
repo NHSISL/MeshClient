@@ -4,7 +4,7 @@
 
 using Newtonsoft.Json;
 
-namespace NEL.MESH.Models.Mesh
+namespace NEL.MESH.Models.Foundations.Mesh.ExternalModeld
 {
     internal class TrackMessageResponse
     {

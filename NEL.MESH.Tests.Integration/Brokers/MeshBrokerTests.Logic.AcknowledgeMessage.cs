@@ -7,7 +7,7 @@ namespace NEL.MESH.Tests.Integration.Brokers
     public partial class MeshBrokerTests
     {
         //[Fact]
-        //public async Task ShouldSendMessageAsync()
+        //public async Task ShouldAcknowledgeMessageAsync()
         //{
         //    // given
         //    string message = GetRandomString();
@@ -15,24 +15,22 @@ namespace NEL.MESH.Tests.Integration.Brokers
         //    string workflowId = GetRandomString();
         //    string contentType = GetRandomString();
 
-        //    // when
         //    HttpResponseMessage sendMessageResponse =
         //        await this.meshBroker.SendMessageAsync(mailboxTo, workflowId, message, contentType);
 
         //    var sendMessageResponseBody = await sendMessageResponse.Content.ReadAsStringAsync();
-        //    var headers = GetHeaders(sendMessageResponse.Headers);
         //    string messageId = (JsonConvert.DeserializeObject<SendMessageResponse>(sendMessageResponseBody)).MessageId;
 
-        //    var receivedMessageResponse =
+        //    var getMessageResponse =
         //        await this.meshBroker.GetMessageAsync(messageId);
 
-        //    var receivedMessageResponseBody = await receivedMessageResponse.Content.ReadAsStringAsync();
+        //    var getMessageResponseBody = await getMessageResponse.Content.ReadAsStringAsync();
+
+        //    // when
+        //    var acknowledgeMessageReposne = await this.meshBroker.AcknowledgeMessageAsync(messageId);
 
         //    // then
-        //    sendMessageResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.Accepted);
-        //    receivedMessageResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        //    receivedMessageResponseBody.Should().BeEquivalentTo(message);
-        //    await this.meshBroker.AcknowledgeMessageAsync(messageId);
+
         //}
     }
 }
