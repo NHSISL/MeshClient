@@ -151,16 +151,15 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             if (string.IsNullOrEmpty(contentType))
             {
-                contentType = "text/plain";
+                contentType = "application/json";
             }
 
             HttpResponseMessage responseMessage = new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(message.Body, Encoding.UTF8, contentType)
+                Content = new StringContent("{\"messageID\": \"" + message.MessageId + "\"}", Encoding.UTF8, contentType)
             };
 
-            responseMessage.Content.Headers.Add("Content-Type", string.Empty);
             responseMessage.Content.Headers.Add("Content-Encoding", string.Empty);
             responseMessage.Content.Headers.Add("Mex-FileName", string.Empty);
             responseMessage.Content.Headers.Add("Mex-From", string.Empty);
@@ -171,15 +170,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             responseMessage.Content.Headers.Add("Mex-Subject", string.Empty);
             responseMessage.Content.Headers.Add("Mex-Content-Checksum", string.Empty);
             responseMessage.Content.Headers.Add("Mex-Content-Encrypted", string.Empty);
-            responseMessage.Content.Headers.Add("Authorization", string.Empty);
             responseMessage.Content.Headers.Add("Mex-ClientVersion", string.Empty);
             responseMessage.Content.Headers.Add("Mex-OSVersion", string.Empty);
             responseMessage.Content.Headers.Add("Mex-OSArchitecture", string.Empty);
             responseMessage.Content.Headers.Add("Mex-JavaVersion", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-Chunk-Range", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-Chunk-Range", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-Chunk-Range", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-Chunk-Range", string.Empty);
 
             foreach (var item in message.Headers)
             {
@@ -200,7 +194,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static Message GetMessageFromHttpResponseMessage(HttpResponseMessage responseMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
-            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
+            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Content.Headers);
 
             Message message = new Message
             {
@@ -209,12 +203,13 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 To = headers["Mex-To"].First(),
                 WorkflowId = headers["Mex-WorkflowID"].First(),
                 Body = responseMessageBody,
+                Headers = headers
             };
 
             return message;
         }
 
-        private static Dictionary<string, List<string>> GetHeaders(HttpResponseHeaders headers)
+        private static Dictionary<string, List<string>> GetHeaders(HttpContentHeaders headers)
         {
             var dictionary = new Dictionary<string, List<string>>();
 
@@ -233,7 +228,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static Filler<Message> CreateMessageFiller()
         {
             var filler = new Filler<Message>();
-            filler.Setup();
+            filler.Setup().OnProperty(message => message.Headers)
+                .Use(new Dictionary<string, List<string>>());
 
             return filler;
         }

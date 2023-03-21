@@ -24,6 +24,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             randomMessage.Headers["Mex-LocalID"] = new List<string> { GetRandomString() };
             randomMessage.Headers["Mex-Subject"] = new List<string> { GetRandomString() };
             randomMessage.Headers["Mex-Content-Encrypted"] = new List<string> { "encrypted" };
+            randomMessage.Headers["Mex-From"] = new List<string> { GetRandomString() };
             Message inputMessage = randomMessage;
             HttpResponseMessage responseMessage = CreateHttpResponseMessage(inputMessage);
 
@@ -45,11 +46,17 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             var actualMessage = await this.meshService.SendMessageAsync(inputMessage);
 
             // then
-            actualMessage.Should().Be(expectedMessage);
+            actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.HandshakeAsync(),
-                    Times.Once);
+                broker.SendMessageAsync(inputMessage.To,
+                    inputMessage.WorkflowId,
+                    inputMessage.Body,
+                    inputMessage.Headers["Content-Type"].First(),
+                    inputMessage.Headers["Mex-LocalID"].First(),
+                    inputMessage.Headers["Mex-Subject"].First(),
+                    inputMessage.Headers["Mex-Content-Encrypted"].First()),
+                        Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
