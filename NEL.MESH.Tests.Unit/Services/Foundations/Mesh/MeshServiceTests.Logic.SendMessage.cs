@@ -18,45 +18,57 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         [Fact]
         public async Task ShouldSendMessageAsync()
         {
-            // given
-            Message randomMessage = CreateRandomMessage();
-            randomMessage.Headers["Content-Type"] = new List<string> { "text/plain" };
-            randomMessage.Headers["Mex-LocalID"] = new List<string> { GetRandomString() };
-            randomMessage.Headers["Mex-Subject"] = new List<string> { GetRandomString() };
-            randomMessage.Headers["Mex-Content-Encrypted"] = new List<string> { "encrypted" };
-            randomMessage.Headers["Mex-From"] = new List<string> { GetRandomString() };
-            Message inputMessage = randomMessage;
-            HttpResponseMessage responseMessage = CreateHttpResponseMessage(inputMessage);
+            try
+            {
+                // given
+                Message randomMessage = CreateRandomMessage();
+                randomMessage.Headers["Content-Type"] = new List<string> { "text/plain" };
+                randomMessage.Headers["Mex-LocalID"] = new List<string> { GetRandomString() };
+                randomMessage.Headers["Mex-Subject"] = new List<string> { GetRandomString() };
+                randomMessage.Headers["Mex-Content-Encrypted"] = new List<string> { "encrypted" };
+                randomMessage.Headers["Mex-From"] = new List<string> { GetRandomString() };
+                randomMessage.Headers["Mex-FileName"] = new List<string> { GetRandomString() };
 
-            this.meshBrokerMock.Setup(broker =>
-                broker.SendMessageAsync(
-                    inputMessage.To,
-                    inputMessage.WorkflowId,
-                    inputMessage.Body,
-                    inputMessage.Headers["Content-Type"].First(),
-                    inputMessage.Headers["Mex-LocalID"].First(),
-                    inputMessage.Headers["Mex-Subject"].First(),
-                    inputMessage.Headers["Mex-Content-Encrypted"].First()
-                    ))
-                    .ReturnsAsync(responseMessage);
+                Message inputMessage = randomMessage;
+                HttpResponseMessage responseMessage = CreateHttpResponseMessage(inputMessage);
 
-            Message expectedMessage = GetMessageFromHttpResponseMessage(responseMessage);
+                this.meshBrokerMock.Setup(broker =>
+                    broker.SendMessageAsync(
+                        inputMessage.To,
+                        inputMessage.WorkflowId,
+                        inputMessage.Body,
+                        inputMessage.Headers["Content-Type"].First(),
+                        inputMessage.Headers["Mex-LocalID"].First(),
+                        inputMessage.Headers["Mex-Subject"].First(),
+                        inputMessage.Headers["Mex-Content-Encrypted"].First()
+                        ))
+                        .ReturnsAsync(responseMessage);
 
-            // when
-            var actualMessage = await this.meshService.SendMessageAsync(inputMessage);
+                Message expectedMessage = GetMessageFromHttpResponseMessage(responseMessage);
 
-            // then
-            actualMessage.Should().BeEquivalentTo(expectedMessage);
+                // when
+                var actualMessage = await this.meshService.SendMessageAsync(inputMessage);
 
-            this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(inputMessage.To,
-                    inputMessage.WorkflowId,
-                    inputMessage.Body,
-                    inputMessage.Headers["Content-Type"].First(),
-                    inputMessage.Headers["Mex-LocalID"].First(),
-                    inputMessage.Headers["Mex-Subject"].First(),
-                    inputMessage.Headers["Mex-Content-Encrypted"].First()),
-                        Times.Once);
+                // then
+                actualMessage.Should().BeEquivalentTo(expectedMessage);
+
+                this.meshBrokerMock.Verify(broker =>
+                    broker.SendMessageAsync(inputMessage.To,
+                        inputMessage.WorkflowId,
+                        inputMessage.Body,
+                        inputMessage.Headers["Content-Type"].First(),
+                        inputMessage.Headers["Mex-LocalID"].First(),
+                        inputMessage.Headers["Mex-Subject"].First(),
+                        inputMessage.Headers["Mex-Content-Encrypted"].First()),
+                            Times.Once);
+            }
+            catch (System.Exception ex)
+            {
+
+                throw;
+            }
+
+
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }

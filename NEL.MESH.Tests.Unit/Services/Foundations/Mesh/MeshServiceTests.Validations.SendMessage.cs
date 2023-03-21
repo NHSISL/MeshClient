@@ -204,7 +204,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             invalidMeshException.AddData(
                  key: nameof(Message.Headers),
-                 values: "Values is required");
+                 values: "Header values required");
 
             invalidMeshException.AddData(
                  key: nameof(Message.Body),
