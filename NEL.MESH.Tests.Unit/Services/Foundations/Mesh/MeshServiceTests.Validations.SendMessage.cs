@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -71,6 +72,111 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             // when
             ValueTask<Message> addMessageTask =
                 this.meshService.SendMessageAsync(messageWithNullHeaders);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    addMessageTask.AsTask());
+
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                        Times.Never);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfRequiredMessageItemsAreNullAndLogItAsync(string invalidInput)
+        {
+            // given
+            Message randomMessage = new Message
+            {
+                MessageId = GetRandomString(),
+                From = GetRandomString(),
+                To = GetRandomString(),
+                WorkflowId = GetRandomString(),
+                Headers = new Dictionary<string, List<string>>(),
+                Body = GetRandomString()
+            };
+
+            randomMessage.Headers.Add("Content-Type", new List<string> { invalidInput });
+            randomMessage.Headers.Add("Mex-FileName", new List<string> { invalidInput });
+            randomMessage.Headers.Add("Mex-From", new List<string> { invalidInput });
+            randomMessage.Headers.Add("Mex-To", new List<string> { invalidInput });
+            randomMessage.Headers.Add("Mex-WorkflowID", new List<string> { invalidInput });
+
+            var invalidMeshException =
+                new InvalidMeshException();
+
+            var expectedMeshValidationException =
+                new MeshValidationException(invalidMeshException);
+
+            // when
+            ValueTask<Message> addMessageTask =
+                this.meshService.SendMessageAsync(randomMessage);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    addMessageTask.AsTask());
+
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                        Times.Never);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfRequiredHeadersAreInvalidAndLogItAsync(string invalidInput)
+        {
+            // given
+
+            Message randomMessage = new Message
+            {
+                MessageId = invalidInput,
+                From = invalidInput,
+                To = invalidInput,
+                WorkflowId = invalidInput,
+                Headers = new Dictionary<string, List<string>>(),
+                Body = invalidInput
+            };
+
+            var invalidMeshException =
+                new InvalidMeshException();
+
+            var expectedMeshValidationException =
+                new MeshValidationException(invalidMeshException);
+
+            // when
+            ValueTask<Message> addMessageTask =
+                this.meshService.SendMessageAsync(randomMessage);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
