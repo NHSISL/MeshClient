@@ -4,6 +4,7 @@
 
 using System;
 using System.Net.Http;
+using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 
 namespace NEL.MESH.Services.Mesh
@@ -32,6 +33,19 @@ namespace NEL.MESH.Services.Mesh
                             throw new Exception(message);
                         }
                 }
+            }
+        }
+
+        private static void ValidateMeshMessageOnSendMessage(Message message)
+        {
+            ValidateMessageIsNotNull(message);
+        }
+
+        private static void ValidateMessageIsNotNull(Message message)
+        {
+            if (message is null)
+            {
+                throw new NullMessageException();
             }
         }
     }

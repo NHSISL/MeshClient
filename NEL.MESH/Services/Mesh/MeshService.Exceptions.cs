@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xeptions;
 
@@ -12,7 +13,7 @@ namespace NEL.MESH.Services.Mesh
     internal partial class MeshService : IMeshService
     {
         private delegate ValueTask<bool> ReturningBooleanFunction();
-
+        private delegate ValueTask<Message> RetruningMessageFunction();
         private async ValueTask<bool> TryCatch(ReturningBooleanFunction returningBooleanFunction)
         {
             try
@@ -34,6 +35,26 @@ namespace NEL.MESH.Services.Mesh
 
                 throw CreateAndLogServiceException(failedMeshServiceException);
             }
+        }
+
+        private async ValueTask<Message> TryCatch(RetruningMessageFunction retruningMessageFunction)
+        {
+            try
+            {
+                return await retruningMessageFunction();
+            }
+            catch (NullMessageException nullMessageException)
+            {
+                throw CreateAndLogValidationException(nullMessageException);
+            }
+        }
+
+        private MeshValidationException CreateAndLogValidationException(Xeption exception)
+        {
+            var meshValidationException =
+                new MeshValidationException(exception);
+
+            return meshValidationException;
         }
 
         private MeshDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
