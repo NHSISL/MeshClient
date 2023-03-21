@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -15,7 +17,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIsNullAsync()
         {
             // given
             Message nullMessage = null;
@@ -53,7 +55,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         }
 
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfHeadersDictionaryIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfHeadersDictionaryIsNullAsync()
         {
             // given
 
@@ -98,7 +100,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfRequiredMessageItemsAreNullAndLogItAsync(string invalidInput)
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfRequiredMessageItemsAreNullAsync(
+            string invalidInput)
         {
             // given
             Message randomMessage = new Message
@@ -173,7 +176,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfRequiredHeadersAreInvalidAndLogItAsync(string invalidInput)
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfRequiredHeadersAreInvalidAsync(
+            string invalidInput)
         {
             // given
 
@@ -238,5 +242,77 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageAndHeadersValueMismatchAsync()
+        {
+            // given
+            Message randomMessage = CreateRandomMessage();
+            randomMessage.Headers["Content-Type"] = new List<string> { "text/plain" };
+            randomMessage.Headers["Mex-LocalID"] = new List<string> { GetRandomString() };
+            randomMessage.Headers["Mex-Subject"] = new List<string> { GetRandomString() };
+            randomMessage.Headers["Mex-Content-Encrypted"] = new List<string> { "encrypted" };
+            randomMessage.Headers["Mex-From"] = new List<string> { GetRandomString() };
+            randomMessage.Headers["Mex-To"] = new List<string> { GetRandomString() };
+            randomMessage.Headers["Mex-FileName"] = new List<string> { GetRandomString() };
+            randomMessage.Headers["Mex-WorkflowID"] = new List<string> { GetRandomString() };
+
+            Message inputMessage = randomMessage;
+            HttpResponseMessage responseMessage = CreateHttpResponseMessage(inputMessage);
+
+            this.meshBrokerMock.Setup(broker =>
+                broker.SendMessageAsync(
+                    inputMessage.To,
+                    inputMessage.WorkflowId,
+                    inputMessage.Body,
+                    inputMessage.Headers["Content-Type"].First(),
+                    inputMessage.Headers["Mex-LocalID"].First(),
+                    inputMessage.Headers["Mex-Subject"].First(),
+                    inputMessage.Headers["Mex-Content-Encrypted"].First()
+                    ))
+                    .ReturnsAsync(responseMessage);
+
+            var invalidMeshException =
+                            new InvalidMeshException();
+
+            invalidMeshException.AddData(
+                 key: nameof(Message.To),
+                 values: "Requires a macthing header value for key `Mex-To`");
+
+            invalidMeshException.AddData(
+                 key: nameof(Message.WorkflowId),
+                 values: "Requires a macthing header value for key `Mex-WorkflowID`");
+
+            var expectedMeshValidationException =
+                new MeshValidationException(invalidMeshException);
+
+            // when
+            ValueTask<Message> addMessageTask =
+                this.meshService.SendMessageAsync(randomMessage);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    addMessageTask.AsTask());
+
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                        Times.Never);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+
+
     }
 }

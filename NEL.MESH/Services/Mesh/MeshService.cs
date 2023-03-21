@@ -34,7 +34,6 @@ namespace NEL.MESH.Services.Mesh
         public ValueTask<Message> SendMessageAsync(Message message) =>
             TryCatch(async () =>
             {
-                TryAddHeadersFromMessage(message);
                 ValidateMeshMessageOnSendMessage(message);
 
                 HttpResponseMessage responseMessage = await this.meshBroker.SendMessageAsync(
@@ -66,18 +65,7 @@ namespace NEL.MESH.Services.Mesh
                 return outputMessage;
             });
 
-        private static void TryAddHeadersFromMessage(Message message)
-        {
-            if (!message.Headers.ContainsKey("Mex-To"))
-            {
-                message.Headers.Add("Mex-To", new List<string> { message.To });
-            }
 
-            if (!message.Headers.ContainsKey("Mex-WorkflowID"))
-            {
-                message.Headers.Add("Mex-WorkflowID", new List<string> { message.To });
-            }
-        }
 
         public ValueTask<Message> SendFileAsync(Message message) =>
                 throw new System.NotImplementedException();
