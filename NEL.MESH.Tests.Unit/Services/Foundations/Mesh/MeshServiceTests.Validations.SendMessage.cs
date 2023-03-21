@@ -121,6 +121,26 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             var invalidMeshException =
                 new InvalidMeshException();
 
+            invalidMeshException.AddData(
+                 key: nameof(Message.From),
+                 values: "Header value is required");
+
+            invalidMeshException.AddData(
+                 key: nameof(Message.From),
+                 values: "Header value is required");
+
+            invalidMeshException.AddData(
+                 key: nameof(Message.From),
+                 values: "Header value is required");
+
+            invalidMeshException.AddData(
+                 key: nameof(Message.From),
+                 values: "Header value is required");
+
+            invalidMeshException.AddData(
+                 key: nameof(Message.From),
+                 values: "Header value is required");
+
             var expectedMeshValidationException =
                 new MeshValidationException(invalidMeshException);
 
