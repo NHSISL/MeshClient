@@ -52,7 +52,29 @@ namespace NEL.MESH.Services.Mesh
                     (Rule: IsInvalid(message.Headers, "Mex-FileName"), Parameter: "Mex-FileName"),
                     (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
                     (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
-                    (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"));
+                    (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
+
+                    (Rule: IsNotSame(
+                        message.To,
+                        GetKey(message.Headers, "Mex-To"),
+                        "Mex-To"),
+                            Parameter: nameof(Message.To)),
+
+                    (Rule: IsNotSame(
+                        message.WorkflowId,
+                        GetKey(message.Headers, "Mex-WorkflowID"),
+                        "Mex-WorkflowID"),
+                            Parameter: nameof(Message.WorkflowId)));
+        }
+
+        private static string GetKey(Dictionary<string, List<string>> dictionary, string key)
+        {
+            if (dictionary.ContainsKey(key))
+            {
+                return dictionary[key].FirstOrDefault();
+            }
+
+            return null;
         }
 
         private static void ValidateMessageIsNotNull(Message message)
@@ -70,6 +92,15 @@ namespace NEL.MESH.Services.Mesh
                 throw new NullHeadersException();
             }
         }
+
+        private static dynamic IsNotSame(
+                 string first,
+                 string second,
+                 string secondName) => new
+                 {
+                     Condition = !String.IsNullOrWhiteSpace(first) && first != second,
+                     Message = $"Requires a macthing header value for key '{secondName}'"
+                 };
 
         private static dynamic IsInvalid(string text) => new
         {

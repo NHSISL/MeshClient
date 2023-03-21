@@ -25,8 +25,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             randomMessage.Headers["Mex-Subject"] = new List<string> { GetRandomString() };
             randomMessage.Headers["Mex-Content-Encrypted"] = new List<string> { "encrypted" };
             randomMessage.Headers["Mex-From"] = new List<string> { GetRandomString() };
-            randomMessage.Headers["Mex-To"] = new List<string> { GetRandomString() };
-            randomMessage.Headers["Mex-WorkflowID"] = new List<string> { GetRandomString() };
+            randomMessage.Headers["Mex-To"] = new List<string> { randomMessage.To };
+            randomMessage.Headers["Mex-WorkflowID"] = new List<string> { randomMessage.WorkflowId };
             randomMessage.Headers["Mex-FileName"] = new List<string> { GetRandomString() };
 
             Message inputMessage = randomMessage;

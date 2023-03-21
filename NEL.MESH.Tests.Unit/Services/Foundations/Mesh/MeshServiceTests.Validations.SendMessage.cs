@@ -108,8 +108,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             {
                 MessageId = GetRandomString(),
                 From = GetRandomString(),
-                To = GetRandomString(),
-                WorkflowId = GetRandomString(),
+                To = invalidInput,
+                WorkflowId = invalidInput,
                 Headers = new Dictionary<string, List<string>>(),
                 Body = GetRandomString()
             };
@@ -124,24 +124,32 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new InvalidMeshException();
 
             invalidMeshException.AddData(
-                 key: "Content-Type",
-                 values: "Header value is required");
+                key: nameof(Message.To),
+                values: "Text is required");
 
             invalidMeshException.AddData(
-                 key: "Mex-FileName",
-                 values: "Header value is required");
+                key: nameof(Message.WorkflowId),
+                values: "Text is required");
 
             invalidMeshException.AddData(
-                 key: "Mex-From",
-                 values: "Header value is required");
+                key: "Content-Type",
+                values: "Header value is required");
 
             invalidMeshException.AddData(
-                 key: "Mex-To",
-                 values: "Header value is required");
+                key: "Mex-FileName",
+                values: "Header value is required");
 
             invalidMeshException.AddData(
-                 key: "Mex-WorkflowID",
-                 values: "Header value is required");
+                key: "Mex-From",
+                values: "Header value is required");
+
+            invalidMeshException.AddData(
+                key: "Mex-To",
+                values: "Header value is required");
+
+            invalidMeshException.AddData(
+                key: "Mex-WorkflowID",
+                values: "Header value is required");
 
             var expectedMeshValidationException =
                 new MeshValidationException(invalidMeshException);
@@ -195,24 +203,24 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new InvalidMeshException();
 
             invalidMeshException.AddData(
-                 key: nameof(Message.From),
-                 values: "Text is required");
+                key: nameof(Message.From),
+                values: "Text is required");
 
             invalidMeshException.AddData(
-                 key: nameof(Message.To),
-                 values: "Text is required");
+                key: nameof(Message.To),
+                values: "Text is required");
 
             invalidMeshException.AddData(
-                 key: nameof(Message.WorkflowId),
-                 values: "Text is required");
+                key: nameof(Message.WorkflowId),
+                values: "Text is required");
 
             invalidMeshException.AddData(
-                 key: nameof(Message.Headers),
-                 values: "Header values required");
+                key: nameof(Message.Headers),
+                values: "Header values required");
 
             invalidMeshException.AddData(
-                 key: nameof(Message.Body),
-                 values: "Text is required");
+                key: nameof(Message.Body),
+                values: "Text is required");
 
             var expectedMeshValidationException =
                 new MeshValidationException(invalidMeshException);
@@ -277,11 +285,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             invalidMeshException.AddData(
                  key: nameof(Message.To),
-                 values: "Requires a macthing header value for key `Mex-To`");
+                 values: "Requires a macthing header value for key 'Mex-To'");
 
             invalidMeshException.AddData(
                  key: nameof(Message.WorkflowId),
-                 values: "Requires a macthing header value for key `Mex-WorkflowID`");
+                 values: "Requires a macthing header value for key 'Mex-WorkflowID'");
 
             var expectedMeshValidationException =
                 new MeshValidationException(invalidMeshException);
