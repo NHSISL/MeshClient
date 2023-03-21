@@ -5,8 +5,10 @@
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using Moq;
 using NEL.MESH.Brokers.Mesh;
+using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Services.Mesh;
 using Tynamix.ObjectFiller;
 using Xunit;
@@ -133,6 +135,29 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 unauthorised,
                 forbidden
             };
+        }
+
+        private static Message CreateRandomMessage() =>
+            CreateMessageFiller().Create(); 
+        
+        private static Filler<Message> CreateMessageFiller()
+        {
+            var filler = new Filler<Message>();
+            filler.Setup(); return filler;
+        }
+
+        private static HttpResponseMessage CreateHttpResponseMessage(Message message)
+        {
+            HttpResponseMessage responseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(message.Body, Encoding.UTF8)
+            };
+            foreach (var item in message.Headers)
+            {
+                responseMessage.Content.Headers.Add(item.Key, item.Value);
+            }
+            return responseMessage;
         }
     }
 }

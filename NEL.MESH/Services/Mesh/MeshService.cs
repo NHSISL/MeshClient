@@ -32,7 +32,7 @@ namespace NEL.MESH.Services.Mesh
                 throw new System.NotImplementedException();
 
         public ValueTask<Message> SendFileAsync(Message message) =>
-                throw new System.NotImplementedException();
+                HttpResponseMessage response = await this.meshBroker.SendFileAsync();
 
         public ValueTask<List<string>> GetMessagesAsync() =>
             throw new System.NotImplementedException();
