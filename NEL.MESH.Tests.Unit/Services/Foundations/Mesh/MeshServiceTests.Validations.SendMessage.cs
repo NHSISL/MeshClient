@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -28,6 +29,48 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             // when
             ValueTask<Message> addMessageTask =
                 this.meshService.SendMessageAsync(nullMessage);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    addMessageTask.AsTask());
+
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                        Times.Never);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfHeadersDictionaryIsNullAndLogItAsync()
+        {
+            // given
+
+            Message messageWithNullHeaders = new Message
+            {
+                Headers = null
+            };
+
+            var nullHeadersException =
+                new NullHeadersException();
+
+            var expectedMeshValidationException =
+                new MeshValidationException(nullHeadersException);
+
+            // when
+            ValueTask<Message> addMessageTask =
+                this.meshService.SendMessageAsync(messageWithNullHeaders);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
