@@ -51,6 +51,10 @@ namespace NEL.MESH.Services.Mesh
             {
                 throw CreateAndLogValidationException(nullHeadersException);
             }
+            catch (InvalidMeshException invalidMeshException)
+            {
+                throw CreateAndLogValidationException(invalidMeshException);
+            }
         }
 
         private MeshValidationException CreateAndLogValidationException(Xeption exception)

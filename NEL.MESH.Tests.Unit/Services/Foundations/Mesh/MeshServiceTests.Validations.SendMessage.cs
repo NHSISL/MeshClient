@@ -171,6 +171,26 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             var invalidMeshException =
                 new InvalidMeshException();
 
+            invalidMeshException.AddData(
+                 key: nameof(Message.From),
+                 values: "Text is required");
+
+            invalidMeshException.AddData(
+                 key: nameof(Message.To),
+                 values: "Text is required");
+
+            invalidMeshException.AddData(
+                 key: nameof(Message.WorkflowId),
+                 values: "Text is required");
+
+            invalidMeshException.AddData(
+                 key: nameof(Message.Headers),
+                 values: "Values is required");
+
+            invalidMeshException.AddData(
+                 key: nameof(Message.Body),
+                 values: "Text is required");
+
             var expectedMeshValidationException =
                 new MeshValidationException(invalidMeshException);
 
