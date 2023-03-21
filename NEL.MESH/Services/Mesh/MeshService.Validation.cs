@@ -4,10 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 
@@ -93,6 +91,11 @@ namespace NEL.MESH.Services.Mesh
 
         private static bool IsInvalidKey(Dictionary<string, List<string>> dictionary, string key)
         {
+            if (dictionary == null || dictionary.Count == 0)
+            {
+                return false;
+            }
+
             bool keyExists = dictionary.ContainsKey(key);
 
             if (!keyExists)

@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -122,23 +121,23 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new InvalidMeshException();
 
             invalidMeshException.AddData(
-                 key: nameof(Message.From),
+                 key: "Content-Type",
                  values: "Header value is required");
 
             invalidMeshException.AddData(
-                 key: nameof(Message.From),
+                 key: "Mex-FileName",
                  values: "Header value is required");
 
             invalidMeshException.AddData(
-                 key: nameof(Message.From),
+                 key: "Mex-From",
                  values: "Header value is required");
 
             invalidMeshException.AddData(
-                 key: nameof(Message.From),
+                 key: "Mex-To",
                  values: "Header value is required");
 
             invalidMeshException.AddData(
-                 key: nameof(Message.From),
+                 key: "Mex-WorkflowID",
                  values: "Header value is required");
 
             var expectedMeshValidationException =
