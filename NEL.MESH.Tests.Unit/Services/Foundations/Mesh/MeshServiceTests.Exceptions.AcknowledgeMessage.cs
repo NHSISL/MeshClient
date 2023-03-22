@@ -54,5 +54,44 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
 
+        [Theory]
+        [MemberData(nameof(DependencyResponseMessages))]
+        public async Task ShouldThrowDependencyExceptionIfServerErrorOccursOnAcknowledgeMessage(
+            HttpResponseMessage dependencyResponseMessage)
+        {
+            // given
+            Message someMessage = CreateRandomSendMessage();
+            HttpResponseMessage response = dependencyResponseMessage;
+
+            this.meshBrokerMock.Setup(broker =>
+                broker.AcknowledgeMessageAsync(someMessage.MessageId))
+                    .ReturnsAsync(dependencyResponseMessage);
+
+            var httpRequestException =
+                new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
+
+            var failedMeshServerException =
+                new FailedMeshServerException(httpRequestException);
+
+            var expectedMeshDependencyException =
+                new MeshDependencyException(failedMeshServerException.InnerException as Xeption);
+
+            // when
+            ValueTask<bool> acknowledgeMessageTask =
+                this.meshService.AcknowledgeMessageAsync(someMessage.MessageId);
+
+            MeshDependencyException actualMeshDependencyException =
+                await Assert.ThrowsAsync<MeshDependencyException>(acknowledgeMessageTask.AsTask);
+
+            // then
+            actualMeshDependencyException.Should().BeEquivalentTo(expectedMeshDependencyException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.AcknowledgeMessageAsync(someMessage.MessageId),
+                    Times.Once);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
     }
 }
