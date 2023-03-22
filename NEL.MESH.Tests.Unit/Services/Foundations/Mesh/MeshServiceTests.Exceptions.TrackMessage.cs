@@ -20,47 +20,78 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowDependencyValidationExceptionIfServerErrorOccursOnTrackMessageAsync(
             HttpResponseMessage dependencyValidationResponseMessage)
         {
-            try
-            {
-                // given
-                Message someMessage = CreateRandomMessage();
-                HttpResponseMessage response = dependencyValidationResponseMessage;
+            // given
+            Message someMessage = CreateRandomMessage();
+            HttpResponseMessage response = dependencyValidationResponseMessage;
 
-                this.meshBrokerMock.Setup(broker =>
-                    broker.TrackMessageAsync(It.IsAny<string>()))
-                        .ReturnsAsync(dependencyValidationResponseMessage);
+            this.meshBrokerMock.Setup(broker =>
+                broker.TrackMessageAsync(It.IsAny<string>()))
+                    .ReturnsAsync(dependencyValidationResponseMessage);
 
-                var httpRequestException =
-                    new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
+            var httpRequestException =
+                new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
 
-                var failedMeshClientException =
-                    new FailedMeshClientException(httpRequestException);
+            var failedMeshClientException =
+                new FailedMeshClientException(httpRequestException);
 
-                var expectedMeshDependencyValidationException =
-                    new MeshDependencyValidationException(failedMeshClientException.InnerException as Xeption);
+            var expectedMeshDependencyValidationException =
+                new MeshDependencyValidationException(failedMeshClientException.InnerException as Xeption);
 
-                // when
-                ValueTask<Message> sendMessageTask =
-                    this.meshService.TrackMessageAsync(someMessage.MessageId);
+            // when
+            ValueTask<Message> sendMessageTask =
+                this.meshService.TrackMessageAsync(someMessage.MessageId);
 
-                MeshDependencyValidationException actualMeshDependencyValidationException =
-                    await Assert.ThrowsAsync<MeshDependencyValidationException>(sendMessageTask.AsTask);
+            MeshDependencyValidationException actualMeshDependencyValidationException =
+                await Assert.ThrowsAsync<MeshDependencyValidationException>(sendMessageTask.AsTask);
 
-                // then
-                actualMeshDependencyValidationException.Should().BeEquivalentTo(expectedMeshDependencyValidationException);
+            // then
+            actualMeshDependencyValidationException.Should().BeEquivalentTo(expectedMeshDependencyValidationException);
 
-                this.meshBrokerMock.Verify(broker =>
-                    broker.TrackMessageAsync(It.IsAny<string>()),
-                        Times.Once);
+            this.meshBrokerMock.Verify(broker =>
+                broker.TrackMessageAsync(It.IsAny<string>()),
+                    Times.Once);
 
-                this.meshBrokerMock.VerifyNoOtherCalls();
-            }
-            catch (System.Exception ex)
-            {
-
-                throw;
-            }
-
+            this.meshBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(DependencyResponseMessages))]
+        public async Task ShouldThrowDependencyExceptionIfServerErrorOccursOnTrackMessageAsync(
+            HttpResponseMessage dependencyResponseMessage)
+        {
+            // given
+            Message someMessage = CreateRandomMessage();
+            HttpResponseMessage response = dependencyResponseMessage;
+
+            this.meshBrokerMock.Setup(broker =>
+                broker.TrackMessageAsync(It.IsAny<string>()))
+                    .ReturnsAsync(dependencyResponseMessage);
+
+            var httpRequestException =
+                new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
+
+            var failedMeshServerException =
+                 new FailedMeshServerException(httpRequestException);
+
+            var expectedMeshDependencyException =
+                new MeshDependencyException(failedMeshServerException.InnerException as Xeption);
+
+            // when
+            ValueTask<Message> sendMessageTask =
+                this.meshService.TrackMessageAsync(someMessage.MessageId);
+
+            MeshDependencyException actualMeshDependencyException =
+                await Assert.ThrowsAsync<MeshDependencyException>(sendMessageTask.AsTask);
+
+            // then
+            actualMeshDependencyException.Should().BeEquivalentTo(expectedMeshDependencyException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.TrackMessageAsync(It.IsAny<string>()),
+                    Times.Once);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
     }
 }
