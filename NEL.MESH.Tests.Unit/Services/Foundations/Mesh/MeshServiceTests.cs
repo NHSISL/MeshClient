@@ -191,6 +191,20 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return responseMessage;
         }
 
+        private static HttpResponseMessage CreateTrackingHttpResponseMessage(TrackMessageResponse trackMessageResponse)
+        {
+            string contentType = "application/json";
+            string jsonContent = JsonConvert.SerializeObject(trackMessageResponse);
+
+            HttpResponseMessage responseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(jsonContent, Encoding.UTF8, contentType)
+            };
+
+            return responseMessage;
+        }
+
         private static Message GetMessageFromHttpResponseMessage(HttpResponseMessage responseMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
@@ -200,6 +214,23 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             {
                 MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
                 StringContent = responseMessageBody,
+                Headers = headers
+            };
+
+            return message;
+        }
+
+        private static Message GetMessageFromTrackingHttpResponseMessage(
+            string messageId,
+            HttpResponseMessage responseMessage)
+        {
+            string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Content.Headers);
+
+            Message message = new Message
+            {
+                MessageId = messageId,
+                TrackingInfo = JsonConvert.DeserializeObject<TrackingInfo>(responseMessageBody),
                 Headers = headers
             };
 

@@ -16,6 +16,6 @@ namespace NEL.MESH.Services.Mesh
         ValueTask<Message> TrackMessageAsync(string messageId);
         ValueTask<List<string>> GetMessagesAsync();
         ValueTask<Message> GetMessageAsync(string messageId);
-        ValueTask<Message> AcknowledgeMessageAsync(string messageId);
+        ValueTask<bool> AcknowledgeMessageAsync(string messageId);
     }
 }
