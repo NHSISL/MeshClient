@@ -94,18 +94,18 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             var failedMeshClientException =
                 new FailedMeshClientException(httpRequestException);
 
-            var expectedMeshDependencyValidationException =
-                new MeshDependencyValidationException(failedMeshClientException.InnerException as Xeption);
+            var expectedMeshDependencyException =
+                new MeshDependencyException(failedMeshClientException.InnerException as Xeption);
 
             // when
             ValueTask<Message> sendMessageTask =
                 this.meshService.SendMessageAsync(someMessage);
 
-            MeshDependencyValidationException actualMeshDependencyValidationException =
-                await Assert.ThrowsAsync<MeshDependencyValidationException>(sendMessageTask.AsTask);
+            MeshDependencyException actualMeshDependencyException =
+                await Assert.ThrowsAsync<MeshDependencyException>(sendMessageTask.AsTask);
 
             // then
-            actualMeshDependencyValidationException.Should().BeEquivalentTo(expectedMeshDependencyValidationException);
+            actualMeshDependencyException.Should().BeEquivalentTo(expectedMeshDependencyException);
 
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(
