@@ -120,5 +120,60 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionIfServiceErrorOccursOnSendMessageAsync()
+        {
+            // given
+            Message someMessage = CreateRandomMessage();
+
+            HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.MovedPermanently)
+            {
+                ReasonPhrase = GetRandomString()
+            };
+
+            this.meshBrokerMock.Setup(broker =>
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                    .ReturnsAsync(response);
+
+            var httpRequestException =
+                new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
+
+            var failedMeshServerException =
+                new FailedMeshServerException(httpRequestException);
+
+            var expectedMeshServiceException =
+                new MeshServiceException(failedMeshServerException.InnerException as Xeption);
+
+            // when
+            ValueTask<Message> sendMessageTask =
+                this.meshService.SendMessageAsync(someMessage);
+
+            MeshServiceException actualMeshServiceException =
+                await Assert.ThrowsAsync<MeshServiceException>(sendMessageTask.AsTask);
+
+            // then
+            actualMeshServiceException.Should().BeEquivalentTo(expectedMeshServiceException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                    Times.Once);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
