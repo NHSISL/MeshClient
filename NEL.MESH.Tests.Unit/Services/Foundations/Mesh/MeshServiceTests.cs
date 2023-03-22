@@ -218,27 +218,29 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return dictionary;
         }
 
+        private static Message CreateRandomSendMessage()
+        {
+            var message = CreateMessageFiller().Create();
+            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
+            message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Content-Encrypted", new List<string> { "encrypted" });
+            message.Headers.Add("Mex-From", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-To", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
+
+            return message;
+        }
 
         private static Message CreateRandomMessage() =>
             CreateMessageFiller().Create();
 
         private static Filler<Message> CreateMessageFiller()
         {
-            Dictionary<string, List<string>> dictionary = new Dictionary<string, List<string>>
-            {
-                { "Content-Type", new List<string> { "text/plain" } },
-                { "Mex-LocalID", new List<string> { GetRandomString() } },
-                { "Mex-Subject", new List<string> { GetRandomString() } },
-                { "Mex-Content-Encrypted", new List<string> { "encrypted" } },
-                { "Mex-From", new List<string> { GetRandomString() } },
-                { "Mex-To", new List<string> { GetRandomString() } },
-                { "Mex-WorkflowID", new List<string> { GetRandomString() } },
-                { "Mex-FileName", new List<string> { GetRandomString() } }
-            };
-
             var filler = new Filler<Message>();
             filler.Setup().OnProperty(message => message.Headers)
-                .Use(dictionary);
+                .Use(new Dictionary<string, List<string>>());
 
             return filler;
         }

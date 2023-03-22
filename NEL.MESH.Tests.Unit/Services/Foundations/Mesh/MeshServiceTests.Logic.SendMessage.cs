@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -19,16 +18,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldSendMessageAsync()
         {
             // given
-            Message randomMessage = CreateRandomMessage();
-            randomMessage.Headers["Content-Type"] = new List<string> { "text/plain" };
-            randomMessage.Headers["Mex-LocalID"] = new List<string> { GetRandomString() };
-            randomMessage.Headers["Mex-Subject"] = new List<string> { GetRandomString() };
-            randomMessage.Headers["Mex-Content-Encrypted"] = new List<string> { "encrypted" };
-            randomMessage.Headers["Mex-From"] = new List<string> { GetRandomString() };
-            randomMessage.Headers["Mex-To"] = new List<string> { GetRandomString() };
-            randomMessage.Headers["Mex-WorkflowID"] = new List<string> { GetRandomString() };
-            randomMessage.Headers["Mex-FileName"] = new List<string> { GetRandomString() };
-
+            Message randomMessage = CreateRandomSendMessage();
             Message inputMessage = randomMessage;
             HttpResponseMessage responseMessage = CreateHttpResponseMessage(inputMessage);
 

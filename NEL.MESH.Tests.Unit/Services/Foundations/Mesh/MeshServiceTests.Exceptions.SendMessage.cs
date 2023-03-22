@@ -21,7 +21,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage dependencyValidationResponseMessage)
         {
             // given
-            Message someMessage = CreateRandomMessage();
+            Message someMessage = CreateRandomSendMessage();
             HttpResponseMessage response = dependencyValidationResponseMessage;
 
             this.meshBrokerMock.Setup(broker =>
@@ -74,7 +74,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage dependencyResponseMessage)
         {
             // given
-            Message someMessage = CreateRandomMessage();
+            Message someMessage = CreateRandomSendMessage();
             HttpResponseMessage response = dependencyResponseMessage;
 
             this.meshBrokerMock.Setup(broker =>
@@ -125,7 +125,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowServiceExceptionIfServiceErrorOccursOnSendMessageAsync()
         {
             // given
-            Message someMessage = CreateRandomMessage();
+            Message someMessage = CreateRandomSendMessage();
 
             HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.MovedPermanently)
             {
