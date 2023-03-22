@@ -44,12 +44,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     validationSummary: GetValidationSummary(InvalidMeshArgsException.Data));
 
             // when
-            ValueTask<bool> getMessageTask =
+            ValueTask<bool> acknowledgeMessageTask =
                 this.meshService.AcknowledgeMessageAsync(inputMessage.MessageId);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
-                    getMessageTask.AsTask());
+                    acknowledgeMessageTask.AsTask());
 
             // then
             actualMeshValidationException.Should()
