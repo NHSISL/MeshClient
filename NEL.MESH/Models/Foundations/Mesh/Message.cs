@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace NEL.MESH.Models.Foundations.Mesh
 {
-    internal class Message
+    public class Message
     {
         public string MessageId { get; set; }
         public Dictionary<string, List<string>> Headers { get; set; } = new Dictionary<string, List<string>>();
