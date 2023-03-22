@@ -83,10 +83,10 @@ namespace NEL.MESH.Services.Mesh
                 return outputMessage;
             });
 
-        public ValueTask<List<string>> GetMessagesAsync() =>
+        public ValueTask<List<string>> RetrieveMessagesAsync() =>
             throw new System.NotImplementedException();
 
-        public ValueTask<Message> GetMessageAsync(string messageId) =>
+        public ValueTask<Message> RetieveMessageAsync(string messageId) =>
             TryCatch(async () =>
             {
                 ValidateTrackMessageArguments(messageId);

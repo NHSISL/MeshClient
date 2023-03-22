@@ -39,7 +39,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> getMessageTask =
-                this.meshService.GetMessageAsync(someMessage.MessageId);
+                this.meshService.RetieveMessageAsync(someMessage.MessageId);
 
             MeshDependencyValidationException actualMeshDependencyValidationException =
                 await Assert.ThrowsAsync<MeshDependencyValidationException>(getMessageTask.AsTask);
@@ -79,7 +79,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> GetMessageTask =
-                this.meshService.GetMessageAsync(someMessage.MessageId);
+                this.meshService.RetieveMessageAsync(someMessage.MessageId);
 
             MeshDependencyException actualMeshDependencyException =
                 await Assert.ThrowsAsync<MeshDependencyException>(GetMessageTask.AsTask);
@@ -123,7 +123,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> getMessageTask =
-                this.meshService.GetMessageAsync(someMessage.MessageId);
+                this.meshService.RetieveMessageAsync(someMessage.MessageId);
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>(getMessageTask.AsTask);

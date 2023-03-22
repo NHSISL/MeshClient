@@ -45,7 +45,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> getMessageTask =
-                this.meshService.GetMessageAsync(inputMessage.MessageId);
+                this.meshService.RetieveMessageAsync(inputMessage.MessageId);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
