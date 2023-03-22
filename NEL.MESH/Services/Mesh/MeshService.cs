@@ -63,8 +63,6 @@ namespace NEL.MESH.Services.Mesh
                 return outputMessage;
             });
 
-
-
         public ValueTask<Message> SendFileAsync(Message message) =>
                 throw new System.NotImplementedException();
 
