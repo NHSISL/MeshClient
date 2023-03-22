@@ -131,8 +131,33 @@ namespace NEL.MESH.Clients.Mesh
             }
         }
 
-        public ValueTask<List<string>> GetMessagesAsync() =>
-            throw new System.NotImplementedException();
+        public async ValueTask<List<string>> GetMessagesAsync()
+        {
+            try
+            {
+                return await this.meshService.GetMessagesAsync();
+            }
+            catch (MeshValidationException meshValidationException)
+            {
+                throw new MeshClientValidationException(
+                    meshValidationException.InnerException as Xeption);
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                throw new MeshClientValidationException(
+                    meshDependencyValidationException.InnerException as Xeption);
+            }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw new MeshClientDependencyException(
+                    meshDependencyException.InnerException as Xeption);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw new MeshClientServiceException(
+                    meshServiceException.InnerException as Xeption);
+            }
+        }
 
         public ValueTask<Message> GetMessageAsync(string messageId) =>
             throw new System.NotImplementedException();
