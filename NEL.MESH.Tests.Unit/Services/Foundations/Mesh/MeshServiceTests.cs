@@ -237,6 +237,117 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return message;
         }
 
+        private dynamic CreateRandomTrackingProperties()
+        {
+            return new
+            {
+                AddressType = GetRandomString(),
+                Checksum = GetRandomString(),
+                ChunkCount = GetRandomNumber(),
+                CompressFlag = GetRandomString(),
+                DownloadTimestamp = GetRandomString(),
+                DtsId = GetRandomString(),
+                EncryptedFlag = GetRandomString(),
+                ExpiryTime = GetRandomString(),
+                FileName = GetRandomString(),
+                FileSize = GetRandomNumber(),
+                IsCompressed = GetRandomString(),
+                LocalId = GetRandomString(),
+                MeshRecipientOdsCode = GetRandomString(),
+                MessageId = GetRandomString(),
+                MessageType = GetRandomString(),
+                PartnerId = GetRandomString(),
+                Recipient = GetRandomString(),
+                RecipientName = GetRandomString(),
+                RecipientOrgCode = GetRandomString(),
+                RecipientSmtp = GetRandomString(),
+                Sender = GetRandomString(),
+                SenderName = GetRandomString(),
+                SenderOdsCode = GetRandomString(),
+                SenderOrgCode = GetRandomString(),
+                SenderSmtp = GetRandomString(),
+                Status = GetRandomString(),
+                StatusSuccess = GetRandomString(),
+                UploadTimestamp = GetRandomString(),
+                Version = GetRandomString(),
+                WorkflowId = GetRandomString()
+            };
+        }
+
+        private TrackMessageResponse MapDynamicObjectToTrackMessageResponse(dynamic randomTrackingProperties)
+        {
+            return new TrackMessageResponse
+            {
+                AddressType = randomTrackingProperties.AddressType,
+                Checksum = randomTrackingProperties.Checksum,
+                ChunkCount = randomTrackingProperties.ChunkCount,
+                CompressFlag = randomTrackingProperties.CompressFlag,
+                DownloadTimestamp = randomTrackingProperties.DownloadTimestamp,
+                DtsId = randomTrackingProperties.DtsId,
+                EncryptedFlag = randomTrackingProperties.EncryptedFlag,
+                ExpiryTime = randomTrackingProperties.ExpiryTime,
+                FileName = randomTrackingProperties.FileName,
+                FileSize = randomTrackingProperties.FileSize,
+                IsCompressed = randomTrackingProperties.IsCompressed,
+                LocalId = randomTrackingProperties.LocalId,
+                MeshRecipientOdsCode = randomTrackingProperties.MeshRecipientOdsCode,
+                MessageId = randomTrackingProperties.MessageId,
+                MessageType = randomTrackingProperties.MessageType,
+                PartnerId = randomTrackingProperties.PartnerId,
+                Recipient = randomTrackingProperties.Recipient,
+                RecipientName = randomTrackingProperties.RecipientName,
+                RecipientOrgCode = randomTrackingProperties.RecipientOrgCode,
+                RecipientSmtp = randomTrackingProperties.RecipientSmtp,
+                Sender = randomTrackingProperties.Sender,
+                SenderName = randomTrackingProperties.SenderName,
+                SenderOdsCode = randomTrackingProperties.SenderOdsCode,
+                SenderOrgCode = randomTrackingProperties.SenderOrgCode,
+                SenderSmtp = randomTrackingProperties.SenderSmtp,
+                Status = randomTrackingProperties.Status,
+                StatusSuccess = randomTrackingProperties.StatusSuccess,
+                UploadTimestamp = randomTrackingProperties.UploadTimestamp,
+                Version = randomTrackingProperties.Version,
+                WorkflowId = randomTrackingProperties.WorkflowId
+            };
+        }
+
+        private TrackingInfo MapDynamicObjectToTrackingInfo(dynamic randomTrackingProperties)
+        {
+            return new TrackingInfo
+            {
+                AddressType = randomTrackingProperties.AddressType,
+                Checksum = randomTrackingProperties.Checksum,
+                ChunkCount = randomTrackingProperties.ChunkCount,
+                CompressFlag = randomTrackingProperties.CompressFlag,
+                DownloadTimestamp = randomTrackingProperties.DownloadTimestamp,
+                DtsId = randomTrackingProperties.DtsId,
+                EncryptedFlag = randomTrackingProperties.EncryptedFlag,
+                ExpiryTime = randomTrackingProperties.ExpiryTime,
+                FileName = randomTrackingProperties.FileName,
+                FileSize = randomTrackingProperties.FileSize,
+                IsCompressed = randomTrackingProperties.IsCompressed,
+                LocalId = randomTrackingProperties.LocalId,
+                MeshRecipientOdsCode = randomTrackingProperties.MeshRecipientOdsCode,
+                MessageId = randomTrackingProperties.MessageId,
+                MessageType = randomTrackingProperties.MessageType,
+                PartnerId = randomTrackingProperties.PartnerId,
+                Recipient = randomTrackingProperties.Recipient,
+                RecipientName = randomTrackingProperties.RecipientName,
+                RecipientOrgCode = randomTrackingProperties.RecipientOrgCode,
+                RecipientSmtp = randomTrackingProperties.RecipientSmtp,
+                Sender = randomTrackingProperties.Sender,
+                SenderName = randomTrackingProperties.SenderName,
+                SenderOdsCode = randomTrackingProperties.SenderOdsCode,
+                SenderOrgCode = randomTrackingProperties.SenderOrgCode,
+                SenderSmtp = randomTrackingProperties.SenderSmtp,
+                Status = randomTrackingProperties.Status,
+                StatusSuccess = randomTrackingProperties.StatusSuccess,
+                UploadTimestamp = randomTrackingProperties.UploadTimestamp,
+                Version = randomTrackingProperties.Version,
+                WorkflowId = randomTrackingProperties.WorkflowId
+            };
+        }
+
         private static Dictionary<string, List<string>> GetHeaders(HttpContentHeaders headers)
         {
             var dictionary = new Dictionary<string, List<string>>();

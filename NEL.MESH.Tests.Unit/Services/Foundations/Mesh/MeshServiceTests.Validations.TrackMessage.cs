@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
+using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh.ExternalModeld;
 using Xunit;
 
@@ -14,8 +15,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 {
     public partial class MeshServiceTests
     {
-        [Fact]
-        public async Task ShouldTrackMessageAsync()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionOnTrackMessageIfRequiredMessageArgumenstAreinvalidAsync(
+            string invalidInput)
         {
             // given
             dynamic randomTrackingProperties = CreateRandomTrackingProperties();
@@ -39,15 +44,30 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             Message expectedMessage = GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage);
 
+            var invalidMeshArgsException =
+                new InvalidMeshArgsException();
+
+            invalidMeshArgsException.AddData(
+                key: nameof(Message.MessageId),
+                values: "Text is required");
+
+            var expectedMeshValidationException =
+                new MeshValidationException(invalidMeshArgsException);
+
             // when
-            var actualMessage = await this.meshService.TrackMessageAsync(inputMessageId);
+            ValueTask<Message> trackMessageTask =
+                this.meshService.TrackMessageAsync(inputMessageId);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    trackMessageTask.AsTask());
 
             // then
-            actualMessage.Should().BeEquivalentTo(expectedMessage);
+            actualMeshValidationException.Should().BeEquivalentTo(expectedMeshValidationException);
 
             this.meshBrokerMock.Verify(broker =>
                 broker.TrackMessageAsync(inputMessageId),
-                        Times.Once);
+                        Times.Never);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
