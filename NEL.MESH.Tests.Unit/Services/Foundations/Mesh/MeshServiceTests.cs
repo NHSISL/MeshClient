@@ -199,10 +199,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message message = new Message
             {
                 MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                From = headers["Mex-From"].First(),
-                To = headers["Mex-To"].First(),
-                WorkflowId = headers["Mex-WorkflowID"].First(),
-                Body = responseMessageBody,
+                StringContent = responseMessageBody,
                 Headers = headers
             };
 

@@ -43,28 +43,12 @@ namespace NEL.MESH.Services.Mesh
             ValidateMessageIsNotNull(message);
             ValidateHeadersIsNotNull(message);
             Validate(
-                    (Rule: IsInvalid(message.From), Parameter: nameof(Message.From)),
-                    (Rule: IsInvalid(message.To), Parameter: nameof(Message.To)),
-                    (Rule: IsInvalid(message.WorkflowId), Parameter: nameof(Message.WorkflowId)),
-                    (Rule: IsInvalid(message.Headers), Parameter: nameof(Message.Headers)),
-                    (Rule: IsInvalid(message.Body), Parameter: nameof(Message.Body)),
+                    (Rule: IsInvalid(message.StringContent), Parameter: nameof(Message.StringContent)),
                     (Rule: IsInvalid(message.Headers, "Content-Type"), Parameter: "Content-Type"),
                     (Rule: IsInvalid(message.Headers, "Mex-FileName"), Parameter: "Mex-FileName"),
                     (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
                     (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
-                    (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
-
-                    (Rule: IsNotSame(
-                        message.To,
-                        GetKey(message.Headers, "Mex-To"),
-                        "Mex-To"),
-                            Parameter: nameof(Message.To)),
-
-                    (Rule: IsNotSame(
-                        message.WorkflowId,
-                        GetKey(message.Headers, "Mex-WorkflowID"),
-                        "Mex-WorkflowID"),
-                            Parameter: nameof(Message.WorkflowId)));
+                    (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"));
         }
 
         private static string GetKey(Dictionary<string, List<string>> dictionary, string key)
@@ -108,12 +92,6 @@ namespace NEL.MESH.Services.Mesh
             Message = "Text is required"
         };
 
-        private static dynamic IsInvalid(Dictionary<string, List<string>> dictionary) => new
-        {
-            Condition = dictionary.Count == 0,
-            Message = "Header values required"
-        };
-
         private static dynamic IsInvalid(Dictionary<string, List<string>> dictionary, string key) => new
         {
             Condition = IsInvalidKey(dictionary, key),
@@ -122,7 +100,7 @@ namespace NEL.MESH.Services.Mesh
 
         private static bool IsInvalidKey(Dictionary<string, List<string>> dictionary, string key)
         {
-            if (dictionary == null || dictionary.Count == 0)
+            if (dictionary == null)
             {
                 return false;
             }

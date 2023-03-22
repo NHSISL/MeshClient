@@ -37,9 +37,9 @@ namespace NEL.MESH.Services.Mesh
                 ValidateMeshMessageOnSendMessage(message);
 
                 HttpResponseMessage responseMessage = await this.meshBroker.SendMessageAsync(
-                    mailboxTo: message.To,
-                    workflowId: message.WorkflowId,
-                    message: message.Body,
+                    mailboxTo: message.Headers["Mex-To"].First(),
+                    workflowId: message.Headers["Mex-WorkflowID"].First(),
+                    stringConent: message.StringContent,
                     contentType: message.Headers["Content-Type"].First(),
                     localId: message.Headers["Mex-LocalID"].First(),
                     subject: message.Headers["Mex-Subject"].First(),
@@ -51,10 +51,7 @@ namespace NEL.MESH.Services.Mesh
                 Message outputMessage = new Message
                 {
                     MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                    From = responseMessage.Content.Headers.First(item => item.Key == "Mex-From").Value.FirstOrDefault(),
-                    To = responseMessage.Content.Headers.First(item => item.Key == "Mex-To").Value.FirstOrDefault(),
-                    WorkflowId = responseMessage.Content.Headers.First(item => item.Key == "Mex-WorkflowID").Value.FirstOrDefault(),
-                    Body = responseMessageBody,
+                    StringContent = responseMessageBody,
                 };
 
                 foreach (var header in responseMessage.Content.Headers)

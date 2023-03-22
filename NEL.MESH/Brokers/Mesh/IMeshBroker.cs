@@ -14,7 +14,7 @@ namespace NEL.MESH.Brokers.Mesh
         ValueTask<HttpResponseMessage> SendMessageAsync(
             string mailboxTo,
             string workflowId,
-            string message,
+            string stringConent,
             string contentType,
             string localId,
             string subject,

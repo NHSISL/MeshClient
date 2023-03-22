@@ -25,8 +25,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             randomMessage.Headers["Mex-Subject"] = new List<string> { GetRandomString() };
             randomMessage.Headers["Mex-Content-Encrypted"] = new List<string> { "encrypted" };
             randomMessage.Headers["Mex-From"] = new List<string> { GetRandomString() };
-            randomMessage.Headers["Mex-To"] = new List<string> { randomMessage.To };
-            randomMessage.Headers["Mex-WorkflowID"] = new List<string> { randomMessage.WorkflowId };
+            randomMessage.Headers["Mex-To"] = new List<string> { GetRandomString() };
+            randomMessage.Headers["Mex-WorkflowID"] = new List<string> { GetRandomString() };
             randomMessage.Headers["Mex-FileName"] = new List<string> { GetRandomString() };
 
             Message inputMessage = randomMessage;
@@ -34,9 +34,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
-                    inputMessage.To,
-                    inputMessage.WorkflowId,
-                    inputMessage.Body,
+                    inputMessage.Headers["Mex-To"].First(),
+                    inputMessage.Headers["Mex-WorkflowID"].First(),
+                    inputMessage.StringContent,
                     inputMessage.Headers["Content-Type"].First(),
                     inputMessage.Headers["Mex-LocalID"].First(),
                     inputMessage.Headers["Mex-Subject"].First(),
@@ -54,9 +54,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(
-                    inputMessage.To,
-                    inputMessage.WorkflowId,
-                    inputMessage.Body,
+                    inputMessage.Headers["Mex-To"].First(),
+                    inputMessage.Headers["Mex-WorkflowID"].First(),
+                    inputMessage.StringContent,
                     inputMessage.Headers["Content-Type"].First(),
                     inputMessage.Headers["Mex-LocalID"].First(),
                     inputMessage.Headers["Mex-Subject"].First(),
