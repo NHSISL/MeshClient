@@ -3,7 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 
 namespace NEL.MESH.Services.Mesh
@@ -33,6 +36,102 @@ namespace NEL.MESH.Services.Mesh
                         }
                 }
             }
+        }
+
+        private static void ValidateMeshMessageOnSendMessage(Message message)
+        {
+            ValidateMessageIsNotNull(message);
+            ValidateHeadersIsNotNull(message);
+            Validate(
+                    (Rule: IsInvalid(message.StringContent), Parameter: nameof(Message.StringContent)),
+                    (Rule: IsInvalid(message.Headers, "Content-Type"), Parameter: "Content-Type"),
+                    (Rule: IsInvalid(message.Headers, "Mex-FileName"), Parameter: "Mex-FileName"),
+                    (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
+                    (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
+                    (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"));
+        }
+
+        private static string GetKey(Dictionary<string, List<string>> dictionary, string key)
+        {
+            if (dictionary.ContainsKey(key))
+            {
+                return dictionary[key].FirstOrDefault();
+            }
+
+            return null;
+        }
+
+        private static void ValidateMessageIsNotNull(Message message)
+        {
+            if (message is null)
+            {
+                throw new NullMessageException();
+            }
+        }
+
+        private static void ValidateHeadersIsNotNull(Message message)
+        {
+            if (message.Headers is null)
+            {
+                throw new NullHeadersException();
+            }
+        }
+
+        private static dynamic IsNotSame(
+                 string first,
+                 string second,
+                 string secondName) => new
+                 {
+                     Condition = !String.IsNullOrWhiteSpace(first) && first != second,
+                     Message = $"Requires a macthing header value for key '{secondName}'"
+                 };
+
+        private static dynamic IsInvalid(string text) => new
+        {
+            Condition = String.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(Dictionary<string, List<string>> dictionary, string key) => new
+        {
+            Condition = IsInvalidKey(dictionary, key),
+            Message = "Header value is required"
+        };
+
+        private static bool IsInvalidKey(Dictionary<string, List<string>> dictionary, string key)
+        {
+            if (dictionary == null)
+            {
+                return false;
+            }
+
+            bool keyExists = dictionary.ContainsKey(key);
+
+            if (!keyExists)
+            {
+                return true;
+            }
+
+            string value = dictionary[key].FirstOrDefault();
+
+            return String.IsNullOrWhiteSpace(value);
+        }
+
+        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
+        {
+            var invalidMeshException = new InvalidMeshException();
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidMeshException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidMeshException.ThrowIfContainsErrors();
         }
     }
 }

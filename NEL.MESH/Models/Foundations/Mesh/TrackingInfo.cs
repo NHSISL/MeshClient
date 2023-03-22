@@ -4,7 +4,7 @@
 
 namespace NEL.MESH.Models.Foundations.Mesh
 {
-    internal class TrackingInfo
+    public class TrackingInfo
     {
         public string AddressType { get; set; }
         public string Checksum { get; set; }

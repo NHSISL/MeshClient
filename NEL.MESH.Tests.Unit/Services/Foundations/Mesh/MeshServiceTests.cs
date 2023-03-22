@@ -3,11 +3,18 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using Moq;
 using NEL.MESH.Brokers.Mesh;
+using NEL.MESH.Models.Foundations.Mesh;
+using NEL.MESH.Models.Foundations.Mesh.ExternalModeld;
 using NEL.MESH.Services.Mesh;
+using Newtonsoft.Json;
 using Tynamix.ObjectFiller;
 using Xunit;
 
@@ -133,6 +140,109 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 unauthorised,
                 forbidden
             };
+        }
+
+        private static HttpResponseMessage CreateHttpResponseMessage(Message message)
+        {
+
+            string contentType = message.Headers.ContainsKey("Content-Type")
+                ? message.Headers["Content-Type"].FirstOrDefault()
+                : "text/plain";
+
+            if (string.IsNullOrEmpty(contentType))
+            {
+                contentType = "application/json";
+            }
+
+            HttpResponseMessage responseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent("{\"messageID\": \"" + message.MessageId + "\"}", Encoding.UTF8, contentType)
+            };
+
+            responseMessage.Content.Headers.Add("Content-Encoding", string.Empty);
+            responseMessage.Content.Headers.Add("Mex-FileName", string.Empty);
+            responseMessage.Content.Headers.Add("Mex-From", string.Empty);
+            responseMessage.Content.Headers.Add("Mex-To", string.Empty);
+            responseMessage.Content.Headers.Add("Mex-WorkflowID", string.Empty);
+            responseMessage.Content.Headers.Add("Mex-Chunk-Range", string.Empty);
+            responseMessage.Content.Headers.Add("Mex-LocalID", string.Empty);
+            responseMessage.Content.Headers.Add("Mex-Subject", string.Empty);
+            responseMessage.Content.Headers.Add("Mex-Content-Checksum", string.Empty);
+            responseMessage.Content.Headers.Add("Mex-Content-Encrypted", string.Empty);
+            responseMessage.Content.Headers.Add("Mex-ClientVersion", string.Empty);
+            responseMessage.Content.Headers.Add("Mex-OSVersion", string.Empty);
+            responseMessage.Content.Headers.Add("Mex-OSArchitecture", string.Empty);
+            responseMessage.Content.Headers.Add("Mex-JavaVersion", string.Empty);
+
+            foreach (var item in message.Headers)
+            {
+                if (message.Headers.ContainsKey(item.Key))
+                {
+                    responseMessage.Content.Headers.Remove(item.Key);
+                    responseMessage.Content.Headers.Add(item.Key, item.Value);
+                }
+                else
+                {
+                    responseMessage.Content.Headers.Add(item.Key, item.Value);
+                }
+            }
+
+            return responseMessage;
+        }
+
+        private static Message GetMessageFromHttpResponseMessage(HttpResponseMessage responseMessage)
+        {
+            string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Content.Headers);
+
+            Message message = new Message
+            {
+                MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
+                StringContent = responseMessageBody,
+                Headers = headers
+            };
+
+            return message;
+        }
+
+        private static Dictionary<string, List<string>> GetHeaders(HttpContentHeaders headers)
+        {
+            var dictionary = new Dictionary<string, List<string>>();
+
+            foreach (var header in headers)
+            {
+                dictionary.Add(header.Key, header.Value.ToList());
+            }
+
+            return dictionary;
+        }
+
+        private static Message CreateRandomSendMessage()
+        {
+            var message = CreateMessageFiller().Create();
+            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
+            message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Content-Encrypted", new List<string> { "encrypted" });
+            message.Headers.Add("Mex-From", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-To", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
+
+            return message;
+        }
+
+        private static Message CreateRandomMessage() =>
+            CreateMessageFiller().Create();
+
+        private static Filler<Message> CreateMessageFiller()
+        {
+            var filler = new Filler<Message>();
+            filler.Setup().OnProperty(message => message.Headers)
+                .Use(new Dictionary<string, List<string>>());
+
+            return filler;
         }
     }
 }

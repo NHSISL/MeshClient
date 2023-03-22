@@ -39,19 +39,23 @@ namespace NEL.MESH.Brokers.Mesh
         public async ValueTask<HttpResponseMessage> SendMessageAsync(
             string mailboxTo,
             string workflowId,
-            string message,
-            string contentType)
+            string stringConent,
+            string contentType,
+            string localId,
+            string subject,
+            string contentEncrypted)
         {
             var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/outbox";
             var request = new HttpRequestMessage(HttpMethod.Post, path);
             request.Headers.Add("Authorization", GenerateAuthorisationHeader());
-            request.Content = new StringContent(message);
-            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            request.Content = new StringContent(stringConent);
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
             request.Content.Headers.Add("Mex-From", this.MeshApiConfiguration.MailboxId);
             request.Content.Headers.Add("Mex-To", mailboxTo);
             request.Content.Headers.Add("Mex-WorkflowID", workflowId);
-            request.Content.Headers.Add("Mex-LocalID", Guid.NewGuid().ToString());
-            request.Content.Headers.Add("Content-Type", contentType);
+            request.Content.Headers.Add("Mex-LocalID", localId);
+            request.Content.Headers.Add("Mex-Subject", subject);
+            request.Content.Headers.Add("Mex-Content-Encrypted", contentEncrypted);
 
             var response = await this.httpClient.SendAsync(request);
 
@@ -67,13 +71,12 @@ namespace NEL.MESH.Brokers.Mesh
         {
             var stream = new MemoryStream(fileContents);
             var content = new ByteArrayContent(stream.ToArray());
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
             content.Headers.Add("Mex-From", this.MeshApiConfiguration.MailboxId);
             content.Headers.Add("Mex-To", mailboxTo);
             content.Headers.Add("Mex-WorkflowID", workflowId);
             content.Headers.Add("Mex-LocalID", Guid.NewGuid().ToString());
             content.Headers.Add("Mex-FileName", fileName);
-            content.Headers.Add("Content-Type", contentType);
 
             var response = await this.httpClient
                 .PostAsync($"/messageexchange/{this.MeshApiConfiguration.MailboxId}/outbox", content);
@@ -120,7 +123,6 @@ namespace NEL.MESH.Brokers.Mesh
 
             return response;
         }
-
 
         private HttpClient SetupHttpClient()
         {

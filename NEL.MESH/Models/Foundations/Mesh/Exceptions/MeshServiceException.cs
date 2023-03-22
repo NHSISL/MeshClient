@@ -6,7 +6,7 @@ using Xeptions;
 
 namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
 {
-    public class MeshServiceException : Xeption
+    internal class MeshServiceException : Xeption
     {
         public MeshServiceException(Xeption innerException)
           : base(message: "Mesh service error occurred, contact support.",

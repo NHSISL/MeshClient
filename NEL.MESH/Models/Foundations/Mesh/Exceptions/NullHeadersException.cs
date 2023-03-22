@@ -6,9 +6,9 @@ using Xeptions;
 
 namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
 {
-    internal class MeshDependencyValidationException : Xeption
+    internal class NullHeadersException : Xeption
     {
-        public MeshDependencyValidationException(Xeption innerException)
-            : base(message: "Mesh dependency error occurred, contact support.", innerException) { }
+        public NullHeadersException()
+            : base(message: "Message headers dictionary is null.") { }
     }
 }
