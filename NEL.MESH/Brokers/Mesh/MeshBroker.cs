@@ -17,18 +17,18 @@ namespace NEL.MESH.Brokers.Mesh
 {
     internal class MeshBroker : IMeshBroker
     {
-        private readonly IMeshApiConfiguration MeshApiConfiguration;
+        private readonly MeshConfigurations meshConfiguration;
         private readonly HttpClient httpClient;
 
-        internal MeshBroker(IMeshApiConfiguration meshApiConfiguration)
+        internal MeshBroker(MeshConfigurations meshConfiguration)
         {
-            this.MeshApiConfiguration = meshApiConfiguration;
+            this.meshConfiguration = meshConfiguration;
             this.httpClient = SetupHttpClient();
         }
 
         public async ValueTask<HttpResponseMessage> HandshakeAsync()
         {
-            string path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}";
+            string path = $"/messageexchange/{this.meshConfiguration.MailboxId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("Authorization", GenerateAuthorisationHeader());
             var response = await this.httpClient.SendAsync(request);
@@ -45,12 +45,12 @@ namespace NEL.MESH.Brokers.Mesh
             string subject,
             string contentEncrypted)
         {
-            var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/outbox";
+            var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/outbox";
             var request = new HttpRequestMessage(HttpMethod.Post, path);
             request.Headers.Add("Authorization", GenerateAuthorisationHeader());
             request.Content = new StringContent(stringConent);
             request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            request.Content.Headers.Add("Mex-From", this.MeshApiConfiguration.MailboxId);
+            request.Content.Headers.Add("Mex-From", this.meshConfiguration.MailboxId);
             request.Content.Headers.Add("Mex-To", mailboxTo);
             request.Content.Headers.Add("Mex-WorkflowID", workflowId);
             request.Content.Headers.Add("Mex-LocalID", localId);
@@ -72,21 +72,21 @@ namespace NEL.MESH.Brokers.Mesh
             var stream = new MemoryStream(fileContents);
             var content = new ByteArrayContent(stream.ToArray());
             content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            content.Headers.Add("Mex-From", this.MeshApiConfiguration.MailboxId);
+            content.Headers.Add("Mex-From", this.meshConfiguration.MailboxId);
             content.Headers.Add("Mex-To", mailboxTo);
             content.Headers.Add("Mex-WorkflowID", workflowId);
             content.Headers.Add("Mex-LocalID", Guid.NewGuid().ToString());
             content.Headers.Add("Mex-FileName", fileName);
 
             var response = await this.httpClient
-                .PostAsync($"/messageexchange/{this.MeshApiConfiguration.MailboxId}/outbox", content);
+                .PostAsync($"/messageexchange/{this.meshConfiguration.MailboxId}/outbox", content);
 
             return response;
         }
 
         public async ValueTask<HttpResponseMessage> TrackMessageAsync(string messageId)
         {
-            var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/outbox/tracking?messageID={messageId}";
+            var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/outbox/tracking?messageID={messageId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("Authorization", GenerateAuthorisationHeader());
             var response = await this.httpClient.SendAsync(request);
@@ -96,7 +96,7 @@ namespace NEL.MESH.Brokers.Mesh
 
         public async ValueTask<HttpResponseMessage> GetMessagesAsync()
         {
-            var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/inbox";
+            var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/inbox";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("Authorization", GenerateAuthorisationHeader());
             var response = await this.httpClient.SendAsync(request);
@@ -106,7 +106,7 @@ namespace NEL.MESH.Brokers.Mesh
 
         public async ValueTask<HttpResponseMessage> GetMessageAsync(string messageId)
         {
-            var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/inbox/{messageId}";
+            var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/inbox/{messageId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("Authorization", GenerateAuthorisationHeader());
             var response = await this.httpClient.SendAsync(request);
@@ -116,7 +116,7 @@ namespace NEL.MESH.Brokers.Mesh
 
         public async ValueTask<HttpResponseMessage> AcknowledgeMessageAsync(string messageId)
         {
-            var path = $"/messageexchange/{this.MeshApiConfiguration.MailboxId}/inbox/{messageId}/status/acknowledged";
+            var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/inbox/{messageId}/status/acknowledged";
             var request = new HttpRequestMessage(HttpMethod.Put, path);
             request.Headers.Add("Authorization", GenerateAuthorisationHeader());
             var response = await this.httpClient.SendAsync(request);
@@ -130,20 +130,20 @@ namespace NEL.MESH.Brokers.Mesh
 
             var httpClient = new HttpClient(handler)
             {
-                BaseAddress = new Uri(this.MeshApiConfiguration.Url)
+                BaseAddress = new Uri(this.meshConfiguration.Url)
             };
 
             httpClient.DefaultRequestHeaders.Add(
                 name: "Mex-ClientVersion",
-                value: this.MeshApiConfiguration.MexClientVersion);
+                value: this.meshConfiguration.MexClientVersion);
 
             httpClient.DefaultRequestHeaders.Add(
                 name: "Mex-OSName",
-                value: this.MeshApiConfiguration.MexOSName);
+                value: this.meshConfiguration.MexOSName);
 
             httpClient.DefaultRequestHeaders.Add(
                 name: "Mex-OSVersion",
-                value: this.MeshApiConfiguration.MexOSVersion);
+                value: this.meshConfiguration.MexOSVersion);
 
             return httpClient;
         }
@@ -157,22 +157,22 @@ namespace NEL.MESH.Brokers.Mesh
                 CheckCertificateRevocationList = false
             };
 
-            if (this.MeshApiConfiguration.ClientCertificate != null)
+            if (this.meshConfiguration.ClientCertificate != null)
             {
-                handler.ClientCertificates.Add(this.MeshApiConfiguration.ClientCertificate);
+                handler.ClientCertificates.Add(this.meshConfiguration.ClientCertificate);
             }
 
-            if (this.MeshApiConfiguration.RootCertificate != null)
+            if (this.meshConfiguration.RootCertificate != null)
             {
                 handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
                 {
                     if (chain != null)
                     {
                         chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
-                        chain.ChainPolicy.CustomTrustStore.Add(this.MeshApiConfiguration.RootCertificate);
-                        if (this.MeshApiConfiguration.IntermediateCertificates != null)
+                        chain.ChainPolicy.CustomTrustStore.Add(this.meshConfiguration.RootCertificate);
+                        if (this.meshConfiguration.IntermediateCertificates != null)
                         {
-                            chain.ChainPolicy.ExtraStore.AddRange(this.MeshApiConfiguration.IntermediateCertificates);
+                            chain.ChainPolicy.ExtraStore.AddRange(this.meshConfiguration.IntermediateCertificates);
                         }
 
                         chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
@@ -193,8 +193,8 @@ namespace NEL.MESH.Brokers.Mesh
 
         private string GenerateAuthorisationHeader()
         {
-            string mailboxId = this.MeshApiConfiguration.MailboxId;
-            string password = this.MeshApiConfiguration.Password;
+            string mailboxId = this.meshConfiguration.MailboxId;
+            string password = this.meshConfiguration.Password;
             string nonce = Guid.NewGuid().ToString();
             string timeStamp = DateTime.UtcNow.ToString("yyyyMMddHHmm");
             string nonce_count = "0";

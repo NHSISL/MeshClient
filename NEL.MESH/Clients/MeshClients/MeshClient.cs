@@ -10,7 +10,7 @@ using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Services.Mesh;
 using Xeptions;
 
-namespace NEL.MESH.Clients.Mesh
+namespace NEL.MESH.Clients.MeshClients
 {
     internal class MeshClient : IMeshClient
     {
@@ -187,7 +187,32 @@ namespace NEL.MESH.Clients.Mesh
             }
         }
 
-        public ValueTask<bool> AcknowledgeMessageAsync(string messageId) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<bool> AcknowledgeMessageAsync(string messageId)
+        {
+            try
+            {
+                return await this.meshService.AcknowledgeMessageAsync(messageId);
+            }
+            catch (MeshValidationException meshValidationException)
+            {
+                throw new MeshClientValidationException(
+                    meshValidationException.InnerException as Xeption);
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                throw new MeshClientValidationException(
+                    meshDependencyValidationException.InnerException as Xeption);
+            }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw new MeshClientDependencyException(
+                    meshDependencyException.InnerException as Xeption);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw new MeshClientServiceException(
+                    meshServiceException.InnerException as Xeption);
+            }
+        }
     }
 }
