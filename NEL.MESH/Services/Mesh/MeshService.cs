@@ -60,8 +60,6 @@ namespace NEL.MESH.Services.Mesh
                 return outputMessage;
             });
 
-
-
         public ValueTask<Message> SendFileAsync(Message message) =>
                 throw new System.NotImplementedException();
 
@@ -89,7 +87,26 @@ namespace NEL.MESH.Services.Mesh
             throw new System.NotImplementedException();
 
         public ValueTask<Message> GetMessageAsync(string messageId) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateTrackMessageArguments(messageId);
+                HttpResponseMessage responseMessage = await this.meshBroker.GetMessageAsync(messageId);
+                ValidateResponse(responseMessage);
+                string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+
+                Message outputMessage = new Message
+                {
+                    MessageId = messageId,
+                    StringContent = responseMessageBody,
+                };
+
+                foreach (var header in responseMessage.Content.Headers)
+                {
+                    outputMessage.Headers.Add(header.Key, header.Value.ToList());
+                }
+
+                return outputMessage;
+            });
 
         public ValueTask<bool> AcknowledgeMessageAsync(string messageId) =>
             throw new System.NotImplementedException();

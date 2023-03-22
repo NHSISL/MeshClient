@@ -52,13 +52,13 @@ namespace NEL.MESH.Services.Mesh
             {
                 throw CreateAndLogValidationException(nullHeadersException);
             }
+            catch (InvalidMeshArgsException invalidArgumentMeshException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentMeshException);
+            }
             catch (InvalidMeshException invalidMeshException)
             {
                 throw CreateAndLogValidationException(invalidMeshException);
-            }
-            catch (InvalidMeshArgsException invalidMeshArgsException)
-            {
-                throw CreateAndLogValidationException(invalidMeshArgsException);
             }
             catch (FailedMeshClientException failedMeshClientException)
             {
@@ -79,8 +79,10 @@ namespace NEL.MESH.Services.Mesh
 
         private MeshValidationException CreateAndLogValidationException(Xeption exception)
         {
+            string validationSummary = GetValidationSummary(exception.Data);
+
             var meshValidationException =
-                new MeshValidationException(exception);
+                new MeshValidationException(exception, validationSummary);
 
             return meshValidationException;
         }

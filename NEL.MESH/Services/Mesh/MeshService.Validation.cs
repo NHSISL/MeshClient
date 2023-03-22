@@ -3,9 +3,11 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xeptions;
@@ -90,7 +92,7 @@ namespace NEL.MESH.Services.Mesh
                  string secondName) => new
                  {
                      Condition = !String.IsNullOrWhiteSpace(first) && first != second,
-                     Message = $"Requires a macthing header value for key '{secondName}'"
+                     Message = $"Requires a matching header value for key '{secondName}'"
                  };
 
         private static dynamic IsInvalid(string text) => new
@@ -103,6 +105,12 @@ namespace NEL.MESH.Services.Mesh
         {
             Condition = IsInvalidKey(dictionary, key),
             Message = "Header value is required"
+        };
+
+        private static dynamic IsArgInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
         };
 
         private static bool IsInvalidKey(Dictionary<string, List<string>> dictionary, string key)
@@ -138,8 +146,23 @@ namespace NEL.MESH.Services.Mesh
                         value: rule.Message);
                 }
             }
-
             invalidDataException.ThrowIfContainsErrors();
+        }
+
+        private string GetValidationSummary(IDictionary data)
+        {
+            StringBuilder validationSummary = new StringBuilder();
+
+            foreach (DictionaryEntry entry in data)
+            {
+                string errorSummary = ((List<string>)entry.Value)
+                    .Select((string value) => value)
+                    .Aggregate((string current, string next) => current + ", " + next);
+
+                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
+            }
+
+            return validationSummary.ToString();
         }
     }
 }
