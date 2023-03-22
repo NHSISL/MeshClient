@@ -25,7 +25,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             // given
             dynamic randomTrackingProperties = CreateRandomTrackingProperties();
             string randomString = GetRandomString();
-            string inputMessageId = randomString;
+            string inputMessageId = invalidInput;
             Message randomMessage = CreateRandomMessage();
             randomMessage.MessageId = inputMessageId;
 

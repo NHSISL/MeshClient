@@ -65,22 +65,24 @@ namespace NEL.MESH.Services.Mesh
         public ValueTask<Message> SendFileAsync(Message message) =>
                 throw new System.NotImplementedException();
 
-        public async ValueTask<Message> TrackMessageAsync(string messageId)
-        {
-            HttpResponseMessage responseMessage = await this.meshBroker.TrackMessageAsync(messageId);
-            string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
-
-            Message outputMessage = new Message
+        public ValueTask<Message> TrackMessageAsync(string messageId) =>
+            TryCatch(async () =>
             {
-                MessageId = messageId,
-                TrackingInfo = MapTrackMessageResponseToTrackingInfo(
-                    JsonConvert.DeserializeObject<TrackMessageResponse>(responseMessageBody)),
-            };
+                ValidateTrackMessageArguments(messageId);
+                HttpResponseMessage responseMessage = await this.meshBroker.TrackMessageAsync(messageId);
+                string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
 
-            GetHeaderValues(responseMessage, outputMessage);
+                Message outputMessage = new Message
+                {
+                    MessageId = messageId,
+                    TrackingInfo = MapTrackMessageResponseToTrackingInfo(
+                        JsonConvert.DeserializeObject<TrackMessageResponse>(responseMessageBody)),
+                };
 
-            return outputMessage;
-        }
+                GetHeaderValues(responseMessage, outputMessage);
+
+                return outputMessage;
+            });
 
         public ValueTask<List<string>> GetMessagesAsync() =>
             throw new System.NotImplementedException();
