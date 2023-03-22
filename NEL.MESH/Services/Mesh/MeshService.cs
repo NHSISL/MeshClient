@@ -70,6 +70,7 @@ namespace NEL.MESH.Services.Mesh
             {
                 ValidateTrackMessageArguments(messageId);
                 HttpResponseMessage responseMessage = await this.meshBroker.TrackMessageAsync(messageId);
+                ValidateResponse(responseMessage);
                 string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
 
                 Message outputMessage = new Message
