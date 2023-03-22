@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Text;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
+using Xeptions;
 
 namespace NEL.MESH.Services.Mesh
 {
@@ -44,7 +45,7 @@ namespace NEL.MESH.Services.Mesh
         {
             ValidateMessageIsNotNull(message);
             ValidateHeadersIsNotNull(message);
-            Validate(
+            Validate<InvalidMeshException>(
                     (Rule: IsInvalid(message.StringContent), Parameter: nameof(Message.StringContent)),
                     (Rule: IsInvalid(message.Headers, "Content-Type"), Parameter: "Content-Type"),
                     (Rule: IsInvalid(message.Headers, "Mex-FileName"), Parameter: "Mex-FileName"),
@@ -126,42 +127,24 @@ namespace NEL.MESH.Services.Mesh
         }
 
         public void ValidateMeshArgs(string messageId) =>
-           ValidateArgs(
+           Validate<InvalidMeshArgsException>(
                (Rule: IsArgInvalid(messageId), Parameter: nameof(Message.MessageId)));
 
 
-        private static void ValidateArgs(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
+             where T : Xeption
         {
-            var invalidArgumentMeshException = new InvalidMeshArgsException();
-
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T));
             foreach ((dynamic rule, string parameter) in validations)
             {
                 if (rule.Condition)
                 {
-                    invalidArgumentMeshException.UpsertDataList(
+                    invalidDataException.UpsertDataList(
                         key: parameter,
                         value: rule.Message);
                 }
             }
-
-            invalidArgumentMeshException.ThrowIfContainsErrors();
-        }
-
-        private static void Validate(params (dynamic Rule, string Parameter)[] validations)
-        {
-            var invalidMeshException = new InvalidMeshException();
-
-            foreach ((dynamic rule, string parameter) in validations)
-            {
-                if (rule.Condition)
-                {
-                    invalidMeshException.UpsertDataList(
-                        key: parameter,
-                        value: rule.Message);
-                }
-            }
-
-            invalidMeshException.ThrowIfContainsErrors();
+            invalidDataException.ThrowIfContainsErrors();
         }
 
         private string GetValidationSummary(IDictionary data)
