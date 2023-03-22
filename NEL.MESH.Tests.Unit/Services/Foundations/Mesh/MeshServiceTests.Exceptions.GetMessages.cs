@@ -94,7 +94,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
 
-
         [Fact]
         public async Task ShouldThrowServiceExceptionIfServiceErrorOccursOnGetMessagesAsync()
         {

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
@@ -14,6 +15,7 @@ namespace NEL.MESH.Services.Mesh
     {
         private delegate ValueTask<bool> ReturningBooleanFunction();
         private delegate ValueTask<Message> RetruningMessageFunction();
+        private delegate ValueTask<List<string>> ReturningStringListFunction();
 
         private async ValueTask<bool> TryCatch(ReturningBooleanFunction returningBooleanFunction)
         {
@@ -59,6 +61,29 @@ namespace NEL.MESH.Services.Mesh
             catch (InvalidMeshException invalidMeshException)
             {
                 throw CreateAndLogValidationException(invalidMeshException);
+            }
+            catch (FailedMeshClientException failedMeshClientException)
+            {
+                throw CreateAndLogDependencyValidationException(failedMeshClientException);
+            }
+            catch (FailedMeshServerException failedMeshClientException)
+            {
+                throw CreateAndLogDependencyException(failedMeshClientException);
+            }
+            catch (Exception exception)
+            {
+                var failedMeshServiceException =
+                    new FailedMeshServiceException(exception);
+
+                throw CreateAndLogServiceException(failedMeshServiceException);
+            }
+        }
+
+        private async ValueTask<List<string>> TryCatch(ReturningStringListFunction returningStringListFunction)
+        {
+            try
+            {
+                return await returningStringListFunction();
             }
             catch (FailedMeshClientException failedMeshClientException)
             {
