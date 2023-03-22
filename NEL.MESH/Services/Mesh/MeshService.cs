@@ -46,6 +46,7 @@ namespace NEL.MESH.Services.Mesh
                     contentEncrypted: message.Headers["Mex-Content-Encrypted"].First()
                     );
 
+                ValidateResponse(responseMessage);
                 string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
 
                 Message outputMessage = new Message

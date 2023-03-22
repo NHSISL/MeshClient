@@ -224,9 +224,21 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
         private static Filler<Message> CreateMessageFiller()
         {
+            Dictionary<string, List<string>> dictionary = new Dictionary<string, List<string>>
+            {
+                { "Content-Type", new List<string> { "text/plain" } },
+                { "Mex-LocalID", new List<string> { GetRandomString() } },
+                { "Mex-Subject", new List<string> { GetRandomString() } },
+                { "Mex-Content-Encrypted", new List<string> { "encrypted" } },
+                { "Mex-From", new List<string> { GetRandomString() } },
+                { "Mex-To", new List<string> { GetRandomString() } },
+                { "Mex-WorkflowID", new List<string> { GetRandomString() } },
+                { "Mex-FileName", new List<string> { GetRandomString() } }
+            };
+
             var filler = new Filler<Message>();
             filler.Setup().OnProperty(message => message.Headers)
-                .Use(new Dictionary<string, List<string>>());
+                .Use(dictionary);
 
             return filler;
         }

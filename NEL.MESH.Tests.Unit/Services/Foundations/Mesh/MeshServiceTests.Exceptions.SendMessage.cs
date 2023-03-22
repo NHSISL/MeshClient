@@ -20,45 +20,60 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowDependencyValidationExceptionIfClientErrorOccursOnSendMessageAsync(
             HttpResponseMessage dependencyValidationResponseMessage)
         {
-            // given
-            Message someMessage = CreateRandomMessage();
-            HttpResponseMessage response = dependencyValidationResponseMessage;
+            try
+            {
+                // given
+                Message someMessage = CreateRandomMessage();
+                HttpResponseMessage response = dependencyValidationResponseMessage;
 
-            this.meshBrokerMock.Setup(broker =>
-                broker.HandshakeAsync())
-                    .ReturnsAsync(dependencyValidationResponseMessage);
+                this.meshBrokerMock.Setup(broker =>
+                    broker.SendMessageAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<string>()))
+                        .ReturnsAsync(dependencyValidationResponseMessage);
 
-            var httpRequestException =
-                new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
+                var httpRequestException =
+                    new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
 
-            var failedMeshClientException =
-                new FailedMeshClientException(httpRequestException);
+                var failedMeshClientException =
+                    new FailedMeshClientException(httpRequestException);
 
-            var expectedMeshDependencyValidationException =
-                new MeshDependencyValidationException(failedMeshClientException.InnerException as Xeption);
+                var expectedMeshDependencyValidationException =
+                    new MeshDependencyValidationException(failedMeshClientException.InnerException as Xeption);
 
-            // when
-            ValueTask<Message> sendMessageTask =
-                this.meshService.SendMessageAsync(someMessage);
+                // when
+                ValueTask<Message> sendMessageTask =
+                    this.meshService.SendMessageAsync(someMessage);
 
-            MeshDependencyValidationException actualMeshDependencyValidationException =
-                await Assert.ThrowsAsync<MeshDependencyValidationException>(sendMessageTask.AsTask);
+                MeshDependencyValidationException actualMeshDependencyValidationException =
+                    await Assert.ThrowsAsync<MeshDependencyValidationException>(sendMessageTask.AsTask);
 
-            // then
-            actualMeshDependencyValidationException.Should().BeEquivalentTo(expectedMeshDependencyValidationException);
+                // then
+                actualMeshDependencyValidationException.Should().BeEquivalentTo(expectedMeshDependencyValidationException);
 
-            this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>()),
-                    Times.Once);
+                this.meshBrokerMock.Verify(broker =>
+                    broker.SendMessageAsync(
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<string>()),
+                        Times.Once);
 
-            this.meshBrokerMock.VerifyNoOtherCalls();
+                this.meshBrokerMock.VerifyNoOtherCalls();
+            }
+            catch (System.Exception ex)
+            {
+                throw;
+            }
+
         }
     }
 }

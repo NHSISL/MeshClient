@@ -14,6 +14,7 @@ namespace NEL.MESH.Services.Mesh
     {
         private delegate ValueTask<bool> ReturningBooleanFunction();
         private delegate ValueTask<Message> RetruningMessageFunction();
+
         private async ValueTask<bool> TryCatch(ReturningBooleanFunction returningBooleanFunction)
         {
             try
@@ -54,6 +55,10 @@ namespace NEL.MESH.Services.Mesh
             catch (InvalidMeshException invalidMeshException)
             {
                 throw CreateAndLogValidationException(invalidMeshException);
+            }
+            catch (FailedMeshClientException failedMeshClientException)
+            {
+                throw CreateAndLogDependencyValidationException(failedMeshClientException);
             }
         }
 
