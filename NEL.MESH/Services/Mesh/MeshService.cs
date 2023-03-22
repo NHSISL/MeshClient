@@ -77,7 +77,7 @@ namespace NEL.MESH.Services.Mesh
 
             Message outputMessage = new Message
             {
-                MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
+                MessageId = messageId,
                 StringContent = responseMessageBody,
             };
 

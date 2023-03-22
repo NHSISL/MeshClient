@@ -98,6 +98,12 @@ namespace NEL.MESH.Services.Mesh
             Message = "Header value is required"
         };
 
+        private static dynamic IsArgInvalid(string text) => new
+        {
+            Condition = string.IsNullOrWhiteSpace(text),
+            Message = "Text is required"
+        };
+
         private static bool IsInvalidKey(Dictionary<string, List<string>> dictionary, string key)
         {
             if (dictionary == null)
@@ -115,6 +121,28 @@ namespace NEL.MESH.Services.Mesh
             string value = dictionary[key].FirstOrDefault();
 
             return String.IsNullOrWhiteSpace(value);
+        }
+
+        public void ValidateMeshArgs(string messageId) =>
+           ValidateArgs(
+               (Rule: IsArgInvalid(messageId), Parameter: nameof(messageId)));
+
+
+        private static void ValidateArgs(params (dynamic Rule, string Parameter)[] validations)
+        {
+            var invalidArgumentMeshException = new InvalidMeshArgsException();
+
+            foreach ((dynamic rule, string parameter) in validations)
+            {
+                if (rule.Condition)
+                {
+                    invalidArgumentMeshException.UpsertDataList(
+                        key: parameter,
+                        value: rule.Message);
+                }
+            }
+
+            invalidArgumentMeshException.ThrowIfContainsErrors();
         }
 
         private static void Validate(params (dynamic Rule, string Parameter)[] validations)

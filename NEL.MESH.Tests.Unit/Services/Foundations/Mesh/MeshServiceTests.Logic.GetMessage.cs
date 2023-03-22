@@ -17,27 +17,24 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldGetMessageAsync()
         {
             // given
-            string randomString = GetRandomString();
-            string inputString = randomString;
-
             Message randomMessage = CreateRandomMessage();
             Message inputMessage = randomMessage;
             HttpResponseMessage responseMessage = CreateHttpResponseMessage(inputMessage);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.GetMessageAsync(inputString))
+                broker.GetMessageAsync(inputMessage.MessageId))
                     .ReturnsAsync(responseMessage);
 
             Message expectedMessage = GetMessageFromHttpResponseMessage(responseMessage);
 
             // when
-            var actualMessage = await this.meshService.GetMessageAsync(inputString);
+            var actualMessage = await this.meshService.GetMessageAsync(inputMessage.MessageId);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.GetMessageAsync(inputString),
+                broker.GetMessageAsync(inputMessage.MessageId),
                         Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
