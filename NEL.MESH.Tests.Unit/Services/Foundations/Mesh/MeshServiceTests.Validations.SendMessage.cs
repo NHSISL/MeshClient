@@ -56,7 +56,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowValidationExceptionOnSendMessageIfHeadersDictionaryIsNullAsync()
         {
             // given
-
             Message messageWithNullHeaders = new Message
             {
                 Headers = null

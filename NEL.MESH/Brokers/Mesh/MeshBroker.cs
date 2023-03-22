@@ -124,7 +124,6 @@ namespace NEL.MESH.Brokers.Mesh
             return response;
         }
 
-
         private HttpClient SetupHttpClient()
         {
             HttpClientHandler handler = SetupHttpClientHandler();

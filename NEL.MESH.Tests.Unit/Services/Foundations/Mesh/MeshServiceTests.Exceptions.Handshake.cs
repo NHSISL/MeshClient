@@ -14,7 +14,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 {
     public partial class MeshServiceTests
     {
-
         [Theory]
         [MemberData(nameof(DependencyValidationResponseMessages))]
         public async Task ShouldThrowDependencyValidationExceptionIfClientErrorOccursOnHandshakeAsync(
