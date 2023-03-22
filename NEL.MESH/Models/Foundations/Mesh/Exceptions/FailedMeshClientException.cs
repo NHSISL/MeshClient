@@ -7,7 +7,7 @@ using Xeptions;
 
 namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
 {
-    public class FailedMeshClientException : Xeption
+    internal class FailedMeshClientException : Xeption
     {
         public FailedMeshClientException(Exception innerException)
             : base(message: "Mesh client error occurred, contact support.", innerException: innerException) { }

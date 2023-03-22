@@ -6,7 +6,7 @@ using Xeptions;
 
 namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
 {
-    public class MeshDependencyValidationException : Xeption
+    internal class MeshDependencyValidationException : Xeption
     {
         public MeshDependencyValidationException(Xeption innerException)
             : base(message: "Mesh dependency error occurred, contact support.", innerException) { }
