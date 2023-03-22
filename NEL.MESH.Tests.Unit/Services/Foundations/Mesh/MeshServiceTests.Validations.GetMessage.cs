@@ -39,7 +39,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                values: "Text is required");
 
             var expectedMeshValidationException =
-                new MeshValidationException(InvalidMeshArgsException);
+                 new MeshValidationException(
+                    innerException: InvalidMeshArgsException,
+                    validationSummary: GetValidationSummary(InvalidMeshArgsException.Data));
 
             // when
             ValueTask<Message> getMessageTask =

@@ -118,6 +118,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new InvalidMeshException();
 
             invalidMeshException.AddData(
+                key: nameof(Message.StringContent),
+                values: "Text is required");
+
+            invalidMeshException.AddData(
                 key: "Content-Type",
                 values: "Header value is required");
 
@@ -137,12 +141,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 key: "Mex-WorkflowID",
                 values: "Header value is required");
 
-            invalidMeshException.AddData(
-                key: nameof(Message.StringContent),
-                values: "Text is required");
-
             var expectedMeshValidationException =
-                new MeshValidationException(invalidMeshException);
+                new MeshValidationException(
+                innerException: invalidMeshException,
+                validationSummary: GetValidationSummary(invalidMeshException.Data));
 
             // when
             ValueTask<Message> addMessageTask =

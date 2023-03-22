@@ -69,25 +69,28 @@ namespace NEL.MESH.Services.Mesh
         public ValueTask<List<string>> GetMessagesAsync() =>
             throw new System.NotImplementedException();
 
-        public async ValueTask<Message> GetMessageAsync(string messageId)
-        {
-            HttpResponseMessage responseMessage = await this.meshBroker.GetMessageAsync(messageId);
-
-            string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
-
-            Message outputMessage = new Message
+        public ValueTask<Message> GetMessageAsync(string messageId) =>
+            TryCatch(async () =>
             {
-                MessageId = messageId,
-                StringContent = responseMessageBody,
-            };
+                ValidateMeshArgs(messageId);
 
-            foreach (var header in responseMessage.Content.Headers)
-            {
-                outputMessage.Headers.Add(header.Key, header.Value.ToList());
-            }
+                HttpResponseMessage responseMessage = await this.meshBroker.GetMessageAsync(messageId);
 
-            return outputMessage;
-        }
+                string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+
+                Message outputMessage = new Message
+                {
+                    MessageId = messageId,
+                    StringContent = responseMessageBody,
+                };
+
+                foreach (var header in responseMessage.Content.Headers)
+                {
+                    outputMessage.Headers.Add(header.Key, header.Value.ToList());
+                }
+
+                return outputMessage;
+            });
 
         public ValueTask<Message> TrackMessageAsync(string messageId) =>
             throw new System.NotImplementedException();

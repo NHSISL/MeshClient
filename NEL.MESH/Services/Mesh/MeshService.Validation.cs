@@ -3,9 +3,11 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 
@@ -83,7 +85,7 @@ namespace NEL.MESH.Services.Mesh
                  string secondName) => new
                  {
                      Condition = !String.IsNullOrWhiteSpace(first) && first != second,
-                     Message = $"Requires a macthing header value for key '{secondName}'"
+                     Message = $"Requires a matching header value for key '{secondName}'"
                  };
 
         private static dynamic IsInvalid(string text) => new
@@ -125,7 +127,7 @@ namespace NEL.MESH.Services.Mesh
 
         public void ValidateMeshArgs(string messageId) =>
            ValidateArgs(
-               (Rule: IsArgInvalid(messageId), Parameter: nameof(messageId)));
+               (Rule: IsArgInvalid(messageId), Parameter: nameof(Message.MessageId)));
 
 
         private static void ValidateArgs(params (dynamic Rule, string Parameter)[] validations)
@@ -160,6 +162,22 @@ namespace NEL.MESH.Services.Mesh
             }
 
             invalidMeshException.ThrowIfContainsErrors();
+        }
+
+        private string GetValidationSummary(IDictionary data)
+        {
+            StringBuilder validationSummary = new StringBuilder();
+
+            foreach (DictionaryEntry entry in data)
+            {
+                string errorSummary = ((List<string>)entry.Value)
+                    .Select((string value) => value)
+                    .Aggregate((string current, string next) => current + ", " + next);
+
+                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
+            }
+
+            return validationSummary.ToString();
         }
     }
 }
