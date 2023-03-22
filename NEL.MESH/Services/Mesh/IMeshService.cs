@@ -15,7 +15,7 @@ namespace NEL.MESH.Services.Mesh
         ValueTask<Message> SendFileAsync(Message message);
         ValueTask<Message> TrackMessageAsync(string messageId);
         ValueTask<List<string>> RetrieveMessagesAsync();
-        ValueTask<Message> RetieveMessageAsync(string messageId);
+        ValueTask<Message> RetrieveMessageAsync(string messageId);
         ValueTask<bool> AcknowledgeMessageAsync(string messageId);
     }
 }

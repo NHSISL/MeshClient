@@ -94,7 +94,7 @@ namespace NEL.MESH.Services.Mesh
             return getMessagesResponse.Messages;
         }
 
-        public ValueTask<Message> RetieveMessageAsync(string messageId) =>
+        public ValueTask<Message> RetrieveMessageAsync(string messageId) =>
             TryCatch(async () =>
             {
                 ValidateTrackMessageArguments(messageId);

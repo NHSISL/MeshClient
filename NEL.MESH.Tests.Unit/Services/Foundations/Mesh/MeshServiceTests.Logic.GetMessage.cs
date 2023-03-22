@@ -28,7 +28,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message expectedMessage = GetMessageFromHttpResponseMessage(responseMessage);
 
             // when
-            var actualMessage = await this.meshService.RetieveMessageAsync(inputMessage.MessageId);
+            var actualMessage = await this.meshService.RetrieveMessageAsync(inputMessage.MessageId);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
