@@ -17,7 +17,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
         [Theory]
         [MemberData(nameof(DependencyValidationResponseMessages))]
-        public async Task ShouldThrowDependencyValidationExceptionIfClientErrorOccursAsync(
+        public async Task ShouldThrowDependencyValidationExceptionIfClientErrorOccursOnHandshakeAsync(
             HttpResponseMessage dependencyValidationResponseMessage)
         {
             // given
@@ -55,7 +55,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
         [Theory]
         [MemberData(nameof(DependencyResponseMessages))]
-        public async Task ShouldThrowDependencyExceptionIfServerErrorOccursAsync(
+        public async Task ShouldThrowDependencyExceptionIfServerErrorOccursOnHandshakeAsync(
             HttpResponseMessage dependencyResponseMessage)
         {
             // given
@@ -92,7 +92,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionIfServiceErrorOccursAsync()
+        public async Task ShouldThrowServiceExceptionIfServiceErrorOccursOnHandshakeAsync()
         {
             // given
             HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.MovedPermanently)
