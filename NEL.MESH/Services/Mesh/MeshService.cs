@@ -113,7 +113,7 @@ namespace NEL.MESH.Services.Mesh
          {
              ValidateTrackMessageArguments(messageId);
              HttpResponseMessage response = await this.meshBroker.AcknowledgeMessageAsync(messageId);
-             //ValidateResponse(response);
+             ValidateResponse(response);
 
              return true;
          });

@@ -17,15 +17,15 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
     {
         [Theory]
         [MemberData(nameof(DependencyValidationResponseMessages))]
-        public async Task ShouldThrowDependencyValidationExceptionIfServerErrorOccursOAcknowledgeMessageAsync(
-            HttpResponseMessage dependencyValidationResponseMessage)
+        public async Task ShouldThrowDependencyValidationExceptionIfClientErrorOccursOnAcknowledgeMessage(
+           HttpResponseMessage dependencyValidationResponseMessage)
         {
             // given
             Message someMessage = CreateRandomSendMessage();
             HttpResponseMessage response = dependencyValidationResponseMessage;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.AcknowledgeMessageAsync(It.IsAny<string>()))
+                broker.AcknowledgeMessageAsync(someMessage.MessageId))
                     .ReturnsAsync(dependencyValidationResponseMessage);
 
             var httpRequestException =
@@ -38,20 +38,21 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new MeshDependencyValidationException(failedMeshClientException.InnerException as Xeption);
 
             // when
-            ValueTask<bool> getMessageTask =
+            ValueTask<bool> AcknowledgeMessageTask =
                 this.meshService.AcknowledgeMessageAsync(someMessage.MessageId);
 
             MeshDependencyValidationException actualMeshDependencyValidationException =
-                await Assert.ThrowsAsync<MeshDependencyValidationException>(getMessageTask.AsTask);
+                await Assert.ThrowsAsync<MeshDependencyValidationException>(AcknowledgeMessageTask.AsTask);
 
             // then
             actualMeshDependencyValidationException.Should().BeEquivalentTo(expectedMeshDependencyValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.AcknowledgeMessageAsync(It.IsAny<string>()),
+                broker.AcknowledgeMessageAsync(someMessage.MessageId),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
+
     }
 }
