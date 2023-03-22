@@ -64,6 +64,13 @@ namespace NEL.MESH.Services.Mesh
             {
                 throw CreateAndLogDependencyException(failedMeshClientException);
             }
+            catch (Exception exception)
+            {
+                var failedMeshServiceException =
+                    new FailedMeshServiceException(exception);
+
+                throw CreateAndLogServiceException(failedMeshServiceException);
+            }
         }
 
         private MeshValidationException CreateAndLogValidationException(Xeption exception)

@@ -17,7 +17,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
     {
         [Theory]
         [MemberData(nameof(DependencyValidationResponseMessages))]
-        public async Task ShouldThrowDependencyValidationExceptionIfClientErrorOccursOnSendMessageAsync(
+        public async Task ShouldThrowDependencyValidationExceptionIfServerErrorOccursOnSendMessageAsync(
             HttpResponseMessage dependencyValidationResponseMessage)
         {
             // given
@@ -91,11 +91,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             var httpRequestException =
                 new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
 
-            var failedMeshClientException =
-                new FailedMeshClientException(httpRequestException);
+            var failedMeshServerException =
+                new FailedMeshServerException(httpRequestException);
 
             var expectedMeshDependencyException =
-                new MeshDependencyException(failedMeshClientException.InnerException as Xeption);
+                new MeshDependencyException(failedMeshServerException.InnerException as Xeption);
 
             // when
             ValueTask<Message> sendMessageTask =
@@ -146,11 +146,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             var httpRequestException =
                 new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
 
-            var failedMeshServerException =
-                new FailedMeshServerException(httpRequestException);
+            var failedMeshServiceException =
+                new FailedMeshServiceException(httpRequestException);
 
             var expectedMeshServiceException =
-                new MeshServiceException(failedMeshServerException.InnerException as Xeption);
+                new MeshServiceException(failedMeshServiceException as Xeption);
 
             // when
             ValueTask<Message> sendMessageTask =

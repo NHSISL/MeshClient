@@ -68,11 +68,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             var httpRequestException =
                 new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
 
-            var failedMeshClientException =
-                new FailedMeshClientException(httpRequestException);
+            var failedMeshServerException =
+                new FailedMeshServerException(httpRequestException);
 
             var expectedMeshDependencyException =
-                new MeshDependencyException(failedMeshClientException.InnerException as Xeption);
+                new MeshDependencyException(failedMeshServerException.InnerException as Xeption);
 
             // when
             ValueTask<bool> handshakeTask =
