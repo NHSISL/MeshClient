@@ -20,7 +20,7 @@ namespace NEL.MESH.Brokers.Mesh
         private readonly MeshConfigurations meshConfiguration;
         private readonly HttpClient httpClient;
 
-        internal MeshBroker(MeshConfigurations meshConfiguration)
+        public MeshBroker(MeshConfigurations meshConfiguration)
         {
             this.meshConfiguration = meshConfiguration;
             this.httpClient = SetupHttpClient();
@@ -30,7 +30,6 @@ namespace NEL.MESH.Brokers.Mesh
         {
             string path = $"/messageexchange/{this.meshConfiguration.MailboxId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
-            request.Headers.Add("Authorization", GenerateAuthorisationHeader());
             var response = await this.httpClient.SendAsync(request);
 
             return response;

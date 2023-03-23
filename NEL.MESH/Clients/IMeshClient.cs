@@ -6,8 +6,8 @@ using NEL.MESH.Clients.MeshClients;
 
 namespace NEL.MESH.Clients
 {
-    public interface IMesh
+    public interface IMeshClient
     {
-        IMeshClient MeshClient { get; }
+        IMailboxClient Mailbox { get; }
     }
 }

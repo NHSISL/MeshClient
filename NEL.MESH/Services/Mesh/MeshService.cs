@@ -28,7 +28,7 @@ namespace NEL.MESH.Services.Mesh
                 HttpResponseMessage response = await this.meshBroker.HandshakeAsync();
                 ValidateResponse(response);
 
-                return true;
+                return response.IsSuccessStatusCode;
             });
 
         public ValueTask<Message> SendMessageAsync(Message message) =>
