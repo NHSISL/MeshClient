@@ -23,7 +23,7 @@ namespace NEL.MESH.Tests.Integration.Brokers
         {
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("local.appsettings.json", optional: false, reloadOnChange: true);
+                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true);
 
             IConfiguration configuration = configurationBuilder.Build();
 

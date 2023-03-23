@@ -23,6 +23,10 @@ namespace NEL.MESH.Services.Mesh
             {
                 return await returningBooleanFunction();
             }
+            catch (InvalidMeshArgsException invalidArgumentMeshException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentMeshException);
+            }
             catch (FailedMeshClientException failedMeshClientException)
             {
                 throw CreateAndLogDependencyValidationException(failedMeshClientException);

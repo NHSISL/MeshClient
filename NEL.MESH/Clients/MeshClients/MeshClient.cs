@@ -131,11 +131,11 @@ namespace NEL.MESH.Clients.MeshClients
             }
         }
 
-        public async ValueTask<List<string>> GetMessagesAsync()
+        public async ValueTask<List<string>> RetrieveMessagesAsync()
         {
             try
             {
-                return await this.meshService.GetMessagesAsync();
+                return await this.meshService.RetrieveMessagesAsync();
             }
             catch (MeshValidationException meshValidationException)
             {
@@ -159,11 +159,11 @@ namespace NEL.MESH.Clients.MeshClients
             }
         }
 
-        public async ValueTask<Message> GetMessageAsync(string messageId)
+        public async ValueTask<Message> RetrieveMessageAsync(string messageId)
         {
             try
             {
-                return await this.meshService.GetMessageAsync(messageId);
+                return await this.meshService.RetrieveMessageAsync(messageId);
             }
             catch (MeshValidationException meshValidationException)
             {

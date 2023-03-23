@@ -119,13 +119,21 @@ namespace NEL.MESH.Services.Mesh
             });
 
         public ValueTask<bool> AcknowledgeMessageAsync(string messageId) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateTrackMessageArguments(messageId);
+                HttpResponseMessage response = await this.meshBroker.AcknowledgeMessageAsync(messageId);
+                ValidateResponse(response);
+
+                return response.IsSuccessStatusCode;
+            });
 
         private static void GetHeaderValues(HttpResponseMessage responseMessage, Message outputMessage)
         {
             foreach (var header in responseMessage.Content.Headers)
             {
-                outputMessage.Headers.Add(header.Key, header.Value.ToList());
+                outputMessage.Headers
+                    .Add(header.Key, header.Value.ToList());
             }
         }
 
