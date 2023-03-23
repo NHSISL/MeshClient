@@ -83,10 +83,20 @@ namespace NEL.MESH.Services.Mesh
                 return outputMessage;
             });
 
-        public ValueTask<List<string>> GetMessagesAsync() =>
-            throw new System.NotImplementedException();
+        public ValueTask<List<string>> RetrieveMessagesAsync() =>
+            TryCatch(async () =>
+            {
+                HttpResponseMessage responseMessage = await this.meshBroker.GetMessagesAsync();
+                ValidateResponse(responseMessage);
+                string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
 
-        public ValueTask<Message> GetMessageAsync(string messageId) =>
+                GetMessagesResponse getMessagesResponse =
+                    JsonConvert.DeserializeObject<GetMessagesResponse>(responseMessageBody);
+
+                return getMessagesResponse.Messages;
+            });
+
+        public ValueTask<Message> RetrieveMessageAsync(string messageId) =>
             TryCatch(async () =>
             {
                 ValidateTrackMessageArguments(messageId);

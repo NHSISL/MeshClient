@@ -35,6 +35,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
+        private static List<string> GetRandomStrings()
+        {
+            return Enumerable.Range(0, GetRandomNumber())
+                .Select(item => GetRandomString()).ToList();
+        }
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
@@ -192,6 +198,19 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return responseMessage;
         }
 
+        private static HttpResponseMessage CreateGetMessagesHttpResponseMessage(
+            string stringContent,
+            string contentType = "application/json")
+        {
+            HttpResponseMessage responseMessage = new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(stringContent, Encoding.UTF8, contentType)
+            };
+
+            return responseMessage;
+        }
+
         private static HttpResponseMessage CreateTrackingHttpResponseMessage(TrackMessageResponse trackMessageResponse)
         {
             string contentType = "application/json";
@@ -220,6 +239,15 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             return message;
         }
+
+        private static List<string> GetMessagesFromHttpResponseMessage(HttpResponseMessage responseMessage)
+        {
+            string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+            GetMessagesResponse getMessagesResponse = JsonConvert.DeserializeObject<GetMessagesResponse>(responseMessageBody);
+
+            return getMessagesResponse.Messages;
+        }
+
 
         private static Message GetMessageFromTrackingHttpResponseMessage(
             string messageId,
