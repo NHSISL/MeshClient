@@ -6,9 +6,10 @@ using Xeptions;
 
 namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
 {
-    internal class MeshDependencyValidationException : Xeption
+    internal class InvalidMeshArgsException : Xeption
     {
-        public MeshDependencyValidationException(Xeption innerException)
-            : base(message: "Mesh dependency error occurred, contact support.", innerException) { }
+        public InvalidMeshArgsException()
+            : base(message: "Invalid Mesh argument(s), please correct the errors and try again.")
+        { }
     }
 }

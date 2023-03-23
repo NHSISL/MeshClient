@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xeptions;
 using Xunit;
@@ -16,14 +17,15 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
     {
         [Theory]
         [MemberData(nameof(DependencyValidationResponseMessages))]
-        public async Task ShouldThrowDependencyValidationExceptionIfClientErrorOccursOnHandshakeAsync(
+        public async Task ShouldThrowDependencyValidationExceptionIfServerErrorOccursOnTrackMessageAsync(
             HttpResponseMessage dependencyValidationResponseMessage)
         {
             // given
+            Message someMessage = CreateRandomMessage();
             HttpResponseMessage response = dependencyValidationResponseMessage;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.HandshakeAsync())
+                broker.TrackMessageAsync(It.IsAny<string>()))
                     .ReturnsAsync(dependencyValidationResponseMessage);
 
             var httpRequestException =
@@ -36,17 +38,17 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new MeshDependencyValidationException(failedMeshClientException.InnerException as Xeption);
 
             // when
-            ValueTask<bool> handshakeTask =
-                this.meshService.HandshakeAsync();
+            ValueTask<Message> sendMessageTask =
+                this.meshService.TrackMessageAsync(someMessage.MessageId);
 
             MeshDependencyValidationException actualMeshDependencyValidationException =
-                await Assert.ThrowsAsync<MeshDependencyValidationException>(handshakeTask.AsTask);
+                await Assert.ThrowsAsync<MeshDependencyValidationException>(sendMessageTask.AsTask);
 
             // then
             actualMeshDependencyValidationException.Should().BeEquivalentTo(expectedMeshDependencyValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.HandshakeAsync(),
+                broker.TrackMessageAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -54,53 +56,56 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
         [Theory]
         [MemberData(nameof(DependencyResponseMessages))]
-        public async Task ShouldThrowDependencyExceptionIfServerErrorOccursOnHandshakeAsync(
+        public async Task ShouldThrowDependencyExceptionIfServerErrorOccursOnTrackMessageAsync(
             HttpResponseMessage dependencyResponseMessage)
         {
             // given
+            Message someMessage = CreateRandomMessage();
             HttpResponseMessage response = dependencyResponseMessage;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.HandshakeAsync())
+                broker.TrackMessageAsync(It.IsAny<string>()))
                     .ReturnsAsync(dependencyResponseMessage);
 
             var httpRequestException =
                 new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
 
             var failedMeshServerException =
-                new FailedMeshServerException(httpRequestException);
+                 new FailedMeshServerException(httpRequestException);
 
             var expectedMeshDependencyException =
                 new MeshDependencyException(failedMeshServerException.InnerException as Xeption);
 
             // when
-            ValueTask<bool> handshakeTask =
-                this.meshService.HandshakeAsync();
+            ValueTask<Message> sendMessageTask =
+                this.meshService.TrackMessageAsync(someMessage.MessageId);
 
             MeshDependencyException actualMeshDependencyException =
-                await Assert.ThrowsAsync<MeshDependencyException>(handshakeTask.AsTask);
+                await Assert.ThrowsAsync<MeshDependencyException>(sendMessageTask.AsTask);
 
             // then
             actualMeshDependencyException.Should().BeEquivalentTo(expectedMeshDependencyException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.HandshakeAsync(),
+                broker.TrackMessageAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldThrowServiceExceptionIfServiceErrorOccursOnHandshakeAsync()
+        public async Task ShouldThrowServiceExceptionIfServiceErrorOccursOnTrackMessageAsync()
         {
             // given
+            Message someMessage = CreateRandomMessage();
+
             HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.MovedPermanently)
             {
                 ReasonPhrase = GetRandomString()
             };
 
             this.meshBrokerMock.Setup(broker =>
-                broker.HandshakeAsync())
+                broker.TrackMessageAsync(It.IsAny<string>()))
                     .ReturnsAsync(response);
 
             var httpRequestException =
@@ -113,17 +118,17 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new MeshServiceException(failedMeshServiceException as Xeption);
 
             // when
-            ValueTask<bool> handshakeTask =
-                this.meshService.HandshakeAsync();
+            ValueTask<Message> sendMessageTask =
+                this.meshService.TrackMessageAsync(someMessage.MessageId);
 
             MeshServiceException actualMeshServiceException =
-                await Assert.ThrowsAsync<MeshServiceException>(handshakeTask.AsTask);
+                await Assert.ThrowsAsync<MeshServiceException>(sendMessageTask.AsTask);
 
             // then
             actualMeshServiceException.Should().BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.HandshakeAsync(),
+                broker.TrackMessageAsync(It.IsAny<string>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
