@@ -6,7 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace NEL.MESH.Models.Configurations
 {
-    internal class MeshApiConfiguration : IMeshApiConfiguration
+    public class MeshConfigurations
     {
         public string MailboxId { get; set; }
         public string Password { get; set; }

@@ -16,7 +16,7 @@ namespace NEL.MESH.Tests.Integration.Brokers
 {
     public partial class MeshBrokerTests
     {
-        private readonly IMeshApiConfiguration meshApiConfiguration;
+        private readonly MeshConfigurations meshConfiguration;
         private readonly IMeshBroker meshBroker;
 
         public MeshBrokerTests()
@@ -47,7 +47,7 @@ namespace NEL.MESH.Tests.Integration.Brokers
             string clientCertificatePassword = configuration["MeshConfiguration:ClientCertificatePassword"];
             X509Certificate2 clientCertificate = CreateCertificate(base64ClientCertificate, clientCertificatePassword);
 
-            this.meshApiConfiguration = new MeshApiConfiguration()
+            this.meshConfiguration = new MeshConfigurations()
             {
                 MailboxId = configuration["MeshConfiguration:MailboxId"],
                 Password = configuration["MeshConfiguration:Password"],
@@ -60,7 +60,7 @@ namespace NEL.MESH.Tests.Integration.Brokers
                 MexOSVersion = configuration["MeshConfiguration:MexOSVersion"],
             };
 
-            this.meshBroker = new MeshBroker(this.meshApiConfiguration);
+            this.meshBroker = new MeshBroker(this.meshConfiguration);
         }
 
         private static X509Certificate2 CreateCertificate(string base64RootCertificate, string? password = null)

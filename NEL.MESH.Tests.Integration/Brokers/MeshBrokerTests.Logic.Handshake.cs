@@ -21,7 +21,7 @@ namespace NEL.MESH.Tests.Integration.Brokers
 
             // then
             response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-            body.Should().BeEquivalentTo($"{{\"mailboxId\":\"{this.meshApiConfiguration.MailboxId}\"}}");
+            body.Should().BeEquivalentTo($"{{\"mailboxId\":\"{this.meshConfiguration.MailboxId}\"}}");
         }
     }
 }
