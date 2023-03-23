@@ -61,7 +61,7 @@ namespace NEL.MESH.Services.Mesh
             });
 
         public ValueTask<Message> SendFileAsync(Message message) =>
-                HttpResponseMessage response = await this.meshBroker.SendFileAsync();
+            throw new System.NotImplementedException();
 
         public ValueTask<Message> TrackMessageAsync(string messageId) =>
             TryCatch(async () =>
