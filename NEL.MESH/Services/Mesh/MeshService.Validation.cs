@@ -54,6 +54,11 @@ namespace NEL.MESH.Services.Mesh
                 (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"));
         }
 
+        private static void ValidateMeshMessageOnSendFile(Message message)
+        {
+            ValidateMessageIsNotNull(message);
+        }
+
         public static void ValidateTrackMessageArguments(string messageId)
         {
             Validate<InvalidMeshArgsException>(

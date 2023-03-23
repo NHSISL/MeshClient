@@ -61,34 +61,37 @@ namespace NEL.MESH.Services.Mesh
                 return outputMessage;
             });
 
-        public async ValueTask<Message> SendFileAsync(Message message)
-        {
-            HttpResponseMessage responseFileMessage = await this.meshBroker.SendFileAsync(
-                    mailboxTo: message.Headers["Mex-To"].First(),
-                    workflowId: message.Headers["Mex-WorkflowID"].First(),
-                    contentType: message.Headers["Content-Type"].First(),
-                    fileContents: message.FileContent,
-                    fileName: message.Headers["Mex-FileName"].First(),
-                    subject: message.Headers["Mex-Subject"].First(),
-                    contentChecksum: message.Headers["Mex-Content-Checksum"].First(),
-                    contentEncrypted: message.Headers["Mex-Content-Encrypted"].First(),
-                    encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
-                    chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
-                    localId: GetKeyStringValue("Mex-LocalID", message.Headers)
-                    );
-
-            string responseMessageBody = responseFileMessage.Content.ReadAsStringAsync().Result;
-
-            Message outputMessage = new Message
+        public ValueTask<Message> SendFileAsync(Message message) =>
+            TryCatch(async () =>
             {
-                MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                StringContent = responseMessageBody,
-            };
 
-            GetHeaderValues(responseFileMessage, outputMessage);
+                ValidateMeshMessageOnSendFile(message);
+                HttpResponseMessage responseFileMessage = await this.meshBroker.SendFileAsync(
+                        mailboxTo: message.Headers["Mex-To"].First(),
+                        workflowId: message.Headers["Mex-WorkflowID"].First(),
+                        contentType: message.Headers["Content-Type"].First(),
+                        fileContents: message.FileContent,
+                        fileName: message.Headers["Mex-FileName"].First(),
+                        subject: message.Headers["Mex-Subject"].First(),
+                        contentChecksum: message.Headers["Mex-Content-Checksum"].First(),
+                        contentEncrypted: message.Headers["Mex-Content-Encrypted"].First(),
+                        encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
+                        chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
+                        localId: GetKeyStringValue("Mex-LocalID", message.Headers)
+                        );
 
-            return outputMessage;
-        }
+                string responseMessageBody = responseFileMessage.Content.ReadAsStringAsync().Result;
+
+                Message outputMessage = new Message
+                {
+                    MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
+                    StringContent = responseMessageBody,
+                };
+
+                GetHeaderValues(responseFileMessage, outputMessage);
+
+                return outputMessage;
+            });
 
         public ValueTask<Message> TrackMessageAsync(string messageId) =>
             TryCatch(async () =>
