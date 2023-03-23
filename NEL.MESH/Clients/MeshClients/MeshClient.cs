@@ -131,7 +131,7 @@ namespace NEL.MESH.Clients.MeshClients
             }
         }
 
-        public async ValueTask<List<string>> GetMessagesAsync()
+        public async ValueTask<List<string>> RetrieveMessagesAsync()
         {
             try
             {
@@ -159,7 +159,7 @@ namespace NEL.MESH.Clients.MeshClients
             }
         }
 
-        public async ValueTask<Message> GetMessageAsync(string messageId)
+        public async ValueTask<Message> RetrieveMessageAsync(string messageId)
         {
             try
             {
