@@ -132,7 +132,8 @@ namespace NEL.MESH.Services.Mesh
         {
             foreach (var header in responseMessage.Content.Headers)
             {
-                outputMessage.Headers.Add(header.Key, header.Value.ToList());
+                outputMessage.Headers
+                    .Add(header.Key, header.Value.ToList());
             }
         }
 
