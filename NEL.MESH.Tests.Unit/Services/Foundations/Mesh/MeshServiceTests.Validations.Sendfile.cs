@@ -55,5 +55,50 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendFileIfHeadersDictionaryIsNullAsync()
+        {
+            // given
+            Message messageWithNullHeaders = new Message
+            {
+                Headers = null
+            };
+
+            var nullHeadersException =
+                new NullHeadersException();
+
+            var expectedMeshValidationException =
+                new MeshValidationException(nullHeadersException);
+
+            // when
+            ValueTask<Message> addMessageTask =
+                this.meshService.SendFileAsync(messageWithNullHeaders);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    addMessageTask.AsTask());
+
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendFileAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                        Times.Never);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
