@@ -57,6 +57,7 @@ namespace NEL.MESH.Services.Mesh
         private static void ValidateMeshMessageOnSendFile(Message message)
         {
             ValidateMessageIsNotNull(message);
+            ValidateHeadersIsNotNull(message);
         }
 
         public static void ValidateTrackMessageArguments(string messageId)
