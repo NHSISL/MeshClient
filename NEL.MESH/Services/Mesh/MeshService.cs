@@ -109,14 +109,14 @@ namespace NEL.MESH.Services.Mesh
             });
 
         public ValueTask<bool> AcknowledgeMessageAsync(string messageId) =>
-         TryCatch(async () =>
-         {
-             ValidateTrackMessageArguments(messageId);
-             HttpResponseMessage response = await this.meshBroker.AcknowledgeMessageAsync(messageId);
-             ValidateResponse(response);
+            TryCatch(async () =>
+            {
+                ValidateTrackMessageArguments(messageId);
+                HttpResponseMessage response = await this.meshBroker.AcknowledgeMessageAsync(messageId);
+                ValidateResponse(response);
 
-             return true;
-         });
+                return true;
+            });
 
         private static void GetHeaderValues(HttpResponseMessage responseMessage, Message outputMessage)
         {

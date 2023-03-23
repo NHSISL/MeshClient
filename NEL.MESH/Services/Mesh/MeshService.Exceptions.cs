@@ -25,10 +25,6 @@ namespace NEL.MESH.Services.Mesh
             {
                 throw CreateAndLogValidationException(invalidArgumentMeshException);
             }
-            catch (InvalidMeshException invalidMeshException)
-            {
-                throw CreateAndLogValidationException(invalidMeshException);
-            }
             catch (FailedMeshClientException failedMeshClientException)
             {
                 throw CreateAndLogDependencyValidationException(failedMeshClientException);

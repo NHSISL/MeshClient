@@ -98,6 +98,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         {
             // given
             Message someMessage = CreateRandomSendMessage();
+
             HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.MovedPermanently)
             {
                 ReasonPhrase = GetRandomString()

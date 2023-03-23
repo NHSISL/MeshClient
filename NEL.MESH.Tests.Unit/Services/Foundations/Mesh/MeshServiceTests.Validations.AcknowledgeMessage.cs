@@ -21,15 +21,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowValidationExceptionOnAcknowledgeMessageIfMessageIdIsNullOrEmptyAsync(string invalidText)
         {
             // given
-
             Message randomMessage = CreateRandomMessage();
             randomMessage.MessageId = invalidText;
             Message inputMessage = randomMessage;
             HttpResponseMessage responseMessage = CreateHttpResponseMessage(inputMessage);
 
             this.meshBrokerMock.Setup(broker =>
-              broker.AcknowledgeMessageAsync(inputMessage.MessageId))
-                  .ReturnsAsync(responseMessage);
+                broker.AcknowledgeMessageAsync(inputMessage.MessageId))
+                    .ReturnsAsync(responseMessage);
 
             var InvalidMeshArgsException =
                 new InvalidMeshArgsException();

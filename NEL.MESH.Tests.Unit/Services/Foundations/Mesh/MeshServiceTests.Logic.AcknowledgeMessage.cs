@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
 namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
@@ -17,7 +16,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldDoAcknowledgeMessageAsync()
         {
             // given
-            Message someMessage = CreateRandomSendMessage();
+            string someMessageId = GetRandomString();
 
             HttpResponseMessage response = new HttpResponseMessage
             {
@@ -27,17 +26,17 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             bool expectedResult = response.IsSuccessStatusCode;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.AcknowledgeMessageAsync(someMessage.MessageId))
+                broker.AcknowledgeMessageAsync(someMessageId))
                     .ReturnsAsync(response);
 
             // when
-            var actualResult = await this.meshService.AcknowledgeMessageAsync(someMessage.MessageId);
+            var actualResult = await this.meshService.AcknowledgeMessageAsync(someMessageId);
 
             // then
             actualResult.Should().Be(expectedResult);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.AcknowledgeMessageAsync(someMessage.MessageId),
+                broker.AcknowledgeMessageAsync(someMessageId),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
