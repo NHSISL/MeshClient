@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -60,8 +61,34 @@ namespace NEL.MESH.Services.Mesh
                 return outputMessage;
             });
 
-        public ValueTask<Message> SendFileAsync(Message message) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<Message> SendFileAsync(Message message)
+        {
+            HttpResponseMessage responseFileMessage = await this.meshBroker.SendFileAsync(
+                    mailboxTo: message.Headers["Mex-To"].First(),
+                    workflowId: message.Headers["Mex-WorkflowID"].First(),
+                    contentType: message.Headers["Content-Type"].First(),
+                    fileContents: message.FileContent,
+                    fileName: message.Headers["Mex-FileName"].First(),
+                    subject: message.Headers["Mex-Subject"].First(),
+                    contentChecksum: message.Headers["Mex-Content-Checksum"].First(),
+                    contentEncrypted: message.Headers["Mex-Content-Encrypted"].First(),
+                    encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
+                    chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
+                    localId: GetKeyStringValue("Mex-LocalID", message.Headers)
+                    );
+
+            string responseMessageBody = responseFileMessage.Content.ReadAsStringAsync().Result;
+
+            Message outputMessage = new Message
+            {
+                MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
+                StringContent = responseMessageBody,
+            };
+
+            GetHeaderValues(responseFileMessage, outputMessage);
+
+            return outputMessage;
+        }
 
         public ValueTask<Message> TrackMessageAsync(string messageId) =>
             TryCatch(async () =>
@@ -174,6 +201,12 @@ namespace NEL.MESH.Services.Mesh
             };
 
             return trackingInfo;
+        }
+        private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
+        {
+            return dictionary.ContainsKey(key)
+                ? dictionary[key]?.First()
+                : string.Empty;
         }
     }
 }
