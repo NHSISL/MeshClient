@@ -135,7 +135,7 @@ namespace NEL.MESH.Clients.MeshClients
         {
             try
             {
-                return await this.meshService.GetMessagesAsync();
+                return await this.meshService.RetrieveMessagesAsync();
             }
             catch (MeshValidationException meshValidationException)
             {
@@ -163,7 +163,7 @@ namespace NEL.MESH.Clients.MeshClients
         {
             try
             {
-                return await this.meshService.GetMessageAsync(messageId);
+                return await this.meshService.RetrieveMessageAsync(messageId);
             }
             catch (MeshValidationException meshValidationException)
             {

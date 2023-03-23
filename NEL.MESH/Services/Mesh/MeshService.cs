@@ -125,7 +125,7 @@ namespace NEL.MESH.Services.Mesh
                 HttpResponseMessage response = await this.meshBroker.AcknowledgeMessageAsync(messageId);
                 ValidateResponse(response);
 
-                return true;
+                return response.IsSuccessStatusCode;
             });
 
         private static void GetHeaderValues(HttpResponseMessage responseMessage, Message outputMessage)
