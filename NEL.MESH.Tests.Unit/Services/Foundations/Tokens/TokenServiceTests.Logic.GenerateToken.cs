@@ -16,18 +16,17 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
         public async Task ShouldGenerateTokenAsync()
         {
             // given
-            string randomMailboxId = GetRandomString(wordCount: 1);
-            string mailboxId = randomMailboxId;
-            string randomPassword = GetRandomString();
-            string password = randomPassword;
-            string randomKey = GetRandomString();
-            string key = randomKey;
-            int nonce_count = GetRandomNumber();
-            string nonce = this.identifierBrokerMock.Object.GetIdentifier().ToString();
-            string timeStamp = this.dateTimeBrokerMock.Object.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmm");
-            string stringToHash = $"{mailboxId}:{nonce}:{nonce_count}:{password}:{timeStamp}";
-            DateTimeOffset randomDateTimeOffset = GetRandomDateTimeOffset();
-            Guid randomIdentifier = Guid.NewGuid();
+            string mailboxId = GetRandomString();
+            string password = GetRandomString();
+            string inputKey = GetRandomString();
+            Guid identifier = Guid.NewGuid();
+            DateTimeOffset randomDateTimeOffset = new DateTime(2022, 3, 24, 12, 00, 00);
+            string timeStamp = randomDateTimeOffset.ToString("yyyyMMddHHmm");
+            string nonce = identifier.ToString();
+            int nonce_count = 0;
+            string inputStringToHash = $"{mailboxId}:{nonce}:{nonce_count}:{password}:{timeStamp}";
+            string inputSharedKey = HashStringSha256(inputStringToHash, inputKey);
+            string expectedToken = $"NHSMESH {mailboxId}:{nonce}:{nonce_count}:{timeStamp}:{inputSharedKey}";
 
             this.dateTimeBrokerMock.Setup(broker =>
                 broker.GetCurrentDateTimeOffset())
@@ -35,12 +34,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifier())
-                    .Returns(randomIdentifier);
-
-            string expectedToken = HashStringSha256(stringToHash, key);
+                    .Returns(identifier);
 
             // when
-            string actualToken = await this.tokenService.GenerateTokenAsync(mailboxId, password, key);
+            string actualToken = await this.tokenService.GenerateTokenAsync(mailboxId, password, inputKey);
 
             // then
             actualToken.Should().BeEquivalentTo(expectedToken);
