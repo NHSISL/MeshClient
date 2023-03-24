@@ -54,6 +54,21 @@ namespace NEL.MESH.Services.Mesh
                 (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"));
         }
 
+        private static void ValidateMeshMessageOnSendFile(Message message)
+        {
+            ValidateMessageIsNotNull(message);
+            ValidateHeadersIsNotNull(message);
+            Validate<InvalidMeshException>(
+                (Rule: IsInvalid(message.FileContent), Parameter: nameof(Message.FileContent)),
+                (Rule: IsInvalid(message.Headers, "Content-Type"), Parameter: "Content-Type"),
+                (Rule: IsInvalid(message.Headers, "Mex-FileName"), Parameter: "Mex-FileName"),
+                (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
+                (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
+                (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
+                (Rule: IsInvalid(message.Headers, "Mex-Content-Checksum"), Parameter: "Mex-Content-Checksum"),
+                (Rule: IsInvalid(message.Headers, "Mex-Content-Encrypted"), Parameter: "Mex-Content-Encrypted"));
+        }
+
         public static void ValidateTrackMessageArguments(string messageId)
         {
             Validate<InvalidMeshArgsException>(
@@ -111,6 +126,12 @@ namespace NEL.MESH.Services.Mesh
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(byte[] data) => new
+        {
+            Condition = (data == null || data.Length == 0),
+            Message = "Content is required"
         };
 
         private static bool IsInvalidKey(Dictionary<string, List<string>> dictionary, string key)

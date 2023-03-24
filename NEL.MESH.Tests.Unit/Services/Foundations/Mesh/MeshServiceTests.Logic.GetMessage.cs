@@ -25,7 +25,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 broker.GetMessageAsync(inputMessage.MessageId))
                     .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageFromHttpResponseMessage(responseMessage);
+            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessage(responseMessage);
 
             // when
             var actualMessage = await this.meshService.RetrieveMessageAsync(inputMessage.MessageId);

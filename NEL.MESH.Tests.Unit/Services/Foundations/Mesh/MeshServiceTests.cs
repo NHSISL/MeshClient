@@ -32,12 +32,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             this.meshService = new MeshService(meshBroker: this.meshBrokerMock.Object);
         }
 
-        private static string GetRandomString() =>
-            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
-
-        private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
-
         public static TheoryData DependencyValidationResponseMessages()
         {
             var invalidValue =
@@ -143,6 +137,19 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             };
         }
 
+        private static string GetRandomString() =>
+            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
+        private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
+        {
+            return dictionary.ContainsKey(key)
+                ? dictionary[key]?.First()
+                : string.Empty;
+        }
+
         private static HttpResponseMessage CreateHttpResponseMessage(Message message)
         {
 
@@ -206,7 +213,23 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return responseMessage;
         }
 
-        private static Message GetMessageFromHttpResponseMessage(HttpResponseMessage responseMessage)
+        private static Message GetMessageWithStringContentFromHttpResponseMessage(HttpResponseMessage responseMessage)
+        {
+            string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Content.Headers);
+
+
+            Message message = new Message
+            {
+                MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
+                StringContent = responseMessageBody,
+                Headers = headers
+            };
+
+            return message;
+        }
+
+        private static Message GetMessageWithFileContentFromHttpResponseMessage(HttpResponseMessage responseMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
             Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Content.Headers);
@@ -372,6 +395,24 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             message.Headers.Add("Mex-To", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
+
+            return message;
+        }
+
+        private static Message CreateRandomSendFileMessage()
+        {
+            var message = CreateMessageFiller().Create();
+            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
+            message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Content-Encrypted", new List<string> { "encrypted" });
+            message.Headers.Add("Mex-From", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-To", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
 
             return message;
         }

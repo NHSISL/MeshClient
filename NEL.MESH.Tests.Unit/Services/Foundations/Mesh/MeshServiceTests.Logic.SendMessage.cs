@@ -34,7 +34,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     ))
                     .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageFromHttpResponseMessage(responseMessage);
+            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessage(responseMessage);
 
             // when
             var actualMessage = await this.meshService.SendMessageAsync(inputMessage);

@@ -25,7 +25,13 @@ namespace NEL.MESH.Brokers.Mesh
             string workflowId,
             string contentType,
             byte[] fileContents,
-            string fileName);
+            string fileName,
+            string subject,
+            string contentChecksum,
+            string contentEncrypted,
+            string encoding,
+            string chunkRange,
+            string localId);
 
         ValueTask<HttpResponseMessage> TrackMessageAsync(string messageId);
         ValueTask<HttpResponseMessage> GetMessagesAsync();
