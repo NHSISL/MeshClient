@@ -8,7 +8,7 @@ using NEL.MESH.Models.Foundations.Mesh;
 
 namespace NEL.MESH.Clients.MeshClients
 {
-    public interface IMeshClient
+    public interface IMailboxClient
     {
         ValueTask<bool> HandshakeAsync();
         ValueTask<Message> SendMessageAsync(Message message);

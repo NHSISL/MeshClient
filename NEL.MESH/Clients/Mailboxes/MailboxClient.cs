@@ -12,11 +12,11 @@ using Xeptions;
 
 namespace NEL.MESH.Clients.MeshClients
 {
-    internal class MeshClient : IMeshClient
+    internal class MailboxClient : IMailboxClient
     {
         private readonly IMeshService meshService;
 
-        public MeshClient(IMeshService meshService) =>
+        public MailboxClient(IMeshService meshService) =>
             this.meshService = meshService;
 
         public async ValueTask<bool> HandshakeAsync()
