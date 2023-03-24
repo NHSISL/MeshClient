@@ -64,17 +64,16 @@ namespace NEL.MESH.Services.Mesh
         public ValueTask<Message> SendFileAsync(Message message) =>
             TryCatch(async () =>
             {
-
                 ValidateMeshMessageOnSendFile(message);
                 HttpResponseMessage responseFileMessage = await this.meshBroker.SendFileAsync(
-                        mailboxTo: message.Headers["Mex-To"].First(),
-                        workflowId: message.Headers["Mex-WorkflowID"].First(),
-                        contentType: message.Headers["Content-Type"].First(),
+                        mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
+                        workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
+                        contentType: GetKeyStringValue("Content-Type", message.Headers),
                         fileContents: message.FileContent,
-                        fileName: message.Headers["Mex-FileName"].First(),
-                        subject: message.Headers["Mex-Subject"].First(),
-                        contentChecksum: message.Headers["Mex-Content-Checksum"].First(),
-                        contentEncrypted: message.Headers["Mex-Content-Encrypted"].First(),
+                        fileName: GetKeyStringValue("Mex-FileName", message.Headers),
+                        subject: GetKeyStringValue("Mex-Subject", message.Headers),
+                        contentChecksum: GetKeyStringValue("Mex-Content-Checksum", message.Headers),
+                        contentEncrypted: GetKeyStringValue("Mex-Content-Encrypted", message.Headers),
                         encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
                         chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
                         localId: GetKeyStringValue("Mex-LocalID", message.Headers)
@@ -205,6 +204,7 @@ namespace NEL.MESH.Services.Mesh
 
             return trackingInfo;
         }
+         
         private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
         {
             return dictionary.ContainsKey(key)
