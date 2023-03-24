@@ -4,7 +4,7 @@
 
 using Newtonsoft.Json;
 
-namespace NEL.MESH.Models.Foundations.Mesh.ExternalModeld
+namespace NEL.MESH.Models.Foundations.Mesh.ExternalModels
 {
     internal class HandshakeResponse
     {

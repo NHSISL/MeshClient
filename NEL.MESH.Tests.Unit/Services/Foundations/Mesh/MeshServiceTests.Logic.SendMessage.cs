@@ -18,6 +18,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldSendMessageAsync()
         {
             // given
+            string authorizationToken = GetRandomString();
             Message randomMessage = CreateRandomSendMessage();
             Message inputMessage = randomMessage;
             HttpResponseMessage responseMessage = CreateHttpResponseMessage(inputMessage);
@@ -30,14 +31,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     inputMessage.Headers["Content-Type"].First(),
                     inputMessage.Headers["Mex-LocalID"].First(),
                     inputMessage.Headers["Mex-Subject"].First(),
-                    inputMessage.Headers["Mex-Content-Encrypted"].First()
-                    ))
+                    inputMessage.Headers["Mex-Content-Encrypted"].First(),
+                    authorizationToken))
                     .ReturnsAsync(responseMessage);
 
             Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessage(responseMessage);
 
             // when
-            var actualMessage = await this.meshService.SendMessageAsync(inputMessage);
+            var actualMessage = await this.meshService.SendMessageAsync(inputMessage, authorizationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
@@ -50,7 +51,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     inputMessage.Headers["Content-Type"].First(),
                     inputMessage.Headers["Mex-LocalID"].First(),
                     inputMessage.Headers["Mex-Subject"].First(),
-                    inputMessage.Headers["Mex-Content-Encrypted"].First()),
+                    inputMessage.Headers["Mex-Content-Encrypted"].First(),
+                    authorizationToken),
                         Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

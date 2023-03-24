@@ -5,14 +5,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Models.Foundations.Mesh.ExternalModeld;
+using NEL.MESH.Models.Foundations.Mesh.ExternalModels;
 using Newtonsoft.Json;
 
-namespace NEL.MESH.Services.Mesh
+namespace NEL.MESH.Services.Foundations.Mesh
 {
     internal partial class MeshService : IMeshService
     {
@@ -32,10 +31,10 @@ namespace NEL.MESH.Services.Mesh
                 return response.IsSuccessStatusCode;
             });
 
-        public ValueTask<Message> SendMessageAsync(Message message) =>
+        public ValueTask<Message> SendMessageAsync(Message message, string authorizationToken) =>
             TryCatch(async () =>
             {
-                ValidateMeshMessageOnSendMessage(message);
+                ValidateMeshMessageOnSendMessage(message, authorizationToken);
 
                 HttpResponseMessage responseMessage = await this.meshBroker.SendMessageAsync(
                     mailboxTo: message.Headers["Mex-To"].First(),
@@ -44,8 +43,8 @@ namespace NEL.MESH.Services.Mesh
                     contentType: message.Headers["Content-Type"].First(),
                     localId: message.Headers["Mex-LocalID"].First(),
                     subject: message.Headers["Mex-Subject"].First(),
-                    contentEncrypted: message.Headers["Mex-Content-Encrypted"].First()
-                    );
+                    contentEncrypted: message.Headers["Mex-Content-Encrypted"].First(),
+                    authorizationToken);
 
                 ValidateResponse(responseMessage);
                 string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
@@ -61,10 +60,11 @@ namespace NEL.MESH.Services.Mesh
                 return outputMessage;
             });
 
-        public ValueTask<Message> SendFileAsync(Message message) =>
+        public ValueTask<Message> SendFileAsync(Message message, string authorizationToken) =>
             TryCatch(async () =>
             {
-                ValidateMeshMessageOnSendFile(message);
+                ValidateMeshMessageOnSendFile(message, authorizationToken);
+
                 HttpResponseMessage responseFileMessage = await this.meshBroker.SendFileAsync(
                         mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
                         workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
@@ -76,8 +76,8 @@ namespace NEL.MESH.Services.Mesh
                         contentEncrypted: GetKeyStringValue("Mex-Content-Encrypted", message.Headers),
                         encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
                         chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
-                        localId: GetKeyStringValue("Mex-LocalID", message.Headers)
-                        );
+                        localId: GetKeyStringValue("Mex-LocalID", message.Headers),
+                        authorizationToken);
 
                 string responseMessageBody = responseFileMessage.Content.ReadAsStringAsync().Result;
 
@@ -92,11 +92,14 @@ namespace NEL.MESH.Services.Mesh
                 return outputMessage;
             });
 
-        public ValueTask<Message> TrackMessageAsync(string messageId) =>
+        public ValueTask<Message> TrackMessageAsync(string messageId, string authorizationToken) =>
             TryCatch(async () =>
             {
-                ValidateTrackMessageArguments(messageId);
-                HttpResponseMessage responseMessage = await this.meshBroker.TrackMessageAsync(messageId);
+                ValidateTrackMessageArguments(messageId, authorizationToken);
+
+                HttpResponseMessage responseMessage =
+                    await this.meshBroker.TrackMessageAsync(messageId, authorizationToken);
+
                 ValidateResponse(responseMessage);
                 string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
 
@@ -112,10 +115,11 @@ namespace NEL.MESH.Services.Mesh
                 return outputMessage;
             });
 
-        public ValueTask<List<string>> RetrieveMessagesAsync() =>
+        public ValueTask<List<string>> RetrieveMessagesAsync(string authorizationToken) =>
             TryCatch(async () =>
             {
-                HttpResponseMessage responseMessage = await this.meshBroker.GetMessagesAsync();
+                ValidateRetrieveMessagesArguments(authorizationToken);
+                HttpResponseMessage responseMessage = await this.meshBroker.GetMessagesAsync(authorizationToken);
                 ValidateResponse(responseMessage);
                 string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
 
@@ -125,11 +129,11 @@ namespace NEL.MESH.Services.Mesh
                 return getMessagesResponse.Messages;
             });
 
-        public ValueTask<Message> RetrieveMessageAsync(string messageId) =>
+        public ValueTask<Message> RetrieveMessageAsync(string messageId, string authorizationToken) =>
             TryCatch(async () =>
             {
-                ValidateTrackMessageArguments(messageId);
-                HttpResponseMessage responseMessage = await this.meshBroker.GetMessageAsync(messageId);
+                ValidateRetrieveMessageArguments(messageId, authorizationToken);
+                HttpResponseMessage responseMessage = await this.meshBroker.GetMessageAsync(messageId, authorizationToken);
                 ValidateResponse(responseMessage);
                 string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
 
@@ -147,11 +151,13 @@ namespace NEL.MESH.Services.Mesh
                 return outputMessage;
             });
 
-        public ValueTask<bool> AcknowledgeMessageAsync(string messageId) =>
+        public ValueTask<bool> AcknowledgeMessageAsync(string messageId, string authorizationToken) =>
             TryCatch(async () =>
             {
-                ValidateTrackMessageArguments(messageId);
-                HttpResponseMessage response = await this.meshBroker.AcknowledgeMessageAsync(messageId);
+                ValidateAcknowledgeMessageArguments(messageId, authorizationToken);
+
+                HttpResponseMessage response =
+                    await this.meshBroker.AcknowledgeMessageAsync(messageId, authorizationToken);
                 ValidateResponse(response);
 
                 return response.IsSuccessStatusCode;
@@ -204,7 +210,7 @@ namespace NEL.MESH.Services.Mesh
 
             return trackingInfo;
         }
-         
+
         private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
         {
             return dictionary.ContainsKey(key)

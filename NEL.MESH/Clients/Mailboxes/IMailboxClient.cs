@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
 
-namespace NEL.MESH.Clients.MeshClients
+namespace NEL.MESH.Clients.Mailboxes
 {
     public interface IMailboxClient
     {

@@ -21,14 +21,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowValidationExceptionOnGetMessageIfMessageIdIsNullOrEmptyAsync(string invalidText)
         {
             // given
-
+            string invalidAuthorizationToken = invalidText;
             Message randomMessage = CreateRandomMessage();
             randomMessage.MessageId = invalidText;
             Message inputMessage = randomMessage;
             HttpResponseMessage responseMessage = CreateHttpResponseMessage(inputMessage);
 
             this.meshBrokerMock.Setup(broker =>
-              broker.GetMessageAsync(inputMessage.MessageId))
+              broker.GetMessageAsync(inputMessage.MessageId, invalidAuthorizationToken))
                   .ReturnsAsync(responseMessage);
 
             var InvalidMeshArgsException =
@@ -38,6 +38,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                key: nameof(Message.MessageId),
                values: "Text is required");
 
+            InvalidMeshArgsException.AddData(
+                key: "Token",
+                values: "Text is required");
+
             var expectedMeshValidationException =
                  new MeshValidationException(
                     innerException: InvalidMeshArgsException,
@@ -45,7 +49,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> getMessageTask =
-                this.meshService.RetrieveMessageAsync(inputMessage.MessageId);
+                this.meshService.RetrieveMessageAsync(inputMessage.MessageId, invalidAuthorizationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
@@ -56,7 +60,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.GetMessageAsync(inputMessage.MessageId),
+                broker.GetMessageAsync(inputMessage.MessageId, invalidAuthorizationToken),
                     Times.Never);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

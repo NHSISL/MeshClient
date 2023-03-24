@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Models.Foundations.Mesh.ExternalModeld;
+using NEL.MESH.Models.Foundations.Mesh.ExternalModels;
 using Xunit;
 
 namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
@@ -18,6 +18,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldTrackMessageAsync()
         {
             // given
+            string authorizationToken = GetRandomString();
             dynamic randomTrackingProperties = CreateRandomTrackingProperties();
             string randomString = GetRandomString();
             string inputMessageId = randomString;
@@ -34,19 +35,19 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage responseMessage = CreateTrackingHttpResponseMessage(trackMessageResponse);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.TrackMessageAsync(inputMessageId))
+                broker.TrackMessageAsync(inputMessageId, authorizationToken))
                     .ReturnsAsync(responseMessage);
 
             Message expectedMessage = GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage);
 
             // when
-            var actualMessage = await this.meshService.TrackMessageAsync(inputMessageId);
+            var actualMessage = await this.meshService.TrackMessageAsync(inputMessageId, authorizationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.TrackMessageAsync(inputMessageId),
+                broker.TrackMessageAsync(inputMessageId, authorizationToken),
                         Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
