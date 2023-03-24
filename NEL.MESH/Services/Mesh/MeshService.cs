@@ -38,13 +38,17 @@ namespace NEL.MESH.Services.Mesh
                 ValidateMeshMessageOnSendMessage(message);
 
                 HttpResponseMessage responseMessage = await this.meshBroker.SendMessageAsync(
-                    mailboxTo: message.Headers["Mex-To"].First(),
-                    workflowId: message.Headers["Mex-WorkflowID"].First(),
+                    mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
+                    workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
                     stringConent: message.StringContent,
-                    contentType: message.Headers["Content-Type"].First(),
-                    localId: message.Headers["Mex-LocalID"].First(),
-                    subject: message.Headers["Mex-Subject"].First(),
-                    contentEncrypted: message.Headers["Mex-Content-Encrypted"].First()
+                    localId: GetKeyStringValue("Mex-LocalID", message.Headers),
+                    contentType: GetKeyStringValue("Content-Type", message.Headers),
+                    subject: GetKeyStringValue("Mex-Subject", message.Headers),
+                    fileName: GetKeyStringValue("Mex-FileName", message.Headers),
+                    contentChecksum: GetKeyStringValue("Mex-Content-Checksum", message.Headers),
+                    contentEncrypted: GetKeyStringValue("Mex-Content-Encrypted", message.Headers),
+                    encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
+                    chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers)
                     );
 
                 ValidateResponse(responseMessage);
