@@ -100,5 +100,101 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionOnSendFileIfRequiredMessageItemsAreNullAsync(
+            string invalidInput)
+        {
+            // given
+            byte[] invalidContent = null;
+
+            Message randomMessage = new Message
+            {
+                MessageId = GetRandomString(),
+                Headers = new Dictionary<string, List<string>>(),
+                FileContent = invalidContent
+            };
+
+            randomMessage.Headers.Add("Mex-From", new List<string> { invalidInput });
+            randomMessage.Headers.Add("Mex-To", new List<string> { invalidInput });
+            randomMessage.Headers.Add("Mex-WorkflowID", new List<string> { invalidInput });
+            randomMessage.Headers.Add("Content-Type", new List<string> { invalidInput });
+            randomMessage.Headers.Add("Mex-Subject", new List<string> { invalidInput });
+            randomMessage.Headers.Add("Mex-FileName", new List<string> { invalidInput });
+            randomMessage.Headers.Add("Mex-Content-Checksum", new List<string> { invalidInput });
+            randomMessage.Headers.Add("Mex-Content-Encrypted", new List<string> { invalidInput });
+
+            var invalidMeshException =
+                new InvalidMeshException();
+
+            invalidMeshException.AddData(
+                key: nameof(Message.FileContent),
+                values: "Content is required");
+
+            invalidMeshException.AddData(
+                key: "Content-Type",
+                values: "Header value is required");
+
+            invalidMeshException.AddData(
+                key: "Mex-FileName",
+                values: "Header value is required");
+
+            invalidMeshException.AddData(
+                key: "Mex-From",
+                values: "Header value is required");
+
+            invalidMeshException.AddData(
+                key: "Mex-To",
+                values: "Header value is required");
+
+            invalidMeshException.AddData(
+                key: "Mex-WorkflowID",
+                values: "Header value is required");
+
+            invalidMeshException.AddData(
+                key: "Mex-Content-Checksum",
+                values: "Header value is required");
+
+            invalidMeshException.AddData(
+                key: "Mex-Content-Encrypted",
+                values: "Header value is required");
+
+            var expectedMeshValidationException =
+                new MeshValidationException(
+                innerException: invalidMeshException,
+                validationSummary: GetValidationSummary(invalidMeshException.Data));
+
+            // when
+            ValueTask<Message> addMessageTask =
+                this.meshService.SendFileAsync(randomMessage);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    addMessageTask.AsTask());
+
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendFileAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                        Times.Never);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
