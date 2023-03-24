@@ -390,11 +390,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             message.Headers.Add("Content-Type", new List<string> { "text/plain" });
             message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Content-Encrypted", new List<string> { "encrypted" });
             message.Headers.Add("Mex-From", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-To", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
 
             return message;
         }
