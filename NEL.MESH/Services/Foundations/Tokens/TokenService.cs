@@ -11,7 +11,7 @@ using NEL.MESH.Brokers.Identifiers;
 
 namespace NEL.MESH.Services.Foundations.Tokens
 {
-    internal class TokenService : ITokenService
+    internal partial class TokenService : ITokenService
     {
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
@@ -22,19 +22,21 @@ namespace NEL.MESH.Services.Foundations.Tokens
             this.identifierBroker = identifierBroker;
         }
 
-        public async ValueTask<string> GenerateTokenAsync(string mailboxId, string password, string key)
-        {
-            string nonce = this.identifierBroker.GetIdentifier().ToString();
-            string timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmm");
-            string nonce_count = "0";
-            string stringToHash = $"{mailboxId}:{nonce}:{nonce_count}:{password}:{timeStamp}";
-            string sharedKey = GenerateSha256(stringToHash, key);
+        public ValueTask<string> GenerateTokenAsync(string mailboxId, string password, string key) =>
+            TryCatch(async () =>
+            {
+                ValidateGenerateTokenArgs(mailboxId, password, key);
+                string nonce = this.identifierBroker.GetIdentifier().ToString();
+                string timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmm");
+                string nonce_count = "0";
+                string stringToHash = $"{mailboxId}:{nonce}:{nonce_count}:{password}:{timeStamp}";
+                string sharedKey = GenerateSha256(stringToHash, key);
 
-            string token =
-                await ValueTask.FromResult($"NHSMESH {mailboxId}:{nonce}:{nonce_count}:{timeStamp}:{sharedKey}");
+                string token =
+                    await ValueTask.FromResult($"NHSMESH {mailboxId}:{nonce}:{nonce_count}:{timeStamp}:{sharedKey}");
 
-            return token;
-        }
+                return token;
+            });
 
         private string GenerateSha256(string value, string key)
         {
@@ -49,6 +51,5 @@ namespace NEL.MESH.Services.Foundations.Tokens
 
             return hash;
         }
-
     }
 }
