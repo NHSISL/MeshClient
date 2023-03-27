@@ -4,27 +4,36 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NEL.MESH.Brokers.DateTimes;
-using NEL.MESH.Brokers.Identifiers;
 using NEL.MESH.Models.Foundations.Mesh;
+using NEL.MESH.Services.Foundations.Mesh;
+using NEL.MESH.Services.Foundations.Tokens;
 
 namespace NEL.MESH.Services.Orchestrations.Mesh
 {
-    internal class MeshOrchestrationService : IMeshOrchestrationService
+    internal partial class MeshOrchestrationService : IMeshOrchestrationService
     {
-        private readonly IDateTimeBroker dateTimeBroker;
-        private readonly IIdentifierBroker identifierBroker;
+        private readonly ITokenService tokenService;
+        private readonly IMeshService meshService;
 
-        public MeshOrchestrationService(IDateTimeBroker dateTimeBroker, IIdentifierBroker identifierBroker)
+        public MeshOrchestrationService(ITokenService tokenService, IMeshService meshService)
         {
-            this.dateTimeBroker = dateTimeBroker;
-            this.identifierBroker = identifierBroker;
+            this.tokenService = tokenService;
+            this.meshService = meshService;
         }
 
-        public ValueTask<bool> AcknowledgeMessageAsync(string messageId) =>
+        public ValueTask<bool> HandshakeAsync() =>
+            TryCatch(async () =>
+            {
+                return await this.meshService.HandshakeAsync();
+            });
+
+        public ValueTask<Message> SendMessageAsync(Message message) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<bool> HandshakeAsync() =>
+        public ValueTask<Message> SendFileAsync(Message message) =>
+            throw new System.NotImplementedException();
+
+        public ValueTask<Message> TrackMessageAsync(string messageId) =>
             throw new System.NotImplementedException();
 
         public ValueTask<Message> RetrieveMessageAsync(string messageId) =>
@@ -33,13 +42,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         public ValueTask<List<string>> RetrieveMessagesAsync() =>
             throw new System.NotImplementedException();
 
-        public ValueTask<Message> SendFileAsync(Message message) =>
-            throw new System.NotImplementedException();
-
-        public ValueTask<Message> SendMessageAsync(Message message) =>
-            throw new System.NotImplementedException();
-
-        public ValueTask<Message> TrackMessageAsync(string messageId) =>
+        public ValueTask<bool> AcknowledgeMessageAsync(string messageId) =>
             throw new System.NotImplementedException();
     }
 }

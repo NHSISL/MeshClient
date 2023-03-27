@@ -24,14 +24,14 @@ namespace NEL.MESH.Tests.Acceptance
             this.wireMockServer = WireMockServer.Start();
             this.meshConfigurations = new MeshConfigurations
             {
-                ClientCertificate = new X509Certificate2(),
+                ClientCertificate = new X509Certificate2(new byte[0]),
                 IntermediateCertificates = new X509Certificate2Collection(),
                 MailboxId = GetRandomString(),
                 MexClientVersion = GetRandomString(),
                 MexOSName = GetRandomString(),
                 MexOSVersion = GetRandomString(),
                 Password = GetRandomString(),
-                RootCertificate = new X509Certificate2(),
+                RootCertificate = new X509Certificate2(new byte[0]),
                 Url = $"https://{GetRandomString()}.com"
             };
 
