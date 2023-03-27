@@ -10,7 +10,6 @@ using System.Net.Http.Headers;
 using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Configurations;
 
@@ -47,11 +46,12 @@ namespace NEL.MESH.Brokers.Mesh
             string contentChecksum,
             string contentEncrypted,
             string encoding,
-            string chunkRange)
+            string chunkRange,
+            string authorizationToken)
         {
             var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/outbox";
             var request = new HttpRequestMessage(HttpMethod.Post, path);
-            request.Headers.Add("Authorization", GenerateAuthorisationHeader());
+            request.Headers.Add("Authorization", authorizationToken);
             request.Content = new StringContent(stringConent);
             request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
             request.Content.Headers.Add("Mex-From", this.meshConfiguration.MailboxId);
@@ -81,11 +81,12 @@ namespace NEL.MESH.Brokers.Mesh
             string contentEncrypted,
             string encoding,
             string chunkRange,
-            string localId)
+            string localId,
+            string authorizationToken)
         {
             var stream = new MemoryStream(fileContents);
             var content = new ByteArrayContent(stream.ToArray());
-            content.Headers.Add("Authorization", GenerateAuthorisationHeader());
+            content.Headers.Add("Authorization", authorizationToken);
             content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
             content.Headers.Add("Mex-From", this.meshConfiguration.MailboxId);
             content.Headers.Add("Mex-To", mailboxTo);
@@ -104,41 +105,41 @@ namespace NEL.MESH.Brokers.Mesh
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> TrackMessageAsync(string messageId)
+        public async ValueTask<HttpResponseMessage> TrackMessageAsync(string messageId, string authorizationToken)
         {
             var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/outbox/tracking?messageID={messageId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
-            request.Headers.Add("Authorization", GenerateAuthorisationHeader());
+            request.Headers.Add("Authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
 
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> GetMessagesAsync()
+        public async ValueTask<HttpResponseMessage> GetMessagesAsync(string authorizationToken)
         {
             var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/inbox";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
-            request.Headers.Add("Authorization", GenerateAuthorisationHeader());
+            request.Headers.Add("Authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
 
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> GetMessageAsync(string messageId)
+        public async ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, string authorizationToken)
         {
             var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/inbox/{messageId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
-            request.Headers.Add("Authorization", GenerateAuthorisationHeader());
+            request.Headers.Add("Authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
 
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> AcknowledgeMessageAsync(string messageId)
+        public async ValueTask<HttpResponseMessage> AcknowledgeMessageAsync(string messageId, string authorizationToken)
         {
             var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/inbox/{messageId}/status/acknowledged";
             var request = new HttpRequestMessage(HttpMethod.Put, path);
-            request.Headers.Add("Authorization", GenerateAuthorisationHeader());
+            request.Headers.Add("Authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
 
             return response;
@@ -209,34 +210,6 @@ namespace NEL.MESH.Brokers.Mesh
             }
 
             return handler;
-        }
-
-        private string GenerateAuthorisationHeader()
-        {
-            string mailboxId = this.meshConfiguration.MailboxId;
-            string password = this.meshConfiguration.Password;
-            string nonce = Guid.NewGuid().ToString();
-            string timeStamp = DateTime.UtcNow.ToString("yyyyMMddHHmm");
-            string nonce_count = "0";
-            string stringToHash = $"{mailboxId}:{nonce}:{nonce_count}:{password}:{timeStamp}";
-            string key = "BackBone";
-            string sharedKey = GenerateSha256(stringToHash, key);
-
-            return $"NHSMESH {mailboxId}:{nonce}:{nonce_count}:{timeStamp}:{sharedKey}";
-        }
-
-        private string GenerateSha256(string value, string key)
-        {
-            var crypt = new HMACSHA256(Encoding.ASCII.GetBytes(key));
-            string hash = String.Empty;
-            byte[] crypto = crypt.ComputeHash(Encoding.ASCII.GetBytes(value));
-
-            foreach (byte theByte in crypto)
-            {
-                hash += theByte.ToString("x2");
-            }
-
-            return hash;
         }
 
         ~MeshBroker()

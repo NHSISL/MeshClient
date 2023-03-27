@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
 
-namespace NEL.MESH.Services.Mesh
+namespace NEL.MESH.Services.Orchestrations.Mesh
 {
-    internal interface IMeshService
+    internal interface IMeshOrchestrationService
     {
         ValueTask<bool> HandshakeAsync();
         ValueTask<Message> SendMessageAsync(Message message);

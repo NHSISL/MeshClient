@@ -12,9 +12,9 @@ using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xeptions;
 
-namespace NEL.MESH.Services.Mesh
+namespace NEL.MESH.Services.Foundations.Mesh
 {
-    internal partial class MeshService : IMeshService
+    internal partial class MeshService
     {
         private static void ValidateResponse(HttpResponseMessage response)
         {
@@ -41,7 +41,7 @@ namespace NEL.MESH.Services.Mesh
             }
         }
 
-        private static void ValidateMeshMessageOnSendMessage(Message message)
+        private static void ValidateMeshMessageOnSendMessage(Message message, string authorizationToken)
         {
             ValidateMessageIsNotNull(message);
             ValidateHeadersIsNotNull(message);
@@ -51,10 +51,11 @@ namespace NEL.MESH.Services.Mesh
                 (Rule: IsInvalid(message.Headers, "Mex-FileName"), Parameter: "Mex-FileName"),
                 (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
                 (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
-                (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"));
+                (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
-        private static void ValidateMeshMessageOnSendFile(Message message)
+        private static void ValidateMeshMessageOnSendFile(Message message, string authorizationToken)
         {
             ValidateMessageIsNotNull(message);
             ValidateHeadersIsNotNull(message);
@@ -66,13 +67,36 @@ namespace NEL.MESH.Services.Mesh
                 (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
                 (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
                 (Rule: IsInvalid(message.Headers, "Mex-Content-Checksum"), Parameter: "Mex-Content-Checksum"),
-                (Rule: IsInvalid(message.Headers, "Mex-Content-Encrypted"), Parameter: "Mex-Content-Encrypted"));
+                (Rule: IsInvalid(message.Headers, "Mex-Content-Encrypted"), Parameter: "Mex-Content-Encrypted"),
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
-        public static void ValidateTrackMessageArguments(string messageId)
+        public static void ValidateTrackMessageArguments(string messageId, string authorizationToken)
         {
             Validate<InvalidMeshArgsException>(
-               (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)));
+               (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
+               (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+        }
+
+        public static void ValidateRetrieveMessageArguments(string messageId, string authorizationToken)
+        {
+            Validate<InvalidMeshArgsException>(
+               (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
+               (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+        }
+
+        public static void ValidateRetrieveMessagesArguments(string authorizationToken)
+        {
+            Validate<InvalidMeshArgsException>(
+               (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+        }
+
+
+        public static void ValidateAcknowledgeMessageArguments(string messageId, string authorizationToken)
+        {
+            Validate<InvalidMeshArgsException>(
+               (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
+               (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
         private static string GetKey(Dictionary<string, List<string>> dictionary, string key)

@@ -18,6 +18,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIsNullAsync()
         {
             // given
+            string authorizationToken = GetRandomString();
             Message nullMessage = null;
 
             var nullMessageException =
@@ -28,7 +29,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> addMessageTask =
-                this.meshService.SendMessageAsync(nullMessage);
+                this.meshService.SendMessageAsync(nullMessage, authorizationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
@@ -40,6 +41,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(
+                    It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
@@ -60,6 +62,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowValidationExceptionOnSendMessageIfHeadersDictionaryIsNullAsync()
         {
             // given
+            string authorizationToken = GetRandomString();
+
             Message messageWithNullHeaders = new Message
             {
                 Headers = null
@@ -73,7 +77,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> addMessageTask =
-                this.meshService.SendMessageAsync(messageWithNullHeaders);
+                this.meshService.SendMessageAsync(messageWithNullHeaders, authorizationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
@@ -85,6 +89,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(
+                    It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
@@ -109,6 +114,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             string invalidInput)
         {
             // given
+            string invalidAuthorizationToken = invalidInput;
+
             Message randomMessage = new Message
             {
                 MessageId = GetRandomString(),
@@ -149,6 +156,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 key: "Mex-WorkflowID",
                 values: "Header value is required");
 
+            invalidMeshException.AddData(
+                key: "Token",
+                values: "Text is required");
+
             var expectedMeshValidationException =
                 new MeshValidationException(
                 innerException: invalidMeshException,
@@ -156,7 +167,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> addMessageTask =
-                this.meshService.SendMessageAsync(randomMessage);
+                this.meshService.SendMessageAsync(randomMessage, invalidAuthorizationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
@@ -168,6 +179,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(
+                    It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),

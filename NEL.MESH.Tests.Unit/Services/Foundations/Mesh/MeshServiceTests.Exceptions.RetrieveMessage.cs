@@ -21,11 +21,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage dependencyValidationResponseMessage)
         {
             // given
+            string authorizationToken = GetRandomString();
             Message someMessage = CreateRandomSendMessage();
             HttpResponseMessage response = dependencyValidationResponseMessage;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.GetMessageAsync(It.IsAny<string>()))
+                broker.GetMessageAsync(It.IsAny<string>(), It.IsAny<string>()))
                     .ReturnsAsync(dependencyValidationResponseMessage);
 
             var httpRequestException =
@@ -39,7 +40,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> getMessageTask =
-                this.meshService.RetrieveMessageAsync(someMessage.MessageId);
+                this.meshService.RetrieveMessageAsync(someMessage.MessageId, authorizationToken);
 
             MeshDependencyValidationException actualMeshDependencyValidationException =
                 await Assert.ThrowsAsync<MeshDependencyValidationException>(getMessageTask.AsTask);
@@ -48,7 +49,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshDependencyValidationException.Should().BeEquivalentTo(expectedMeshDependencyValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.GetMessageAsync(It.IsAny<string>()),
+                broker.GetMessageAsync(It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -60,12 +61,13 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage dependencyResponseMessage)
         {
             // given
+            string authorizationToken = GetRandomString();
             Message someMessage = CreateRandomSendMessage();
             HttpResponseMessage response = dependencyResponseMessage;
 
             this.meshBrokerMock.Setup(broker =>
                 broker.GetMessageAsync(
-                    It.IsAny<string>()))
+                    It.IsAny<string>(), It.IsAny<string>()))
                     .ReturnsAsync(dependencyResponseMessage);
 
             var httpRequestException =
@@ -79,7 +81,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> GetMessageTask =
-                this.meshService.RetrieveMessageAsync(someMessage.MessageId);
+                this.meshService.RetrieveMessageAsync(someMessage.MessageId, authorizationToken);
 
             MeshDependencyException actualMeshDependencyException =
                 await Assert.ThrowsAsync<MeshDependencyException>(GetMessageTask.AsTask);
@@ -89,7 +91,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Verify(broker =>
                 broker.GetMessageAsync(
-                    It.IsAny<string>()),
+                    It.IsAny<string>(), It.IsAny<string>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -100,6 +102,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowServiceExceptionIfServiceErrorOccursOnGetMessageAsync()
         {
             // given
+            string authorizationToken = GetRandomString();
             Message someMessage = CreateRandomSendMessage();
 
             HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.MovedPermanently)
@@ -109,7 +112,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Setup(broker =>
                 broker.GetMessageAsync(
-                    It.IsAny<string>()))
+                    It.IsAny<string>(), It.IsAny<string>()))
                     .ReturnsAsync(response);
 
             var httpRequestException =
@@ -123,7 +126,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> getMessageTask =
-                this.meshService.RetrieveMessageAsync(someMessage.MessageId);
+                this.meshService.RetrieveMessageAsync(someMessage.MessageId, authorizationToken);
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>(getMessageTask.AsTask);
@@ -133,6 +136,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Verify(broker =>
                 broker.GetMessageAsync(
+                    It.IsAny<string>(),
                     It.IsAny<string>()),
                     Times.Once);
 

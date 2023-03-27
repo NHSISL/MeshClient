@@ -19,6 +19,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         {
             // given
             Message nullMessage = null;
+            string authorizationToken = GetRandomString();
 
             var nullMessageException =
                 new NullMessageException();
@@ -28,7 +29,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> addMessageTask =
-                this.meshService.SendFileAsync(nullMessage);
+                this.meshService.SendFileAsync(nullMessage, authorizationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
@@ -44,6 +45,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
@@ -60,6 +62,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowValidationExceptionOnSendFileIfHeadersDictionaryIsNullAsync()
         {
             // given
+            string authorizationToken = GetRandomString();
+
             Message messageWithNullHeaders = new Message
             {
                 Headers = null
@@ -73,7 +77,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> addMessageTask =
-                this.meshService.SendFileAsync(messageWithNullHeaders);
+                this.meshService.SendFileAsync(messageWithNullHeaders, authorizationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
@@ -89,6 +93,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
@@ -109,6 +114,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             string invalidInput)
         {
             // given
+            string invalidAuthorizationToken = invalidInput;
             byte[] invalidContent = null;
 
             Message randomMessage = new Message
@@ -162,6 +168,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 key: "Mex-Content-Encrypted",
                 values: "Header value is required");
 
+            invalidMeshException.AddData(
+                key: "Token",
+                values: "Text is required");
+
             var expectedMeshValidationException =
                 new MeshValidationException(
                 innerException: invalidMeshException,
@@ -169,7 +179,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> addMessageTask =
-                this.meshService.SendFileAsync(randomMessage);
+                this.meshService.SendFileAsync(randomMessage, invalidAuthorizationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
@@ -185,6 +195,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),

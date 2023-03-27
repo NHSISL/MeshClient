@@ -7,23 +7,23 @@ using System.Threading.Tasks;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
-using NEL.MESH.Services.Mesh;
+using NEL.MESH.Services.Orchestrations.Mesh;
 using Xeptions;
 
-namespace NEL.MESH.Clients.MeshClients
+namespace NEL.MESH.Clients.Mailboxes
 {
     internal class MailboxClient : IMailboxClient
     {
-        private readonly IMeshService meshService;
+        private readonly IMeshOrchestrationService meshOrchestrationService;
 
-        public MailboxClient(IMeshService meshService) =>
-            this.meshService = meshService;
+        public MailboxClient(IMeshOrchestrationService meshOrchestrationService) =>
+            this.meshOrchestrationService = meshOrchestrationService;
 
         public async ValueTask<bool> HandshakeAsync()
         {
             try
             {
-                return await this.meshService.HandshakeAsync();
+                return await meshOrchestrationService.HandshakeAsync();
             }
             catch (MeshValidationException meshValidationException)
             {
@@ -51,7 +51,7 @@ namespace NEL.MESH.Clients.MeshClients
         {
             try
             {
-                return await this.meshService.SendMessageAsync(message);
+                return await meshOrchestrationService.SendMessageAsync(message);
             }
             catch (MeshValidationException meshValidationException)
             {
@@ -79,7 +79,7 @@ namespace NEL.MESH.Clients.MeshClients
         {
             try
             {
-                return await this.meshService.SendFileAsync(message);
+                return await meshOrchestrationService.SendFileAsync(message);
             }
             catch (MeshValidationException meshValidationException)
             {
@@ -107,7 +107,7 @@ namespace NEL.MESH.Clients.MeshClients
         {
             try
             {
-                return await this.meshService.TrackMessageAsync(messageId);
+                return await meshOrchestrationService.TrackMessageAsync(messageId);
             }
             catch (MeshValidationException meshValidationException)
             {
@@ -135,7 +135,7 @@ namespace NEL.MESH.Clients.MeshClients
         {
             try
             {
-                return await this.meshService.RetrieveMessagesAsync();
+                return await meshOrchestrationService.RetrieveMessagesAsync();
             }
             catch (MeshValidationException meshValidationException)
             {
@@ -163,7 +163,7 @@ namespace NEL.MESH.Clients.MeshClients
         {
             try
             {
-                return await this.meshService.RetrieveMessageAsync(messageId);
+                return await meshOrchestrationService.RetrieveMessageAsync(messageId);
             }
             catch (MeshValidationException meshValidationException)
             {
@@ -191,7 +191,7 @@ namespace NEL.MESH.Clients.MeshClients
         {
             try
             {
-                return await this.meshService.AcknowledgeMessageAsync(messageId);
+                return await meshOrchestrationService.AcknowledgeMessageAsync(messageId);
             }
             catch (MeshValidationException meshValidationException)
             {

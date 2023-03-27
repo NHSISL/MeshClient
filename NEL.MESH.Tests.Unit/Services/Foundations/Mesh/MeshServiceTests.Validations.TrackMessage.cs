@@ -8,7 +8,7 @@ using FluentAssertions;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
-using NEL.MESH.Models.Foundations.Mesh.ExternalModeld;
+using NEL.MESH.Models.Foundations.Mesh.ExternalModels;
 using Xunit;
 
 namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
@@ -23,6 +23,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             string invalidInput)
         {
             // given
+            string invalidAuthorizationToken = invalidInput;
             dynamic randomTrackingProperties = CreateRandomTrackingProperties();
             string randomString = GetRandomString();
             string inputMessageId = invalidInput;
@@ -39,7 +40,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage responseMessage = CreateTrackingHttpResponseMessage(trackMessageResponse);
 
             this.meshBrokerMock.Setup(broker =>
-                broker.TrackMessageAsync(inputMessageId))
+                broker.TrackMessageAsync(inputMessageId, invalidAuthorizationToken))
                     .ReturnsAsync(responseMessage);
 
             Message expectedMessage = GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage);
@@ -51,6 +52,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 key: nameof(Message.MessageId),
                 values: "Text is required");
 
+            invalidMeshArgsException.AddData(
+                key: "Token",
+                values: "Text is required");
+
             var expectedMeshValidationException =
                 new MeshValidationException(
                    innerException: invalidMeshArgsException,
@@ -58,7 +63,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> trackMessageTask =
-                this.meshService.TrackMessageAsync(inputMessageId);
+                this.meshService.TrackMessageAsync(inputMessageId, invalidAuthorizationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
@@ -68,7 +73,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshValidationException.Should().BeEquivalentTo(expectedMeshValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.TrackMessageAsync(inputMessageId),
+                broker.TrackMessageAsync(inputMessageId, invalidAuthorizationToken),
                         Times.Never);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

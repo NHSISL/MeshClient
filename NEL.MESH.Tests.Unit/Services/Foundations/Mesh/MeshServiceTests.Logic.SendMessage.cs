@@ -18,6 +18,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldSendMessageAsync()
         {
             // given
+            string authorizationToken = GetRandomString();
             Message randomMessage = CreateRandomSendMessage();
             Message inputMessage = randomMessage;
             HttpResponseMessage responseMessage = CreateHttpResponseMessage(inputMessage);
@@ -34,14 +35,15 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     GetKeyStringValue("Mex-Content-Checksum", inputMessage.Headers),
                     GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers),
                     GetKeyStringValue("Mex-Encoding", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Chunk-Range", inputMessage.Headers)
+                    GetKeyStringValue("Mex-Chunk-Range", inputMessage.Headers),
+                    authorizationToken
                     ))
                     .ReturnsAsync(responseMessage);
 
             Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessage(responseMessage);
 
             // when
-            var actualMessage = await this.meshService.SendMessageAsync(inputMessage);
+            var actualMessage = await this.meshService.SendMessageAsync(inputMessage, authorizationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
@@ -58,7 +60,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     GetKeyStringValue("Mex-Content-Checksum", inputMessage.Headers),
                     GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers),
                     GetKeyStringValue("Mex-Encoding", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Chunk-Range", inputMessage.Headers)),
+                    GetKeyStringValue("Mex-Chunk-Range", inputMessage.Headers),
+                    authorizationToken),
                         Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

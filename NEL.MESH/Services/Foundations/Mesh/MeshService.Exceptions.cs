@@ -9,9 +9,9 @@ using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xeptions;
 
-namespace NEL.MESH.Services.Mesh
+namespace NEL.MESH.Services.Foundations.Mesh
 {
-    internal partial class MeshService : IMeshService
+    internal partial class MeshService
     {
         private delegate ValueTask<bool> ReturningBooleanFunction();
         private delegate ValueTask<Message> RetruningMessageFunction();
@@ -96,6 +96,10 @@ namespace NEL.MESH.Services.Mesh
             catch (FailedMeshServerException failedMeshClientException)
             {
                 throw CreateAndLogDependencyException(failedMeshClientException);
+            }
+            catch (InvalidMeshArgsException invalidArgumentMeshException)
+            {
+                throw CreateAndLogValidationException(invalidArgumentMeshException);
             }
             catch (Exception exception)
             {

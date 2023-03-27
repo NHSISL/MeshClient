@@ -2,12 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using NEL.MESH.Clients.Mailboxes;
+using System.Threading.Tasks;
 
-namespace NEL.MESH.Clients
+namespace NEL.MESH.Services.Foundations.Tokens
 {
-    public interface IMeshClient
+    internal interface ITokenService
     {
-        IMailboxClient Mailbox { get; }
+        ValueTask<string> GenerateTokenAsync(string mailboxId, string password, string key);
     }
 }
