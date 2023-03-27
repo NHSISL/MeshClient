@@ -3,10 +3,14 @@
 // ---------------------------------------------------------------
 
 using Moq;
+using NEL.MESH.Models.Foundations.Mesh.Exceptions;
+using NEL.MESH.Models.Foundations.Token.Exceptions;
 using NEL.MESH.Services.Foundations.Mesh;
 using NEL.MESH.Services.Foundations.Tokens;
 using NEL.MESH.Services.Orchestrations.Mesh;
 using Tynamix.ObjectFiller;
+using Xeptions;
+using Xunit;
 
 namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 {
@@ -36,5 +40,35 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
+
+        public static TheoryData MeshDependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new TokenValidationException(innerException),
+                new TokenDependencyValidationException(innerException),
+                new MeshValidationException(innerException),
+                new MeshDependencyValidationException(innerException),
+            };
+        }
+
+        public static TheoryData DownloadDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new TokenDependencyException(innerException),
+                new TokenServiceException(innerException),
+                new MeshDependencyException(innerException),
+                new MeshServiceException(innerException),
+            };
+        }
     }
 }
