@@ -18,9 +18,6 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         {
             // given
             string randomToken = GetRandomString();
-            string randomMailboxId = GetRandomString();
-            string randomPassword = GetRandomString();
-            string randomKey = GetRandomString();
             Message randomMessage = CreateRandomSendMessage();
             Message inputMessage = randomMessage;
             Message outputMessage = inputMessage.DeepClone();
