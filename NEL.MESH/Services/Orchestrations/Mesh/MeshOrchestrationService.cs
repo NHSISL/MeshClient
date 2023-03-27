@@ -10,7 +10,7 @@ using NEL.MESH.Services.Foundations.Tokens;
 
 namespace NEL.MESH.Services.Orchestrations.Mesh
 {
-    internal class MeshOrchestrationService : IMeshOrchestrationService
+    internal partial class MeshOrchestrationService : IMeshOrchestrationService
     {
         private readonly ITokenService tokenService;
         private readonly IMeshService meshService;
@@ -22,7 +22,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         }
 
         public ValueTask<bool> HandshakeAsync() =>
-            this.meshService.HandshakeAsync();
+            TryCatch(async () =>
+            {
+                return await this.meshService.HandshakeAsync();
+            });
 
         public ValueTask<Message> SendMessageAsync(Message message) =>
             throw new System.NotImplementedException();
