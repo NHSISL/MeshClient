@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Token.Exceptions;
@@ -54,6 +55,13 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 throw CreateAndLogDependencyException(meshServiceException);
             }
+            catch (Exception exception)
+            {
+                var failedMeshOrchestrationServiceException =
+                    new FailedMeshOrchestrationServiceException(exception);
+
+                throw CreateAndLogServiceException(failedMeshOrchestrationServiceException);
+            }
         }
 
         private MeshOrchestrationDependencyValidationException CreateAndLogDependencyValidationException(
@@ -72,6 +80,15 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 new MeshOrchestrationDependencyException(exception.InnerException as Xeption);
 
             throw meshOrchestrationDependencyException;
+        }
+
+        private MeshOrchestrationServiceException
+            CreateAndLogServiceException(Xeption exception)
+        {
+            var meshOrchestrationServiceException =
+                new MeshOrchestrationServiceException(exception);
+
+            throw meshOrchestrationServiceException;
         }
     }
 }
