@@ -18,7 +18,11 @@ namespace NEL.MESH.Brokers.Mesh
             string contentType,
             string localId,
             string subject,
+            string fileName,
+            string contentChecksum,
             string contentEncrypted,
+            string encoding,
+            string chunkRange,
             string authorizationToken);
 
         ValueTask<HttpResponseMessage> SendFileAsync(

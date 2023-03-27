@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection.Metadata;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Configurations;
@@ -40,7 +42,11 @@ namespace NEL.MESH.Brokers.Mesh
             string contentType,
             string localId,
             string subject,
+            string fileName,
+            string contentChecksum,
             string contentEncrypted,
+            string encoding,
+            string chunkRange,
             string authorizationToken)
         {
             var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/outbox";
@@ -53,7 +59,11 @@ namespace NEL.MESH.Brokers.Mesh
             request.Content.Headers.Add("Mex-WorkflowID", workflowId);
             request.Content.Headers.Add("Mex-LocalID", localId);
             request.Content.Headers.Add("Mex-Subject", subject);
+            request.Content.Headers.Add("Mex-FileName", fileName);
+            request.Content.Headers.Add("Mex-Content-Checksum", contentChecksum);
             request.Content.Headers.Add("Mex-Content-Encrypted", contentEncrypted);
+            request.Content.Headers.Add("Mex-Encoding", encoding);
+            request.Content.Headers.Add("Mex-Chunk-Range", chunkRange);
 
             var response = await this.httpClient.SendAsync(request);
 

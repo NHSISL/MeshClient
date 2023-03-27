@@ -5,7 +5,7 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<Title>MESH Client</Title>
-		<Authors>Christo du Toit | David Cunliffe</Authors>
+		<Authors>Christo du Toit | David Cunliffe | David Hayes | Hassan Raza</Authors>
 		<Company>NEL ICB</Company>
 		<Description> .NET Client To Send And Recieve MESH messages </Description>
 		<Copyright>Copyright (c) NEL ICB</Copyright>
