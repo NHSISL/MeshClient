@@ -36,6 +36,26 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
             }
+
+
+            catch (TokenDependencyException tokenDependencyException)
+            {
+                throw CreateAndLogDependencyException(tokenDependencyException);
+            }
+            catch (TokenServiceException tokenServiceException)
+            {
+                throw CreateAndLogDependencyException(tokenServiceException);
+            }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshDependencyException);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw CreateAndLogDependencyException(meshServiceException);
+            }
+
+
         }
 
         private MeshOrchestrationDependencyValidationException CreateAndLogDependencyValidationException(
@@ -45,6 +65,15 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 new MeshOrchestrationDependencyValidationException(exception.InnerException as Xeption);
 
             return meshOrchestrationDependencyValidationException;
+        }
+
+        private MeshOrchestrationDependencyException
+            CreateAndLogDependencyException(Xeption exception)
+        {
+            var meshOrchestrationDependencyException =
+                new MeshOrchestrationDependencyException(exception.InnerException as Xeption);
+
+            throw meshOrchestrationDependencyException;
         }
     }
 }
