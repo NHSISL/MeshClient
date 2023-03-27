@@ -191,6 +191,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         value: rule.Message);
                 }
             }
+
             invalidDataException.ThrowIfContainsErrors();
         }
 

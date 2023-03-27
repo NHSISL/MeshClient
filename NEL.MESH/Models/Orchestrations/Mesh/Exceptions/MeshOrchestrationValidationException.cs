@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace NEL.MESH.Services.Orchestrations.Mesh
+namespace NEL.MESH.Models.Orchestrations.Mesh.Exceptions
 {
     internal class MeshOrchestrationValidationException : Xeption
     {

@@ -4,6 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
+using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Token.Exceptions;
 using NEL.MESH.Models.Orchestrations.Mesh.Exceptions;
@@ -14,6 +15,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
     internal partial class MeshOrchestrationService
     {
         private delegate ValueTask<bool> ReturningBooleanFunction();
+        private delegate ValueTask<Message> ReturningMessageFunction();
 
         private async ValueTask<bool> TryCatch(ReturningBooleanFunction returningBooleanFunction)
         {
@@ -64,6 +66,18 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             }
         }
 
+        private async ValueTask<Message> TryCatch(ReturningMessageFunction returningMessageFunction)
+        {
+            try
+            {
+                return await returningMessageFunction();
+            }
+            catch (NullMeshMessageException nullMeshMessageException)
+            {
+                throw CreateAndLogValidationException(nullMeshMessageException);
+            }
+        }
+
         private MeshOrchestrationDependencyValidationException CreateAndLogDependencyValidationException(
             Xeption exception)
         {
@@ -89,6 +103,16 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 new MeshOrchestrationServiceException(exception);
 
             throw meshOrchestrationServiceException;
+        }
+
+        private MeshOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
+        {
+            string validationSummary = GetValidationSummary(exception.Data);
+
+            var meshOrchestrationValidationException =
+                new MeshOrchestrationValidationException(exception, validationSummary);
+
+            return meshOrchestrationValidationException;
         }
     }
 }
