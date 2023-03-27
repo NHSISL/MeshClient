@@ -76,6 +76,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 throw CreateAndLogValidationException(nullMeshMessageException);
             }
+            catch (InvalidTokenException invalidTokenException)
+            {
+                throw CreateAndLogValidationException(invalidTokenException);
+            }
         }
 
         private MeshOrchestrationDependencyValidationException CreateAndLogDependencyValidationException(

@@ -31,8 +31,8 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             TryCatch(async () =>
             {
                 ValidateMessageIsNotNull(message);
-
                 string token = await this.tokenService.GenerateTokenAsync();
+                ValidateToken(token);
                 Message outputMessage = await this.meshService.SendMessageAsync(message, token);
 
                 return outputMessage;

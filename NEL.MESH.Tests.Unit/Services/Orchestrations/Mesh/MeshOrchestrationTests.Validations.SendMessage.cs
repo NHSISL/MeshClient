@@ -53,8 +53,14 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             var invalidTokenException =
                 new InvalidTokenException();
 
+            invalidTokenException.AddData(
+                key: "Token",
+                values: "Text is required");
+
             var expectedMeshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(invalidTokenException);
+                new MeshOrchestrationValidationException(
+                    innerException: invalidTokenException,
+                    validationSummary: GetValidationSummary(invalidTokenException.Data));
 
             this.tokenServiceMock.Setup(service =>
                 service.GenerateTokenAsync())
@@ -70,6 +76,10 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // then
             actualMeshOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationValidationException);
+
+            this.tokenServiceMock.Verify(service =>
+                service.GenerateTokenAsync(),
+                    Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
