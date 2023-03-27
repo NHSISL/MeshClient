@@ -15,7 +15,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
     {
         [Theory]
         [MemberData(nameof(MeshDependencyValidationExceptions))]
-        public async Task ShouldThrowDependencyValidationOnProcessIfDependencyValidationOccursOnHandShakeAsync(
+        public async Task ShouldThrowDependencyValidationExceptionOnHandshakeIfDependencyValidationErrorOccursAsync(
             Xeption dependancyValidationException)
         {
             // given
@@ -36,6 +36,38 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // then
             actualMeshOrchestrationDependencyValidationException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationDependencyValidationException);
+
+            this.meshServiceMock.Verify(service =>
+                service.HandshakeAsync(),
+                    Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.tokenServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(MeshDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnHandshakeIfDependencyErrorOccursAsync(
+            Xeption dependancyException)
+        {
+            // given
+            var expectedMeshOrchestrationDependencyException =
+            new MeshOrchestrationDependencyException(
+                dependancyException.InnerException as Xeption);
+
+            this.meshServiceMock.Setup(service =>
+                service.HandshakeAsync())
+                    .ThrowsAsync(dependancyException);
+
+            // when
+            ValueTask<bool> handshakeTask = this.meshOrchestrationService.HandshakeAsync();
+
+            MeshOrchestrationDependencyException actualMeshOrchestrationDependencyException =
+                await Assert.ThrowsAsync<MeshOrchestrationDependencyException>(handshakeTask.AsTask);
+
+            // then
+            actualMeshOrchestrationDependencyException.Should()
+                .BeEquivalentTo(expectedMeshOrchestrationDependencyException);
 
             this.meshServiceMock.Verify(service =>
                 service.HandshakeAsync(),

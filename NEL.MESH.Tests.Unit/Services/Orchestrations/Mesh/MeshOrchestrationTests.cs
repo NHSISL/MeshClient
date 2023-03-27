@@ -56,7 +56,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             };
         }
 
-        public static TheoryData DownloadDependencyExceptions()
+        public static TheoryData MeshDependencyExceptions()
         {
             string randomMessage = GetRandomString();
             string exceptionMessage = randomMessage;
