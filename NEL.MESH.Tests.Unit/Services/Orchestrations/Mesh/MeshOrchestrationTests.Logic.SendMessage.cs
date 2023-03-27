@@ -27,7 +27,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             Message expectedMessage = outputMessage;
 
             this.tokenServiceMock.Setup(service =>
-                service.GenerateTokenAsync(randomMailboxId, randomPassword, randomKey))
+                service.GenerateTokenAsync())
                     .ReturnsAsync(randomToken);
 
             this.meshServiceMock.Setup(service =>
@@ -42,7 +42,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             this.tokenServiceMock.Verify(service =>
-                service.GenerateTokenAsync(randomMailboxId, randomPassword, randomKey),
+                service.GenerateTokenAsync(),
                     Times.Once);
 
             this.meshServiceMock.Verify(service =>

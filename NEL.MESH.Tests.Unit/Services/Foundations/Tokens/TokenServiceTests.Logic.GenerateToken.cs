@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
+using NEL.MESH.Models.Configurations;
 using Xunit;
 
 namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
@@ -18,14 +19,26 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
             // given
             string mailboxId = GetRandomString();
             string password = GetRandomString();
-            string inputKey = GetRandomString();
+            string key = GetRandomString();
+
+            MeshConfiguration meshConfiguration = new MeshConfiguration
+            {
+                MailboxId = mailboxId,
+                Password = password,
+                Key = key
+            };
+
+            this.meshBrokerMock.Setup(broker =>
+                broker.MeshConfiguration)
+                    .Returns(meshConfiguration);
+
             Guid identifier = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = new DateTime(2022, 3, 24, 12, 00, 00);
             string timeStamp = randomDateTimeOffset.ToString("yyyyMMddHHmm");
             string nonce = identifier.ToString();
             int nonce_count = 0;
             string inputStringToHash = $"{mailboxId}:{nonce}:{nonce_count}:{password}:{timeStamp}";
-            string inputSharedKey = HashStringSha256(inputStringToHash, inputKey);
+            string inputSharedKey = HashStringSha256(inputStringToHash, key);
             string expectedToken = $"NHSMESH {mailboxId}:{nonce}:{nonce_count}:{timeStamp}:{inputSharedKey}";
 
             this.dateTimeBrokerMock.Setup(broker =>
@@ -37,7 +50,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
                     .Returns(identifier);
 
             // when
-            string actualToken = await this.tokenService.GenerateTokenAsync(mailboxId, password, inputKey);
+            string actualToken = await this.tokenService.GenerateTokenAsync();
 
             // then
             actualToken.Should().BeEquivalentTo(expectedToken);

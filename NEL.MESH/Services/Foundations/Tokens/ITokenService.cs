@@ -8,6 +8,6 @@ namespace NEL.MESH.Services.Foundations.Tokens
 {
     internal interface ITokenService
     {
-        ValueTask<string> GenerateTokenAsync(string mailboxId, string password, string key);
+        ValueTask<string> GenerateTokenAsync();
     }
 }

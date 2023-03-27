@@ -6,10 +6,11 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace NEL.MESH.Models.Configurations
 {
-    public class MeshConfigurations
+    public class MeshConfiguration
     {
         public string MailboxId { get; set; }
         public string Password { get; set; }
+        public string Key { get; set; }
         public string Url { get; set; }
         public X509Certificate2 RootCertificate { get; set; }
         public X509Certificate2Collection IntermediateCertificates { get; set; }

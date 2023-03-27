@@ -16,7 +16,7 @@ namespace NEL.MESH.Clients
 {
     public class MeshClient : IMeshClient
     {
-        public MeshClient(MeshConfigurations meshConfigurations)
+        public MeshClient(MeshConfiguration meshConfigurations)
         {
             IHost host = RegisterServices(meshConfigurations);
             Mailbox = InitializeClient(host);
@@ -27,7 +27,7 @@ namespace NEL.MESH.Clients
         private static IMailboxClient InitializeClient(IHost host) =>
             host.Services.GetRequiredService<IMailboxClient>();
 
-        private static IHost RegisterServices(MeshConfigurations meshConfigurations)
+        private static IHost RegisterServices(MeshConfiguration meshConfigurations)
         {
             IHostBuilder builder = Host.CreateDefaultBuilder();
 

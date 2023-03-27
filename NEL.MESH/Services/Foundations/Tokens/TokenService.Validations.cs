@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NEL.MESH.Models.Configurations;
 using NEL.MESH.Models.Foundations.Token.Exceptions;
 using Xeptions;
 
@@ -17,9 +18,9 @@ namespace NEL.MESH.Services.Foundations.Tokens
         public static void ValidateGenerateTokenArgs(string mailboxId, string password, string key)
         {
             Validate<InvalidTokenArgsException>(
-               (Rule: IsInvalid(mailboxId), Parameter: "MailboxId"),
-               (Rule: IsInvalid(password), Parameter: "Password"),
-               (Rule: IsInvalid(key), Parameter: "Key"));
+               (Rule: IsInvalid(mailboxId), Parameter: nameof(MeshConfiguration.MailboxId)),
+               (Rule: IsInvalid(password), Parameter: nameof(MeshConfiguration.Password)),
+               (Rule: IsInvalid(key), Parameter: nameof(MeshConfiguration.Key)));
         }
 
         private static dynamic IsInvalid(string text) => new
