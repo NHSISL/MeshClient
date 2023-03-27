@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -68,6 +69,42 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // then
             actualMeshOrchestrationDependencyException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationDependencyException);
+
+            this.meshServiceMock.Verify(service =>
+                service.HandshakeAsync(),
+                    Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.tokenServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnHandshakeIfServiceErrorOccursAsync()
+        {
+            // given
+            string someMessage = GetRandomString();
+            var serviceException = new Exception(someMessage);
+
+            var failedMeshOrchestrationServiceException =
+                new FailedMeshOrchestrationServiceException(serviceException);
+
+
+            var expectedMeshOrchestrationServiceException =
+            new MeshOrchestrationServiceException(failedMeshOrchestrationServiceException);
+
+            this.meshServiceMock.Setup(service =>
+                service.HandshakeAsync())
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<bool> handshakeTask = this.meshOrchestrationService.HandshakeAsync();
+
+            MeshOrchestrationServiceException actualMeshOrchestrationServiceException =
+                await Assert.ThrowsAsync<MeshOrchestrationServiceException>(handshakeTask.AsTask);
+
+            // then
+            actualMeshOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedMeshOrchestrationServiceException);
 
             this.meshServiceMock.Verify(service =>
                 service.HandshakeAsync(),

@@ -54,8 +54,6 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 throw CreateAndLogDependencyException(meshServiceException);
             }
-
-
         }
 
         private MeshOrchestrationDependencyValidationException CreateAndLogDependencyValidationException(
