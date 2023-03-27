@@ -40,15 +40,15 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
                     workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
                     stringConent: message.StringContent,
-                    localId: GetKeyStringValue("Mex-LocalID", message.Headers),
                     contentType: GetKeyStringValue("Content-Type", message.Headers),
+                    localId: GetKeyStringValue("Mex-LocalID", message.Headers),
                     subject: GetKeyStringValue("Mex-Subject", message.Headers),
                     fileName: GetKeyStringValue("Mex-FileName", message.Headers),
                     contentChecksum: GetKeyStringValue("Mex-Content-Checksum", message.Headers),
                     contentEncrypted: GetKeyStringValue("Mex-Content-Encrypted", message.Headers),
                     encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
-                    chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers,
-                    authorizationToken)
+                    chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
+                    authorizationToken
                     );
 
                 ValidateResponse(responseMessage);
