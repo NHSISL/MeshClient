@@ -22,7 +22,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         }
 
         public ValueTask<bool> HandshakeAsync() =>
-            throw new System.NotImplementedException();
+            this.meshService.HandshakeAsync();
 
         public ValueTask<Message> SendMessageAsync(Message message) =>
             throw new System.NotImplementedException();
