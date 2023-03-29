@@ -18,7 +18,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // given
             string randomToken = GetRandomString();
 
-            List<string> outputMessages = GetRandomMessages(GetRandomNumber());
+            List<string> outputMessages = GetRandomMessages();
             List<string> expectedMessages = outputMessages;
 
             this.tokenServiceMock.Setup(service =>
