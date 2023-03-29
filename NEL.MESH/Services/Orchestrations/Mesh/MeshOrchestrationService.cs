@@ -54,6 +54,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 ValidateTrackMessageArgs(messageId);
                 string token = await this.tokenService.GenerateTokenAsync();
+                ValidateToken(token);
                 Message outputMessage = await this.meshService.TrackMessageAsync(messageId, authorizationToken: token);
 
                 return outputMessage;
