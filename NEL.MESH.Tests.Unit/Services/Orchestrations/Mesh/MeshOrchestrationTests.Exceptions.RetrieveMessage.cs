@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -71,6 +72,42 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // then
             actualMeshOrchestrationDependencyException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationDependencyException);
+
+            this.tokenServiceMock.Verify(service =>
+                service.GenerateTokenAsync(),
+                    Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.tokenServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveMessageIfServiceErrorOccursAsync()
+        {
+            // given
+            string someMessageId = GetRandomString();
+            string someErrorMessage = GetRandomString();
+            var serviceException = new Exception(someErrorMessage);
+
+            var failedMeshOrchestrationServiceException =
+                new FailedMeshOrchestrationServiceException(serviceException);
+
+            var expectedMeshOrchestrationServiceException =
+            new MeshOrchestrationServiceException(failedMeshOrchestrationServiceException);
+
+            this.tokenServiceMock.Setup(service =>
+                service.GenerateTokenAsync())
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<Message> sendMessageTask = this.meshOrchestrationService.RetrieveMessageAsync(someMessageId);
+
+            MeshOrchestrationServiceException actualMeshOrchestrationServiceException =
+                await Assert.ThrowsAsync<MeshOrchestrationServiceException>(sendMessageTask.AsTask);
+
+            // then
+            actualMeshOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedMeshOrchestrationServiceException);
 
             this.tokenServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),
