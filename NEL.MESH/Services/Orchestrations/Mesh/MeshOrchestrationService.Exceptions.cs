@@ -171,13 +171,13 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 throw CreateAndLogDependencyException(meshServiceException);
             }
-            //catch (Exception exception)
-            //{
-            //    var failedMeshOrchestrationServiceException =
-            //        new FailedMeshOrchestrationServiceException(exception);
+            catch (Exception exception)
+            {
+                var failedMeshOrchestrationServiceException =
+                    new FailedMeshOrchestrationServiceException(exception);
 
-            //    throw CreateAndLogServiceException(failedMeshOrchestrationServiceException);
-            //}
+                throw CreateAndLogServiceException(failedMeshOrchestrationServiceException);
+            }
         }
 
         private MeshOrchestrationDependencyValidationException CreateAndLogDependencyValidationException(
