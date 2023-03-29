@@ -33,7 +33,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 ValidateMessageIsNotNull(message);
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
-                Message outputMessage = await this.meshService.SendMessageAsync(message, token);
+                Message outputMessage = await this.meshService.SendMessageAsync(message, authorizationToken: token);
 
                 return outputMessage;
             });
@@ -44,13 +44,21 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 ValidateMessageIsNotNull(message);
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
-                Message outputMessage = await this.meshService.SendFileAsync(message, token);
+                Message outputMessage = await this.meshService.SendFileAsync(message, authorizationToken: token);
 
                 return outputMessage;
             });
 
         public ValueTask<Message> TrackMessageAsync(string messageId) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateTrackMessageArgs(messageId);
+                string token = await this.tokenService.GenerateTokenAsync();
+                ValidateToken(token);
+                Message outputMessage = await this.meshService.TrackMessageAsync(messageId, authorizationToken: token);
+
+                return outputMessage;
+            });
 
         public ValueTask<Message> RetrieveMessageAsync(string messageId) =>
             throw new System.NotImplementedException();

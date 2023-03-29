@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NEL.MESH.Models.Foundations.Mesh;
+using NEL.MESH.Models.Foundations.Token.Exceptions;
 using NEL.MESH.Models.Orchestrations.Mesh.Exceptions;
 using Xeptions;
 
@@ -27,6 +28,12 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 throw new NullMeshMessageException();
             }
+        }
+
+        private static void ValidateTrackMessageArgs(string messageId)
+        {
+            Validate<InvalidMeshOrchestrationArgsException>(
+                (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)));
         }
 
         private static dynamic IsInvalid(string text) => new
