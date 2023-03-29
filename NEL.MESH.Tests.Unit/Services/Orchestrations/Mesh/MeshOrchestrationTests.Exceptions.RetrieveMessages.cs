@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -69,6 +70,41 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // then
             actualMeshOrchestrationDependencyException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationDependencyException);
+
+            this.tokenServiceMock.Verify(service =>
+                service.GenerateTokenAsync(),
+                    Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.tokenServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveMessagesIfServiceErrorOccursAsync()
+        {
+            // given
+            string someErrorMessage = GetRandomString();
+            var serviceException = new Exception(someErrorMessage);
+
+            var failedMeshOrchestrationServiceException =
+                new FailedMeshOrchestrationServiceException(serviceException);
+
+            var expectedMeshOrchestrationServiceException =
+            new MeshOrchestrationServiceException(failedMeshOrchestrationServiceException);
+
+            this.tokenServiceMock.Setup(service =>
+                service.GenerateTokenAsync())
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<List<string>> recieveMessagesTask = this.meshOrchestrationService.RetrieveMessagesAsync();
+
+            MeshOrchestrationServiceException actualMeshOrchestrationServiceException =
+                await Assert.ThrowsAsync<MeshOrchestrationServiceException>(recieveMessagesTask.AsTask);
+
+            // then
+            actualMeshOrchestrationServiceException.Should()
+                .BeEquivalentTo(expectedMeshOrchestrationServiceException);
 
             this.tokenServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),
