@@ -49,13 +49,15 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 return outputMessage;
             });
 
-        public async ValueTask<Message> TrackMessageAsync(string messageId)
-        {
-            string token = await this.tokenService.GenerateTokenAsync();
-            Message outputMessage = await this.meshService.TrackMessageAsync(messageId, authorizationToken: token);
+        public ValueTask<Message> TrackMessageAsync(string messageId) =>
+            TryCatch(async () =>
+            {
+                ValidateTrackMessageArgs(messageId);
+                string token = await this.tokenService.GenerateTokenAsync();
+                Message outputMessage = await this.meshService.TrackMessageAsync(messageId, authorizationToken: token);
 
-            return outputMessage;
-        }
+                return outputMessage;
+            });
 
         public ValueTask<Message> RetrieveMessageAsync(string messageId) =>
             throw new System.NotImplementedException();
