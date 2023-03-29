@@ -80,8 +80,8 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 ValidateTrackMessageArgs(messageId);
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
-                bool x = await this.meshService.AcknowledgeMessageAsync(messageId, authorizationToken: token);
-                return x;
+
+                return await this.meshService.AcknowledgeMessageAsync(messageId, authorizationToken: token);
             });
     }
 }
