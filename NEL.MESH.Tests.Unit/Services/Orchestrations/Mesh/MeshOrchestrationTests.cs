@@ -46,6 +46,17 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static List<string> GetRandomMessages(int count)
+        {
+            var messages = new List<string>();
+            for (int i = 0; i < count; i++)
+            {
+                string message = new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+                messages.Add(message);
+            }
+            return messages;
+        }
+
         public static TheoryData MeshDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
