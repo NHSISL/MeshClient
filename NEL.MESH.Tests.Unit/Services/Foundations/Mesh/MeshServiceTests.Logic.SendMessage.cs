@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -27,7 +26,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 broker.SendMessageAsync(
                     GetKeyStringValue("Mex-To", inputMessage.Headers),
                     GetKeyStringValue("Mex-WorkflowID", inputMessage.Headers),
-                    inputMessage.StringContent,
                     GetKeyStringValue("Content-Type", inputMessage.Headers),
                     GetKeyStringValue("Mex-LocalID", inputMessage.Headers),
                     GetKeyStringValue("Mex-Subject", inputMessage.Headers),
@@ -36,7 +34,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers),
                     GetKeyStringValue("Mex-Encoding", inputMessage.Headers),
                     GetKeyStringValue("Mex-Chunk-Range", inputMessage.Headers),
-                    authorizationToken
+                    authorizationToken,
+                    inputMessage.StringContent
                     ))
                     .ReturnsAsync(responseMessage);
 
@@ -52,7 +51,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 broker.SendMessageAsync(
                     GetKeyStringValue("Mex-To", inputMessage.Headers),
                     GetKeyStringValue("Mex-WorkflowID", inputMessage.Headers),
-                    inputMessage.StringContent,
                     GetKeyStringValue("Content-Type", inputMessage.Headers),
                     GetKeyStringValue("Mex-LocalID", inputMessage.Headers),
                     GetKeyStringValue("Mex-Subject", inputMessage.Headers),
@@ -61,7 +59,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers),
                     GetKeyStringValue("Mex-Encoding", inputMessage.Headers),
                     GetKeyStringValue("Mex-Chunk-Range", inputMessage.Headers),
-                    authorizationToken),
+                    authorizationToken,
+                    inputMessage.StringContent),
                         Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

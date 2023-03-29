@@ -39,8 +39,6 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 HttpResponseMessage responseMessage = await this.meshBroker.SendMessageAsync(
                     mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
                     workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
-                    stringConent: message.StringContent,
-                    contentType: GetKeyStringValue("Content-Type", message.Headers),
                     localId: GetKeyStringValue("Mex-LocalID", message.Headers),
                     subject: GetKeyStringValue("Mex-Subject", message.Headers),
                     fileName: GetKeyStringValue("Mex-FileName", message.Headers),
@@ -48,8 +46,9 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     contentEncrypted: GetKeyStringValue("Mex-Content-Encrypted", message.Headers),
                     encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
                     chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
-                    authorizationToken
-                    );
+                    contentType: GetKeyStringValue("Content-Type", message.Headers),
+                    authorizationToken,
+                    stringConent: message.StringContent);
 
                 ValidateResponse(responseMessage);
                 string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
