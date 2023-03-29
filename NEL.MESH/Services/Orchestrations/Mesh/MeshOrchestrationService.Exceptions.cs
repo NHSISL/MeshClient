@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
@@ -16,6 +17,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
     {
         private delegate ValueTask<bool> ReturningBooleanFunction();
         private delegate ValueTask<Message> ReturningMessageFunction();
+        private delegate ValueTask<List<string>> ReturningStringsFunction();
 
         private async ValueTask<bool> TryCatch(ReturningBooleanFunction returningBooleanFunction)
         {
@@ -120,6 +122,38 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                     new FailedMeshOrchestrationServiceException(exception);
 
                 throw CreateAndLogServiceException(failedMeshOrchestrationServiceException);
+            }
+        }
+
+        private async ValueTask<List<string>> TryCatch(ReturningStringsFunction returningStringsFunction)
+        {
+            try
+            {
+                return await returningStringsFunction();
+            }
+            catch (InvalidTokenException invalidTokenException)
+            {
+                throw CreateAndLogValidationException(invalidTokenException);
+            }
+            catch (InvalidMeshOrchestrationArgsException invalidMeshOrchestrationArgsException)
+            {
+                throw CreateAndLogValidationException(invalidMeshOrchestrationArgsException);
+            }
+            catch (TokenValidationException tokenValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(tokenValidationException);
+            }
+            catch (TokenDependencyValidationException tokenDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(tokenDependencyValidationException);
+            }
+            catch (MeshValidationException meshValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshValidationException);
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
             }
         }
 
