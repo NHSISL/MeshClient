@@ -11,6 +11,7 @@ using System.Text;
 using Moq;
 using NEL.MESH.Brokers.DateTimes;
 using NEL.MESH.Brokers.Identifiers;
+using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Services.Foundations.Tokens;
 using Tynamix.ObjectFiller;
 
@@ -20,16 +21,19 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
     {
         private readonly Mock<IDateTimeBroker> dateTimeBrokerMock;
         private readonly Mock<IIdentifierBroker> identifierBrokerMock;
+        private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly ITokenService tokenService;
 
         public TokenServiceTests()
         {
             this.dateTimeBrokerMock = new Mock<IDateTimeBroker>();
             this.identifierBrokerMock = new Mock<IIdentifierBroker>();
+            this.meshBrokerMock = new Mock<IMeshBroker>();
 
             this.tokenService = new TokenService(
                 dateTimeBroker: dateTimeBrokerMock.Object,
-                identifierBroker: identifierBrokerMock.Object);
+                identifierBroker: identifierBrokerMock.Object,
+                meshBroker: meshBrokerMock.Object);
         }
 
         private static string GetRandomString(int wordCount = 0)

@@ -2,7 +2,12 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Token.Exceptions;
 using NEL.MESH.Services.Foundations.Mesh;
@@ -69,6 +74,49 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 new MeshDependencyException(innerException),
                 new MeshServiceException(innerException),
             };
+        }
+
+        private static Message CreateRandomSendMessage()
+        {
+            var message = CreateMessageFiller().Create();
+            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
+            message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Content-Encrypted", new List<string> { "encrypted" });
+            message.Headers.Add("Mex-From", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-To", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
+
+            return message;
+        }
+
+        private static Filler<Message> CreateMessageFiller()
+        {
+            var filler = new Filler<Message>();
+            filler.Setup().OnProperty(message => message.Headers)
+                .Use(new Dictionary<string, List<string>>());
+
+            return filler;
+        }
+
+        private string GetValidationSummary(IDictionary data)
+        {
+            StringBuilder validationSummary = new StringBuilder();
+
+            foreach (DictionaryEntry entry in data)
+            {
+                string errorSummary = ((List<string>)entry.Value)
+                    .Select((string value) => value)
+                    .Aggregate((string current, string next) => current + ", " + next);
+
+                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
+            }
+
+            return validationSummary.ToString();
         }
     }
 }

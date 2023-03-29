@@ -28,7 +28,15 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             });
 
         public ValueTask<Message> SendMessageAsync(Message message) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateMessageIsNotNull(message);
+                string token = await this.tokenService.GenerateTokenAsync();
+                ValidateToken(token);
+                Message outputMessage = await this.meshService.SendMessageAsync(message, token);
+
+                return outputMessage;
+            });
 
         public ValueTask<Message> SendFileAsync(Message message) =>
             throw new System.NotImplementedException();

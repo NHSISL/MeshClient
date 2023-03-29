@@ -17,12 +17,12 @@ namespace NEL.MESH.Tests.Acceptance
     {
         private readonly MeshClient meshClient;
         private readonly WireMockServer wireMockServer;
-        private readonly MeshConfigurations meshConfigurations;
+        private readonly MeshConfiguration meshConfigurations;
 
         public MeshClientTests()
         {
             this.wireMockServer = WireMockServer.Start();
-            this.meshConfigurations = new MeshConfigurations
+            this.meshConfigurations = new MeshConfiguration
             {
                 ClientCertificate = new X509Certificate2(new byte[0]),
                 IntermediateCertificates = new X509Certificate2Collection(),

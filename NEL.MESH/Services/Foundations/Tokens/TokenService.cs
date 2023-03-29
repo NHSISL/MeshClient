@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NEL.MESH.Brokers.DateTimes;
 using NEL.MESH.Brokers.Identifiers;
+using NEL.MESH.Brokers.Mesh;
 
 namespace NEL.MESH.Services.Foundations.Tokens
 {
@@ -15,25 +16,41 @@ namespace NEL.MESH.Services.Foundations.Tokens
     {
         private readonly IDateTimeBroker dateTimeBroker;
         private readonly IIdentifierBroker identifierBroker;
+        private readonly IMeshBroker meshBroker;
 
-        public TokenService(IDateTimeBroker dateTimeBroker, IIdentifierBroker identifierBroker)
+        public TokenService(
+            IDateTimeBroker dateTimeBroker,
+            IIdentifierBroker identifierBroker,
+            IMeshBroker meshBroker)
         {
             this.dateTimeBroker = dateTimeBroker;
             this.identifierBroker = identifierBroker;
+            this.meshBroker = meshBroker;
         }
 
-        public ValueTask<string> GenerateTokenAsync(string mailboxId, string password, string key) =>
+        public ValueTask<string> GenerateTokenAsync() =>
             TryCatch(async () =>
             {
-                ValidateGenerateTokenArgs(mailboxId, password, key);
+                ValidateGenerateTokenArgs(
+                    this.meshBroker.MeshConfiguration.MailboxId,
+                    this.meshBroker.MeshConfiguration.Password,
+                    this.meshBroker.MeshConfiguration.Key);
+
                 string nonce = this.identifierBroker.GetIdentifier().ToString();
                 string timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmm");
                 string nonce_count = "0";
-                string stringToHash = $"{mailboxId}:{nonce}:{nonce_count}:{password}:{timeStamp}";
-                string sharedKey = GenerateSha256(stringToHash, key);
 
-                string token =
-                    await ValueTask.FromResult($"NHSMESH {mailboxId}:{nonce}:{nonce_count}:{timeStamp}:{sharedKey}");
+                string stringToHash =
+                    $"{this.meshBroker.MeshConfiguration.MailboxId}" +
+                    $":{nonce}" +
+                    $":{nonce_count}" +
+                    $":{this.meshBroker.MeshConfiguration.Password}" +
+                    $":{timeStamp}";
+
+                string sharedKey = GenerateSha256(stringToHash, this.meshBroker.MeshConfiguration.Key);
+
+                string token = await ValueTask
+                    .FromResult($"NHSMESH {this.meshBroker.MeshConfiguration.MailboxId}:{nonce}:{nonce_count}:{timeStamp}:{sharedKey}");
 
                 return token;
             });
