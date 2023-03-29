@@ -38,8 +38,13 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 return outputMessage;
             });
 
-        public ValueTask<Message> SendFileAsync(Message message) =>
-            throw new System.NotImplementedException();
+        public async ValueTask<Message> SendFileAsync(Message message)
+        {
+            string token = await this.tokenService.GenerateTokenAsync();
+            Message outputMessage = await this.meshService.SendFileAsync(message, token);
+
+            return outputMessage;
+        }
 
         public ValueTask<Message> TrackMessageAsync(string messageId) =>
             throw new System.NotImplementedException();
