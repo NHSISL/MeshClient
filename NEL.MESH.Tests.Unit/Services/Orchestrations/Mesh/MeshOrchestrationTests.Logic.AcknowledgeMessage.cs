@@ -17,21 +17,30 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // given
             string randomToken = GetRandomString();
 
+            string randomMessageId = GetRandomString();
+            string inputMessageId = randomMessageId;
+
             bool outputValidationResult = true;
             bool expectedValidationResult = outputValidationResult;
 
-            string randomMessageId = GetRandomString();
-            string inputMessageId = randomMessageId;
+            this.tokenServiceMock.Setup(service =>
+              service.GenerateTokenAsync())
+                  .ReturnsAsync(randomToken);
 
             this.meshServiceMock.Setup(service =>
                 service.AcknowledgeMessageAsync(inputMessageId, randomToken))
                     .ReturnsAsync(expectedValidationResult);
 
             // when
-            bool actualResult = await this.meshOrchestrationService.AcknowledgeMessageAsync(inputMessageId);
+            bool actualResult =
+                await this.meshOrchestrationService.AcknowledgeMessageAsync(inputMessageId);
 
             // then
-            actualResult.Should().BeTrue();
+            actualResult.Should().Be(expectedValidationResult);
+
+            this.tokenServiceMock.Verify(service =>
+               service.GenerateTokenAsync(),
+                   Times.Once);
 
             this.meshServiceMock.Verify(service =>
                 service.AcknowledgeMessageAsync(inputMessageId, randomToken),
