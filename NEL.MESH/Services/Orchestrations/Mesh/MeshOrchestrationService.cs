@@ -63,8 +63,13 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         public ValueTask<Message> RetrieveMessageAsync(string messageId) =>
             throw new System.NotImplementedException();
 
-        public ValueTask<List<string>> RetrieveMessagesAsync() =>
-            throw new System.NotImplementedException();
+        public async ValueTask<List<string>> RetrieveMessagesAsync()
+        {
+            string token = await this.tokenService.GenerateTokenAsync();
+            List<string> outputMessage = await this.meshService.RetrieveMessagesAsync(authorizationToken: token);
+
+            return outputMessage;
+        }
 
         public ValueTask<bool> AcknowledgeMessageAsync(string messageId) =>
             throw new System.NotImplementedException();

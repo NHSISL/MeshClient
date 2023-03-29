@@ -27,13 +27,18 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveMessagesAsync(randomToken))
-                    .ReturnsAsync(expectedMessages);
+                    .ReturnsAsync(outputMessages);
 
             // when
-            List<string> actualResult = await this.meshOrchestrationService.RetrieveMessagesAsync();
+            List<string> actualResult =
+                await this.meshOrchestrationService.RetrieveMessagesAsync();
 
             // then
-            actualResult.Should().BeSameAs(expectedMessages);
+            actualResult.Should().BeEquivalentTo(expectedMessages);
+
+            this.tokenServiceMock.Verify(service =>
+                service.GenerateTokenAsync(),
+                    Times.Once);
 
             this.meshServiceMock.Verify(service =>
                 service.RetrieveMessagesAsync(randomToken),
