@@ -155,6 +155,29 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
             }
+            catch (TokenDependencyException tokenDependencyException)
+            {
+                throw CreateAndLogDependencyException(tokenDependencyException);
+            }
+            catch (TokenServiceException tokenServiceException)
+            {
+                throw CreateAndLogDependencyException(tokenServiceException);
+            }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw CreateAndLogDependencyException(meshDependencyException);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw CreateAndLogDependencyException(meshServiceException);
+            }
+            //catch (Exception exception)
+            //{
+            //    var failedMeshOrchestrationServiceException =
+            //        new FailedMeshOrchestrationServiceException(exception);
+
+            //    throw CreateAndLogServiceException(failedMeshOrchestrationServiceException);
+            //}
         }
 
         private MeshOrchestrationDependencyValidationException CreateAndLogDependencyValidationException(
