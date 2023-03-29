@@ -46,5 +46,38 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [MemberData(nameof(MeshDependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnRetrieveMessageIfDependencyErrorOccursAsync(
+            Xeption dependancyException)
+        {
+            // given
+            string someMessageId = GetRandomString();
+            var expectedMeshOrchestrationDependencyException =
+            new MeshOrchestrationDependencyException(
+                dependancyException.InnerException as Xeption);
+
+            this.tokenServiceMock.Setup(service =>
+                service.GenerateTokenAsync())
+                    .ThrowsAsync(dependancyException);
+
+            // when
+            ValueTask<Message> sendMessageTask = this.meshOrchestrationService.RetrieveMessageAsync(someMessageId);
+
+            MeshOrchestrationDependencyException actualMeshOrchestrationDependencyException =
+                await Assert.ThrowsAsync<MeshOrchestrationDependencyException>(sendMessageTask.AsTask);
+
+            // then
+            actualMeshOrchestrationDependencyException.Should()
+                .BeEquivalentTo(expectedMeshOrchestrationDependencyException);
+
+            this.tokenServiceMock.Verify(service =>
+                service.GenerateTokenAsync(),
+                    Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.tokenServiceMock.VerifyNoOtherCalls();
+        }
     }
 }
