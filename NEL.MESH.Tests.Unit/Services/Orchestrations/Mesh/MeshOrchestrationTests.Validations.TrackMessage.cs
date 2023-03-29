@@ -55,5 +55,51 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnTrackMessageIfTokenIsNullAndLogItAsync(string invalidText)
+        {
+            // given
+            string randomMssageId = GetRandomString();
+            string invalidToken = invalidText;
+            Message randomMessage = CreateRandomSendMessage();
+
+            var invalidTokenException =
+                new InvalidTokenException();
+
+            invalidTokenException.AddData(
+                key: "Token",
+                values: "Text is required");
+
+            var expectedMeshOrchestrationValidationException =
+                new MeshOrchestrationValidationException(
+                    innerException: invalidTokenException,
+                    validationSummary: GetValidationSummary(invalidTokenException.Data));
+
+            this.tokenServiceMock.Setup(service =>
+                service.GenerateTokenAsync())
+                    .ReturnsAsync(invalidToken);
+
+            // when
+            ValueTask<Message> messageTask = this.meshOrchestrationService
+                .TrackMessageAsync(messageId: randomMssageId);
+
+            MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
+                await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
+
+            // then
+            actualMeshOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedMeshOrchestrationValidationException);
+
+            this.tokenServiceMock.Verify(service =>
+                service.GenerateTokenAsync(),
+                    Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.tokenServiceMock.VerifyNoOtherCalls();
+        }
     }
 }
