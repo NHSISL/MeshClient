@@ -6,6 +6,7 @@ using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using NEL.MESH.Clients;
 using NEL.MESH.Models.Configurations;
 using Tynamix.ObjectFiller;
@@ -21,21 +22,55 @@ namespace NEL.MESH.Tests.Acceptance
 
         public MeshClientTests()
         {
+            var configurationBuilder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables("NEL:MESH:CLIENT:");
+
+            IConfiguration configuration = configurationBuilder.Build();
+
             this.wireMockServer = WireMockServer.Start();
+
+            var clientCert = configuration["MeshConfiguration:ClientCertificate"];
+            var rootCert = configuration["MeshConfiguration:RootCertificate"];
+
+            string[] intermediateCertificates =
+                configuration.GetSection("MeshConfiguration:IntermediateCertificates").Get<string[]>();
+
             this.meshConfigurations = new MeshConfiguration
             {
-                ClientCertificate = new X509Certificate2(new byte[0]),
-                IntermediateCertificates = new X509Certificate2Collection(),
-                MailboxId = GetRandomString(),
-                MexClientVersion = GetRandomString(),
-                MexOSName = GetRandomString(),
-                MexOSVersion = GetRandomString(),
-                Password = GetRandomString(),
-                RootCertificate = new X509Certificate2(new byte[0]),
-                Url = $"https://{GetRandomString()}.com"
+                ClientCertificate = GetCertificate(clientCert),
+                IntermediateCertificates = GetCertificates(intermediateCertificates),
+                MailboxId = configuration["MeshConfiguration:MailboxId"],
+                MexClientVersion = configuration["MeshConfiguration:MexClientVersion"],
+                MexOSName = configuration["MeshConfiguration:MexOSName"],
+                MexOSVersion = configuration["MeshConfiguration:MexOSVersion"],
+                Password = configuration["MeshConfiguration:Password"],
+                Key = configuration["MeshConfiguration:Key"],
+                RootCertificate = GetCertificate(rootCert),
+                Url = this.wireMockServer.Url
             };
 
             this.meshClient = new MeshClient(meshConfigurations: this.meshConfigurations);
+        }
+
+        private static X509Certificate2Collection GetCertificates(params string[] intermediateCertificates)
+        {
+            var certificates = new X509Certificate2Collection();
+
+            foreach (string item in intermediateCertificates)
+            {
+                certificates.Add(GetCertificate(item));
+            }
+
+            return certificates;
+        }
+
+        private static X509Certificate2 GetCertificate(string value)
+        {
+            byte[] certBytes = Convert.FromBase64String(value);
+
+            return new X509Certificate2(certBytes);
         }
 
         private string GenerateAuthorisationHeader()

@@ -34,4 +34,10 @@
 	  <ProjectReference Include="..\NEL.MESH\NEL.MESH.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="local.appsettings.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

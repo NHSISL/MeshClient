@@ -10,6 +10,7 @@ using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Configurations;
 using NEL.MESH.Services.Foundations.Mesh;
+using NEL.MESH.Services.Foundations.Tokens;
 using NEL.MESH.Services.Orchestrations.Mesh;
 
 namespace NEL.MESH.Clients
@@ -38,6 +39,7 @@ namespace NEL.MESH.Clients
                 configuration.AddTransient<IDateTimeBroker, DateTimeBroker>();
                 configuration.AddTransient<IIdentifierBroker, IdentifierBroker>();
                 configuration.AddTransient<IMeshService, MeshService>();
+                configuration.AddTransient<ITokenService, TokenService>();
                 configuration.AddTransient<IMeshOrchestrationService, MeshOrchestrationService>();
                 configuration.AddTransient<IMailboxClient, MailboxClient>();
             });

@@ -174,7 +174,7 @@ namespace NEL.MESH.Brokers.Mesh
             {
                 ClientCertificateOptions = ClientCertificateOption.Manual,
                 SslProtocols = System.Security.Authentication.SslProtocols.Tls12,
-                CheckCertificateRevocationList = false
+                CheckCertificateRevocationList = false,
             };
 
             if (this.MeshConfiguration.ClientCertificate != null)
@@ -190,6 +190,7 @@ namespace NEL.MESH.Brokers.Mesh
                     {
                         chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
                         chain.ChainPolicy.CustomTrustStore.Add(this.MeshConfiguration.RootCertificate);
+
                         if (this.MeshConfiguration.IntermediateCertificates != null)
                         {
                             chain.ChainPolicy.ExtraStore.AddRange(this.MeshConfiguration.IntermediateCertificates);
