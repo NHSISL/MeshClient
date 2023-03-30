@@ -81,15 +81,6 @@ namespace NEL.MESH.Tests.Acceptance
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static byte[] GetRandomBytes()
-        {
-            byte[] bytes = new byte[GetRandomNumber()];
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                rng.GetBytes(bytes);
-            }
-            return bytes;
-        }
 
         private static Message CreateRandomSendMessage(
             string mexFrom,

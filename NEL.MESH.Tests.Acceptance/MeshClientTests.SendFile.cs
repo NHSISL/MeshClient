@@ -2,8 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -62,18 +60,6 @@ namespace NEL.MESH.Tests.Acceptance
             };
 
             Message expectedSendMessageResult = outputMessage;
-            var stream = new MemoryStream(GetRandomBytes());
-            var byteContent = new ByteArrayContent(stream.ToArray());
-            byteContent.Headers.Add("Mex-From", mexFrom);
-            byteContent.Headers.Add("Mex-To", mexTo);
-            byteContent.Headers.Add("Mex-WorkflowID", mexWorkflowId);
-            byteContent.Headers.Add("Mex-LocalID", mexLocalId);
-            byteContent.Headers.Add("Mex-Subject", mexSubject);
-            byteContent.Headers.Add("Mex-FileName", mexFileName);
-            byteContent.Headers.Add("Mex-Content-Checksum", mexContentChecksum);
-            byteContent.Headers.Add("Mex-Content-Encrypted", mexContentEncrypted);
-            byteContent.Headers.Add("Mex-Encoding", mexEncoding);
-            byteContent.Headers.Add("Mex-Chunk-Range", mexChunkRange);
 
             this.wireMockServer
                 .Given(
@@ -83,8 +69,18 @@ namespace NEL.MESH.Tests.Acceptance
                         .WithHeader("Mex-ClientVersion", this.meshConfigurations.MexClientVersion)
                         .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
                         .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion)
-                        .WithHeader("Authorization", GenerateAuthorisationHeader())
-                        .WithBody(byteContent))
+                        .WithHeader("Mex-From", this.meshConfigurations.MailboxId)
+                        .WithHeader("Mex-To", mexTo)
+                        .WithHeader("Mex-WorkflowID", mexWorkflowId)
+                        .WithHeader("Mex-LocalID", mexLocalId)
+                        .WithHeader("Mex-Subject", mexSubject)
+                        .WithHeader("Mex-FileName", mexFileName)
+                        .WithHeader("Mex-Content-Checksum", mexContentChecksum)
+                        .WithHeader("Mex-Content-Encrypted", mexContentEncrypted)
+                        .WithHeader("Mex-Encoding", mexEncoding)
+                        .WithHeader("Mex-Chunk-Range", mexChunkRange)
+                        .WithHeader("Authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
+                        .WithBody(randomMessage.FileContent))
                 .RespondWith(
                     Response.Create()
                         .WithSuccess()

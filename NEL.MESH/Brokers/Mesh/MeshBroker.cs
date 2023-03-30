@@ -89,20 +89,24 @@ namespace NEL.MESH.Brokers.Mesh
         {
 
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox";
-            var request = new HttpRequestMessage(HttpMethod.Post, path);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, path)
+            {
+                Content = new ByteArrayContent(fileContents)
+            };
+
+            request.Headers.Add("Mex-From", this.MeshConfiguration.MailboxId);
+            request.Headers.Add("Mex-To", mailboxTo);
+            request.Headers.Add("Mex-WorkflowID", workflowId);
+            request.Headers.Add("Mex-LocalID", localId);
+            request.Headers.Add("Mex-Subject", subject);
+            request.Headers.Add("Mex-FileName", fileName);
+            request.Headers.Add("Mex-Content-Checksum", contentChecksum);
+            request.Headers.Add("Mex-Content-Encrypted", contentEncrypted);
+            request.Headers.Add("Mex-Encoding", encoding);
+            request.Headers.Add("Mex-Chunk-Range", chunkRange);
             request.Headers.Add("Authorization", authorizationToken);
-            request.Content = new ByteArrayContent(fileContents);
             request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            request.Content.Headers.Add("Mex-From", this.MeshConfiguration.MailboxId);
-            request.Content.Headers.Add("Mex-To", mailboxTo);
-            request.Content.Headers.Add("Mex-WorkflowID", workflowId);
-            request.Content.Headers.Add("Mex-LocalID", localId);
-            request.Content.Headers.Add("Mex-Subject", subject);
-            request.Content.Headers.Add("Mex-FileName", fileName);
-            request.Content.Headers.Add("Mex-Content-Checksum", contentChecksum);
-            request.Content.Headers.Add("Mex-Content-Encrypted", contentEncrypted);
-            request.Content.Headers.Add("Mex-Encoding", encoding);
-            request.Content.Headers.Add("Mex-Chunk-Range", chunkRange);
 
             var response = await this.httpClient.SendAsync(request);
 
