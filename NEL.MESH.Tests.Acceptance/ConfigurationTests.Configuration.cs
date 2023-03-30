@@ -47,8 +47,8 @@ namespace NEL.MESH.Tests.Acceptance
         public void ShouldGetEnvironmentVariables()
         {
             // given
-            var mailboxId = Environment.GetEnvironmentVariable("NEL_MESH_CLIENT_ACCEPTANCE_MeshConfiguration__MailboxId");
-            var password = Environment.GetEnvironmentVariable("NEL_MESH_CLIENT_ACCEPTANCE_MeshConfiguration__Password");
+            var mailboxId = Environment.GetEnvironmentVariable("NEL_MESH_CLIENT_ACCEPTANCE_MeshConfiguration:MailboxId");
+            var password = Environment.GetEnvironmentVariable("NEL_MESH_CLIENT_ACCEPTANCE_MeshConfiguration:Password");
             //var mexClientVersion = Environment.GetEnvironmentVariable("NEL__MESH__CLIENT__ACCEPTANCE__MeshConfiguration__MexClientVersion");
             //var mexOSName = Environment.GetEnvironmentVariable("NEL__MESH__CLIENT__ACCEPTANCE__MeshConfiguration__MexOSName");
             //var mexOSVersion = Environment.GetEnvironmentVariable("NEL__MESH__CLIENT__ACCEPTANCE__MeshConfiguration__MexOSVersion");
