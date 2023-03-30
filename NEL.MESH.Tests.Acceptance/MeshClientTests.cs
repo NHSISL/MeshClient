@@ -33,6 +33,13 @@ namespace NEL.MESH.Tests.Acceptance
 
             this.compareLogic = new CompareLogic();
             this.wireMockServer = WireMockServer.Start();
+
+            var mailboxId = configuration["MeshConfiguration:MailboxId"];
+            var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"];
+            var mexOSName = configuration["MeshConfiguration:MexOSName"];
+            var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"];
+            var password = configuration["MeshConfiguration:Password"];
+            var key = configuration["MeshConfiguration:Key"];
             var clientCert = configuration["MeshConfiguration:ClientCertificate"];
             var rootCert = configuration["MeshConfiguration:RootCertificate"];
 
@@ -41,15 +48,15 @@ namespace NEL.MESH.Tests.Acceptance
 
             this.meshConfigurations = new MeshConfiguration
             {
-                ClientCertificate = GetCertificate(clientCert),
-                IntermediateCertificates = GetCertificates(intermediateCertificates),
-                MailboxId = configuration["MeshConfiguration:MailboxId"],
-                MexClientVersion = configuration["MeshConfiguration:MexClientVersion"],
-                MexOSName = configuration["MeshConfiguration:MexOSName"],
-                MexOSVersion = configuration["MeshConfiguration:MexOSVersion"],
-                Password = configuration["MeshConfiguration:Password"],
-                Key = configuration["MeshConfiguration:Key"],
+                MailboxId = mailboxId,
+                MexClientVersion = mexClientVersion,
+                MexOSName = mexOSName,
+                MexOSVersion = mexOSVersion,
+                Password = password,
+                Key = key,
                 RootCertificate = GetCertificate(rootCert),
+                IntermediateCertificates = GetCertificates(intermediateCertificates),
+                ClientCertificate = GetCertificate(clientCert),
                 Url = this.wireMockServer.Url
             };
 
