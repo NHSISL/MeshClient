@@ -26,7 +26,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 broker.SendMessageAsync(
                     GetKeyStringValue("Mex-To", inputMessage.Headers),
                     GetKeyStringValue("Mex-WorkflowID", inputMessage.Headers),
-                    GetKeyStringValue("Content-Type", inputMessage.Headers),
                     GetKeyStringValue("Mex-LocalID", inputMessage.Headers),
                     GetKeyStringValue("Mex-Subject", inputMessage.Headers),
                     GetKeyStringValue("Mex-FileName", inputMessage.Headers),
@@ -34,10 +33,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers),
                     GetKeyStringValue("Mex-Encoding", inputMessage.Headers),
                     GetKeyStringValue("Mex-Chunk-Range", inputMessage.Headers),
+                    GetKeyStringValue("Content-Type", inputMessage.Headers),
                     authorizationToken,
-                    inputMessage.StringContent
-                    ))
-                    .ReturnsAsync(responseMessage);
+                    inputMessage.StringContent))
+                        .ReturnsAsync(responseMessage);
 
             Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessage(responseMessage);
 
@@ -51,7 +50,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 broker.SendMessageAsync(
                     GetKeyStringValue("Mex-To", inputMessage.Headers),
                     GetKeyStringValue("Mex-WorkflowID", inputMessage.Headers),
-                    GetKeyStringValue("Content-Type", inputMessage.Headers),
                     GetKeyStringValue("Mex-LocalID", inputMessage.Headers),
                     GetKeyStringValue("Mex-Subject", inputMessage.Headers),
                     GetKeyStringValue("Mex-FileName", inputMessage.Headers),
@@ -59,6 +57,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers),
                     GetKeyStringValue("Mex-Encoding", inputMessage.Headers),
                     GetKeyStringValue("Mex-Chunk-Range", inputMessage.Headers),
+                    GetKeyStringValue("Content-Type", inputMessage.Headers),
                     authorizationToken,
                     inputMessage.StringContent),
                         Times.Once);
