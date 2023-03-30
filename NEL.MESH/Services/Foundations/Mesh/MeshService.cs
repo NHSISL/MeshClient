@@ -48,7 +48,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
                     contentType: GetKeyStringValue("Content-Type", message.Headers),
                     authorizationToken,
-                    stringConent: message.StringContent);
+                    stringContent: message.StringContent);
 
                 ValidateResponse(responseMessage);
                 string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
@@ -72,16 +72,16 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 HttpResponseMessage responseFileMessage = await this.meshBroker.SendFileAsync(
                         mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
                         workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
-                        contentType: GetKeyStringValue("Content-Type", message.Headers),
-                        fileContents: message.FileContent,
-                        fileName: GetKeyStringValue("Mex-FileName", message.Headers),
+                        localId: GetKeyStringValue("Mex-LocalID", message.Headers),
                         subject: GetKeyStringValue("Mex-Subject", message.Headers),
+                        fileName: GetKeyStringValue("Mex-FileName", message.Headers),
                         contentChecksum: GetKeyStringValue("Mex-Content-Checksum", message.Headers),
                         contentEncrypted: GetKeyStringValue("Mex-Content-Encrypted", message.Headers),
                         encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
                         chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
-                        localId: GetKeyStringValue("Mex-LocalID", message.Headers),
-                        authorizationToken);
+                        contentType: GetKeyStringValue("Content-Type", message.Headers),
+                        authorizationToken,
+                        fileContents: message.FileContent);
 
                 string responseMessageBody = responseFileMessage.Content.ReadAsStringAsync().Result;
 

@@ -21,7 +21,6 @@ namespace NEL.MESH.Tests.Acceptance
         public async Task ShouldSendMessageAsync()
         {
             // given
-            bool expectedHandshakeResult = true;
             string path = $"/messageexchange/{this.meshConfigurations.MailboxId}/outbox";
             string mexFrom = GetRandomString();
             string mexTo = GetRandomString();

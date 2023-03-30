@@ -72,16 +72,16 @@ namespace NEL.MESH.Brokers.Mesh
         public async ValueTask<HttpResponseMessage> SendFileAsync(
             string mailboxTo,
             string workflowId,
-            string contentType,
-            byte[] fileContents,
-            string fileName,
+            string localId,
             string subject,
+            string fileName,
             string contentChecksum,
             string contentEncrypted,
             string encoding,
             string chunkRange,
-            string localId,
-            string authorizationToken)
+            string contentType,
+            string authorizationToken,
+            byte[] fileContents)
         {
             var stream = new MemoryStream(fileContents);
             var content = new ByteArrayContent(stream.ToArray());
@@ -90,13 +90,13 @@ namespace NEL.MESH.Brokers.Mesh
             content.Headers.Add("Mex-From", this.MeshConfiguration.MailboxId);
             content.Headers.Add("Mex-To", mailboxTo);
             content.Headers.Add("Mex-WorkflowID", workflowId);
-            content.Headers.Add("Mex-FileName", fileName);
+            content.Headers.Add("Mex-LocalID", localId);
             content.Headers.Add("Mex-Subject", subject);
+            content.Headers.Add("Mex-FileName", fileName);
             content.Headers.Add("Mex-Content-Checksum", contentChecksum);
             content.Headers.Add("Mex-Content-Encrypted", contentEncrypted);
             content.Headers.Add("Mex-Encoding", encoding);
             content.Headers.Add("Mex-Chunk-Range", chunkRange);
-            content.Headers.Add("Mex-LocalID", localId);
 
             var response = await this.httpClient
                 .PostAsync($"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox", content);
