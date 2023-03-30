@@ -69,7 +69,6 @@ namespace NEL.MESH.Tests.Acceptance
                         .WithHeader("Mex-ClientVersion", this.meshConfigurations.MexClientVersion)
                         .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
                         .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion)
-
                         .WithHeader("Mex-From", this.meshConfigurations.MailboxId)
                         .WithHeader("Mex-To", mexTo)
                         .WithHeader("Mex-WorkflowID", mexWorkflowId)
@@ -80,11 +79,8 @@ namespace NEL.MESH.Tests.Acceptance
                         .WithHeader("Mex-Content-Encrypted", mexContentEncrypted)
                         .WithHeader("Mex-Encoding", mexEncoding)
                         .WithHeader("Mex-Chunk-Range", mexChunkRange)
-                    //.WithHeader("Authorization", GenerateAuthorisationHeader())
-                    //.WithBody(new StringContent(
-                    //    randomMessage.StringContent,
-                    //    Encoding.UTF8,
-                    //    new MediaTypeHeaderValue(contentType)))
+                        .WithHeader("Authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
+                        .WithBody(randomMessage.StringContent)
                     )
                 .RespondWith(
                     Response.Create()
