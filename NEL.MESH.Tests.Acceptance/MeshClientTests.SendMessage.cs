@@ -2,8 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -22,7 +20,7 @@ namespace NEL.MESH.Tests.Acceptance
         {
             // given
             string path = $"/messageexchange/{this.meshConfigurations.MailboxId}/outbox";
-            string mexFrom = GetRandomString();
+            string mexFrom = this.meshConfigurations.MailboxId;
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
             string mexLocalId = GetRandomString();
@@ -62,17 +60,6 @@ namespace NEL.MESH.Tests.Acceptance
             };
 
             Message expectedSendMessageResult = outputMessage;
-            var stringContent = new StringContent("test payload", Encoding.UTF8, "application/json");
-            stringContent.Headers.Add("Mex-From", mexFrom);
-            stringContent.Headers.Add("Mex-To", mexTo);
-            stringContent.Headers.Add("Mex-WorkflowID", mexWorkflowId);
-            stringContent.Headers.Add("Mex-LocalID", mexLocalId);
-            stringContent.Headers.Add("Mex-Subject", mexSubject);
-            stringContent.Headers.Add("Mex-FileName", mexFileName);
-            stringContent.Headers.Add("Mex-Content-Checksum", mexContentChecksum);
-            stringContent.Headers.Add("Mex-Content-Encrypted", mexContentEncrypted);
-            stringContent.Headers.Add("Mex-Encoding", mexEncoding);
-            stringContent.Headers.Add("Mex-Chunk-Range", mexChunkRange);
 
             this.wireMockServer
                 .Given(
@@ -82,8 +69,23 @@ namespace NEL.MESH.Tests.Acceptance
                         .WithHeader("Mex-ClientVersion", this.meshConfigurations.MexClientVersion)
                         .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
                         .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion)
-                        .WithHeader("Authorization", GenerateAuthorisationHeader())
-                        .WithBody(stringContent))
+
+                        .WithHeader("Mex-From", this.meshConfigurations.MailboxId)
+                        .WithHeader("Mex-To", mexTo)
+                        .WithHeader("Mex-WorkflowID", mexWorkflowId)
+                        .WithHeader("Mex-LocalID", mexLocalId)
+                        .WithHeader("Mex-Subject", mexSubject)
+                        .WithHeader("Mex-FileName", mexFileName)
+                        .WithHeader("Mex-Content-Checksum", mexContentChecksum)
+                        .WithHeader("Mex-Content-Encrypted", mexContentEncrypted)
+                        .WithHeader("Mex-Encoding", mexEncoding)
+                        .WithHeader("Mex-Chunk-Range", mexChunkRange)
+                    //.WithHeader("Authorization", GenerateAuthorisationHeader())
+                    //.WithBody(new StringContent(
+                    //    randomMessage.StringContent,
+                    //    Encoding.UTF8,
+                    //    new MediaTypeHeaderValue(contentType)))
+                    )
                 .RespondWith(
                     Response.Create()
                         .WithSuccess()
