@@ -1,5 +1,5 @@
 
-![Mesh Client](https://raw.githubusercontent.com/TowerHamletsCCG/MeshClient/main/Resources/MeshBanner4.png)
+![Mesh Client](https://raw.githubusercontent.com/TowerHamletsCCG/MeshClient/main/Resources/MeshBannerNarrow.png)
 
 # MESH CLIENT
 
