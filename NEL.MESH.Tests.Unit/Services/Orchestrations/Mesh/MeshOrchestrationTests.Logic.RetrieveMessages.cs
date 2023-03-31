@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
@@ -13,7 +13,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
     public partial class MeshOrchestrationTests
     {
         [Fact]
-        public async Task ShouldDoRetrieveMessagesAsync()
+        public async Task ShouldRetrieveMessagesAsync()
         {
             // given
             string randomToken = GetRandomString();

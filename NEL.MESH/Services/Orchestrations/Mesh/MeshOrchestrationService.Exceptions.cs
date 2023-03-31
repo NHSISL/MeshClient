@@ -25,6 +25,18 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 return await returningBooleanFunction();
             }
+            catch (NullMeshMessageException nullMeshMessageException)
+            {
+                throw CreateAndLogValidationException(nullMeshMessageException);
+            }
+            catch (InvalidTokenException invalidTokenException)
+            {
+                throw CreateAndLogValidationException(invalidTokenException);
+            }
+            catch (InvalidMeshOrchestrationArgsException invalidMeshOrchestrationArgsException)
+            {
+                throw CreateAndLogValidationException(invalidMeshOrchestrationArgsException);
+            }
             catch (TokenValidationException tokenValidationException)
             {
                 throw CreateAndLogDependencyValidationException(tokenValidationException);

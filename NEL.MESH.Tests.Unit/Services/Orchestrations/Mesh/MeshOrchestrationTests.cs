@@ -53,7 +53,6 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 .ToList();
         }
 
-
         public static TheoryData MeshDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
