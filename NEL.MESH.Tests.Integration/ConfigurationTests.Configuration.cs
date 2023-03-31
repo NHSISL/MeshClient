@@ -38,8 +38,7 @@ namespace NEL.MESH.Tests.Integration
         public void ShouldGetTestEnvironmentVariable()
         {
             // given
-            var mailboxId = Environment
-                .GetEnvironmentVariable("TEST");
+            var mailboxId = Environment.GetEnvironmentVariable("TEST");
 
             // then
             mailboxId.Should().NotBeNullOrEmpty();

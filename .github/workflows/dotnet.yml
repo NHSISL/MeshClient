@@ -8,7 +8,10 @@ on:
     - main
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-latest
+    env:
+        TEST: ${{ secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID }}
+        NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID: ${{ secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID }}
     steps:
     - name: Check Out
       uses: actions/checkout@v2
