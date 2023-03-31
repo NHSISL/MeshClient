@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-using KellermanSoftware.CompareNetObjects;
 using Microsoft.Extensions.Configuration;
 using NEL.MESH.Clients;
 using NEL.MESH.Models.Configurations;
@@ -20,7 +19,6 @@ namespace NEL.MESH.Tests.Acceptance
         private readonly MeshClient meshClient;
         private readonly WireMockServer wireMockServer;
         private readonly MeshConfiguration meshConfigurations;
-        private readonly ICompareLogic compareLogic;
 
         public MeshClientTests()
         {
@@ -31,7 +29,6 @@ namespace NEL.MESH.Tests.Acceptance
 
             IConfiguration configuration = configurationBuilder.Build();
 
-            this.compareLogic = new CompareLogic();
             this.wireMockServer = WireMockServer.Start();
             var clientCert = configuration["MeshConfiguration:ClientCertificate"];
             var rootCert = configuration["MeshConfiguration:RootCertificate"];
