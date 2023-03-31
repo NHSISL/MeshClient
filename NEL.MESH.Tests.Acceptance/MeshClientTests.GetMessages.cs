@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using NEL.MESH.Models.Foundations.Mesh.ExternalModels;
 using Newtonsoft.Json;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -18,11 +19,16 @@ namespace NEL.MESH.Tests.Acceptance
         public async Task ShouldGetMessagesAsync()
         {
             // given
-            string path = $"/messageexchange/{this.meshConfigurations.MailboxId}";
+            string path = $"/messageexchange/{this.meshConfigurations.MailboxId}/inbox";
 
             List<string> randomMessages = GetRandomStrings();
 
-            string serialisedResponseMessage = JsonConvert.SerializeObject(randomMessages);
+            GetMessagesResponse responseMessages = new GetMessagesResponse
+            {
+                Messages = randomMessages
+            };
+
+            string serialisedResponseMessage = JsonConvert.SerializeObject(responseMessages);
 
             List<string> expectedGetMessagesResult = randomMessages;
 
