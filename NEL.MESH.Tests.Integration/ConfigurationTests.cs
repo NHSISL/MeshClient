@@ -15,7 +15,7 @@ namespace NEL.MESH.Tests.Integration
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("NEL_MESH_CLIENT_ACCEPTANCE_");
+                .AddEnvironmentVariables("NEL_MESH_CLIENT_INTEGRATION_");
 
             this.configuration = configurationBuilder.Build();
         }
