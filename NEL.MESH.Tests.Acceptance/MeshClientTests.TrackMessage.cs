@@ -19,7 +19,7 @@ namespace NEL.MESH.Tests.Acceptance
         {
             // given
             string messageId = GetRandomString();
-            string path = $"/messageexchange/{this.meshConfigurations.MailboxId}/outbox/tracking?messageID={messageId}";
+            string path = $"/messageexchange/{this.meshConfigurations.MailboxId}/outbox/tracking";
 
             TrackingInfo randomTrackingInfo = new TrackingInfo
             {
@@ -70,22 +70,22 @@ namespace NEL.MESH.Tests.Acceptance
                     Request.Create()
                         .WithPath(path)
                         .UsingGet()
-                        //.WithHeader("Mex-ClientVersion", this.meshConfigurations.MexClientVersion)
-                        //.WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
-                        //.WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion)
-                        //.WithHeader("Authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
+                        .WithHeader("Mex-ClientVersion", this.meshConfigurations.MexClientVersion)
+                        .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
+                        .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion)
+                        .WithHeader("Authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
+                        .WithParam("messageID", messageId)
                         )
                 .RespondWith(
                     Response.Create()
                         .WithSuccess()
-                        //.WithBody(serialisedResponseMessage)
-                        );
+                        .WithBody(serialisedResponseMessage));
 
             // when
             Message actualTrackMessageResult = await this.meshClient.Mailbox.TrackMessageAsync(messageId);
 
             // then
-            actualTrackMessageResult.Should().Be(expectedTrackMessageResult);
+            actualTrackMessageResult.Should().BeEquivalentTo(expectedTrackMessageResult);
         }
     }
 }
