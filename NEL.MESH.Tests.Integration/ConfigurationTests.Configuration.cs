@@ -6,7 +6,7 @@ using System;
 using FluentAssertions;
 using Xunit;
 
-namespace NEL.MESH.Tests.Acceptance
+namespace NEL.MESH.Tests.Integration
 {
     public partial class ConfigurationTests
     {
