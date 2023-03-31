@@ -10,14 +10,12 @@ using NEL.MESH.Clients;
 using NEL.MESH.Models.Configurations;
 using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
-using WireMock.Server;
 
-namespace NEL.MESH.Tests.Acceptance
+namespace NEL.MESH.Tests.Integration
 {
     public partial class MeshClientTests
     {
         private readonly MeshClient meshClient;
-        private readonly WireMockServer wireMockServer;
         private readonly MeshConfiguration meshConfigurations;
 
         public MeshClientTests()
@@ -25,11 +23,9 @@ namespace NEL.MESH.Tests.Acceptance
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("NEL_MESH_CLIENT_ACCEPTANCE_");
+                .AddEnvironmentVariables("NEL_MESH_CLIENT_INTEGRATION_");
 
             IConfiguration configuration = configurationBuilder.Build();
-
-            this.wireMockServer = WireMockServer.Start();
 
             var mailboxId = configuration["MeshConfiguration:MailboxId"];
             var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"];
@@ -39,9 +35,23 @@ namespace NEL.MESH.Tests.Acceptance
             var key = configuration["MeshConfiguration:Key"];
             var clientCert = configuration["MeshConfiguration:ClientCertificate"];
             var rootCert = configuration["MeshConfiguration:RootCertificate"];
+            var url = configuration["MeshConfiguration:Url"];
 
-            string[] intermediateCertificates =
+            string[] intermediateCertificatesArray =
                 configuration.GetSection("MeshConfiguration:IntermediateCertificates").Get<string[]>();
+
+            //X509Certificate2 rootCertificate = GetCertificate(rootCert);
+            //X509Certificate2Collection intermediateCertificates = GetCertificates(intermediateCertificatesArray);
+            //X509Certificate2 clientCertificate = GetCertificate(clientCert);
+
+            X509Certificate2 rootCertificate =
+                new X509Certificate2(".\\Resources\\dev_RA_Cert.cer");
+
+            X509Certificate2Collection intermediateCertificates =
+                new X509Certificate2Collection() { new X509Certificate2(".\\Resources\\dev_IA_Cert.cer") };
+
+            X509Certificate2 clientCertificate =
+                new X509Certificate2(".\\Resources\\client_Cert_dev.pfx");
 
             this.meshConfigurations = new MeshConfiguration
             {
@@ -51,10 +61,10 @@ namespace NEL.MESH.Tests.Acceptance
                 MexOSVersion = mexOSVersion,
                 Password = password,
                 Key = key,
-                RootCertificate = GetCertificate(rootCert),
-                IntermediateCertificates = GetCertificates(intermediateCertificates),
-                ClientCertificate = GetCertificate(clientCert),
-                Url = this.wireMockServer.Url
+                RootCertificate = rootCertificate,
+                IntermediateCertificates = intermediateCertificates,
+                ClientCertificate = clientCertificate,
+                Url = url
             };
 
             this.meshClient = new MeshClient(meshConfigurations: this.meshConfigurations);

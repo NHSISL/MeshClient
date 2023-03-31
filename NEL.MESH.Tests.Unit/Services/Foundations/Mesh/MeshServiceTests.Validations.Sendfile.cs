@@ -44,7 +44,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<byte[]>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
@@ -52,7 +51,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<string>()),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>()),
                         Times.Never);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -92,7 +92,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<byte[]>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
@@ -100,7 +99,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<string>()),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>()),
                         Times.Never);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -194,7 +194,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<byte[]>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
@@ -202,7 +201,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<string>()),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>()),
                         Times.Never);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
