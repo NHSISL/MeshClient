@@ -75,6 +75,18 @@ namespace NEL.MESH.Tests.Acceptance
         private static string GetRandomString() =>
             new MnemonicString(wordCount: 1, wordMinLength: 1, wordMaxLength: GetRandomNumber()).GetValue();
 
+        private static List<string> GetRandomStrings()
+        {
+            var randomStrings = new List<string>();
+            for (int i = 0; i < GetRandomNumber(); i++)
+            {
+                string randomString = new MnemonicString(wordCount: 1, wordMinLength: 1, wordMaxLength: GetRandomNumber()).GetValue();
+                randomStrings.Add(randomString);
+            }
+            return randomStrings;
+        }
+
+
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
