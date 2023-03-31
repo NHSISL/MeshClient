@@ -19,7 +19,6 @@ namespace NEL.MESH.Tests.Integration
             // then
             mailboxId.Should().NotBeNullOrEmpty();
             mailboxId.Should().StartWith("QM");
-
         }
 
         [Fact]
