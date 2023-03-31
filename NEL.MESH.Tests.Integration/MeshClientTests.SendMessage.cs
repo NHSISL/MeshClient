@@ -1,13 +1,13 @@
-// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-namespace NEL.MESH.Tests.Integration.Brokers
+namespace NEL.MESH.Tests.Integration
 {
-    public partial class MeshBrokerTests
+    public partial class MeshClientTests
     {
         //[Fact]
-        //public async Task ShouldTrackMessageAsync()
+        //public async Task ShouldSendMessageAsync()
         //{
         //    // given
         //    string message = GetRandomString();
@@ -15,23 +15,23 @@ namespace NEL.MESH.Tests.Integration.Brokers
         //    string workflowId = GetRandomString();
         //    string contentType = GetRandomString();
 
-
+        //    // when
         //    HttpResponseMessage sendMessageResponse =
         //        await this.meshBroker.SendMessageAsync(mailboxTo, workflowId, message, contentType);
 
         //    var sendMessageResponseBody = await sendMessageResponse.Content.ReadAsStringAsync();
+        //    var headers = GetHeaders(sendMessageResponse.Headers);
         //    string messageId = (JsonConvert.DeserializeObject<SendMessageResponse>(sendMessageResponseBody)).MessageId;
 
-        //    // when
-        //    var trackMessageResponse =
-        //        await this.meshBroker.TrackMessageAsync(messageId);
+        //    var receivedMessageResponse =
+        //        await this.meshBroker.GetMessageAsync(messageId);
 
-        //    var trackMessageResponseBody = await trackMessageResponse.Content.ReadAsStringAsync();
+        //    var receivedMessageResponseBody = await receivedMessageResponse.Content.ReadAsStringAsync();
 
         //    // then
         //    sendMessageResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.Accepted);
-        //    trackMessageResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        //    await this.meshBroker.GetMessageAsync(messageId);
+        //    receivedMessageResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        //    receivedMessageResponseBody.Should().BeEquivalentTo(message);
         //    await this.meshBroker.AcknowledgeMessageAsync(messageId);
         //}
     }
