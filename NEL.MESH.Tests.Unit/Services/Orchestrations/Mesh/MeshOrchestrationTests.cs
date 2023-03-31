@@ -46,6 +46,13 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static List<string> GetRandomMessages()
+        {
+            return Enumerable.Range(1, GetRandomNumber())
+                .Select(item => GetRandomString())
+                .ToList();
+        }
+
         public static TheoryData MeshDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
