@@ -33,5 +33,17 @@ namespace NEL.MESH.Tests.Integration
             mailboxId.Should().NotBeNullOrEmpty();
             mailboxId.Should().StartWith("QM");
         }
+
+        [Fact]
+        public void ShouldGetTestEnvironmentVariable()
+        {
+            // given
+            var mailboxId = Environment
+                .GetEnvironmentVariable("TEST");
+
+            // then
+            mailboxId.Should().NotBeNullOrEmpty();
+            mailboxId.Should().BeEquivalentTo("TEST");
+        }
     }
 }

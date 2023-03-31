@@ -10,7 +10,7 @@ namespace NEL.MESH.Tests.Integration
 {
     public partial class MeshClientTests
     {
-        [Fact]
+        [Fact(Skip = "Skip test till secrets sorted")]
         public async Task ShouldDoHandshakeAsync()
         {
             // given
