@@ -75,6 +75,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             TryCatch(async () =>
             {
                 string token = await this.tokenService.GenerateTokenAsync();
+                ValidateToken(token);
                 List<string> outputMessage = await this.meshService.RetrieveMessagesAsync(authorizationToken: token);
 
                 return outputMessage;
