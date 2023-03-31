@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: windows-latest
     env:
-        TEST: ${{ secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID }}
+        TEST: ${{ TEST }}
         NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID: ${{ secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID }}
     steps:
     - name: Check Out
