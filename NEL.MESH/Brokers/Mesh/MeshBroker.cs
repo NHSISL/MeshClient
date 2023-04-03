@@ -197,7 +197,8 @@ namespace NEL.MESH.Brokers.Mesh
                         chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
                         chain.ChainPolicy.CustomTrustStore.Add(this.MeshConfiguration.RootCertificate);
 
-                        if (this.MeshConfiguration.IntermediateCertificates != null)
+                        if (this.MeshConfiguration.IntermediateCertificates != null
+                            || this.MeshConfiguration.IntermediateCertificates.Count > 0)
                         {
                             chain.ChainPolicy.ExtraStore.AddRange(this.MeshConfiguration.IntermediateCertificates);
                         }
