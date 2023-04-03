@@ -40,9 +40,14 @@ namespace NEL.MESH.Tests.Acceptance
             var clientCert = configuration["MeshConfiguration:ClientCertificate"];
             var rootCert = configuration["MeshConfiguration:RootCertificate"];
 
-            var intermediateCertificates =
+            List<string> intermediateCertificates =
                 configuration.GetSection("MeshConfiguration:IntermediateCertificates")
                     .Get<List<string>>();
+
+            if (intermediateCertificates == null)
+            {
+                intermediateCertificates = new List<string>();
+            }
 
             this.meshConfigurations = new MeshConfiguration
             {

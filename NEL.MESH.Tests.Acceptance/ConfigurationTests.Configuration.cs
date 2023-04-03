@@ -24,6 +24,11 @@ namespace NEL.MESH.Tests.Acceptance
                 this.configuration.GetSection("MeshConfiguration:IntermediateCertificates")
                     .Get<List<string>>();
 
+            if (intermediateCertificates == null)
+            {
+                intermediateCertificates = new List<string>();
+            }
+
             var clientCertificate = this.configuration["MeshConfiguration:ClientCertificate"];
 
             // then
@@ -31,7 +36,6 @@ namespace NEL.MESH.Tests.Acceptance
             password.Should().NotBeNullOrEmpty();
             key.Should().NotBeNullOrEmpty();
             rootCertificate.Should().NotBeNullOrEmpty();
-            intermediateCertificates.Count.Should().BeGreaterThan(0);
             clientCertificate.Should().NotBeNullOrEmpty();
         }
     }
