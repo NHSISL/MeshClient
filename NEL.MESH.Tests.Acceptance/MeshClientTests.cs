@@ -102,9 +102,10 @@ namespace NEL.MESH.Tests.Acceptance
             string mexContentEncrypted,
             string mexEncoding,
             string mexChunkRange,
-            string contentType)
+            string contentType,
+            string content)
         {
-            var message = CreateMessageFiller().Create();
+            var message = CreateMessageFiller(content).Create();
             message.Headers.Add("Mex-From", new List<string> { mexFrom });
             message.Headers.Add("Mex-To", new List<string> { mexTo });
             message.Headers.Add("Mex-WorkflowID", new List<string> { mexWorkflowId });
@@ -120,11 +121,12 @@ namespace NEL.MESH.Tests.Acceptance
             return message;
         }
 
-        private static Filler<Message> CreateMessageFiller()
+        private static Filler<Message> CreateMessageFiller(string content)
         {
             var filler = new Filler<Message>();
 
             filler.Setup()
+                .OnProperty(message => message.StringContent).Use(content)
                 .OnProperty(message => message.Headers).Use(new Dictionary<string, List<string>>());
 
             return filler;

@@ -31,6 +31,7 @@ namespace NEL.MESH.Tests.Acceptance
             string mexEncoding = GetRandomString();
             string mexChunkRange = GetRandomString();
             string contentType = "text/plain";
+            string content = GetRandomString();
 
             Message randomMessage = CreateRandomSendMessage(
                 mexFrom,
@@ -43,7 +44,8 @@ namespace NEL.MESH.Tests.Acceptance
                 mexContentEncrypted,
                 mexEncoding,
                 mexChunkRange,
-                contentType);
+                contentType,
+                content);
 
             SendMessageResponse responseMessage = new SendMessageResponse
             {
