@@ -10,14 +10,12 @@ using NEL.MESH.Clients;
 using NEL.MESH.Models.Configurations;
 using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
-using WireMock.Server;
 
-namespace NEL.MESH.Tests.Acceptance
+namespace NEL.MESH.Tests.Integration
 {
     public partial class MeshClientTests
     {
         private readonly MeshClient meshClient;
-        private readonly WireMockServer wireMockServer;
         private readonly MeshConfiguration meshConfigurations;
 
         public MeshClientTests()
@@ -25,11 +23,9 @@ namespace NEL.MESH.Tests.Acceptance
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("NEL_MESH_CLIENT_ACCEPTANCE_");
+                .AddEnvironmentVariables("NEL_MESH_CLIENT_INTEGRATION_");
 
             IConfiguration configuration = configurationBuilder.Build();
-
-            this.wireMockServer = WireMockServer.Start();
 
             var mailboxId = configuration["MeshConfiguration:MailboxId"];
             var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"];
@@ -39,9 +35,23 @@ namespace NEL.MESH.Tests.Acceptance
             var key = configuration["MeshConfiguration:Key"];
             var clientCert = configuration["MeshConfiguration:ClientCertificate"];
             var rootCert = configuration["MeshConfiguration:RootCertificate"];
+            var url = configuration["MeshConfiguration:Url"];
 
-            string[] intermediateCertificates =
+            string[] intermediateCertificatesArray =
                 configuration.GetSection("MeshConfiguration:IntermediateCertificates").Get<string[]>();
+
+            //X509Certificate2 rootCertificate = GetCertificate(rootCert);
+            //X509Certificate2Collection intermediateCertificates = GetCertificates(intermediateCertificatesArray);
+            //X509Certificate2 clientCertificate = GetCertificate(clientCert);
+
+            X509Certificate2 rootCertificate =
+                new X509Certificate2(".\\Resources\\dev_RA_Cert.cer");
+
+            X509Certificate2Collection intermediateCertificates =
+                new X509Certificate2Collection() { new X509Certificate2(".\\Resources\\dev_IA_Cert.cer") };
+
+            X509Certificate2 clientCertificate =
+                new X509Certificate2(".\\Resources\\client_Cert_dev.pfx");
 
             this.meshConfigurations = new MeshConfiguration
             {
@@ -51,10 +61,10 @@ namespace NEL.MESH.Tests.Acceptance
                 MexOSVersion = mexOSVersion,
                 Password = password,
                 Key = key,
-                RootCertificate = GetCertificate(rootCert),
-                IntermediateCertificates = GetCertificates(intermediateCertificates),
-                ClientCertificate = GetCertificate(clientCert),
-                Url = this.wireMockServer.Url
+                RootCertificate = rootCertificate,
+                IntermediateCertificates = intermediateCertificates,
+                ClientCertificate = clientCertificate,
+                Url = url
             };
 
             this.meshClient = new MeshClient(meshConfigurations: this.meshConfigurations);
@@ -82,55 +92,10 @@ namespace NEL.MESH.Tests.Acceptance
         private static string GetRandomString() =>
             new MnemonicString(wordCount: 1, wordMinLength: 1, wordMaxLength: GetRandomNumber()).GetValue();
 
-        private static List<string> GetRandomStrings()
-        {
-            var randomStrings = new List<string>();
-            for (int i = 0; i < GetRandomNumber(); i++)
-            {
-                string randomString = new MnemonicString(wordCount: 1, wordMinLength: 1, wordMaxLength: GetRandomNumber()).GetValue();
-                randomStrings.Add(randomString);
-            }
-            return randomStrings;
-        }
-
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static Message CreateRandomMessage()
-        {
-            return CreateMessageFiller().Create();
-        }
-
         private static Message CreateRandomSendMessage(
-            string mexFrom,
-            string mexTo,
-            string mexWorkflowId,
-            string mexLocalId,
-            string mexSubject,
-            string mexFileName,
-            string mexContentChecksum,
-            string mexContentEncrypted,
-            string mexEncoding,
-            string mexChunkRange,
-            string contentType)
-        {
-            var message = CreateMessageFiller().Create();
-            message.Headers.Add("Mex-From", new List<string> { mexFrom });
-            message.Headers.Add("Mex-To", new List<string> { mexTo });
-            message.Headers.Add("Mex-WorkflowID", new List<string> { mexWorkflowId });
-            message.Headers.Add("Mex-LocalID", new List<string> { mexLocalId });
-            message.Headers.Add("Mex-Subject", new List<string> { mexSubject });
-            message.Headers.Add("Mex-FileName", new List<string> { mexFileName });
-            message.Headers.Add("Mex-Content-Checksum", new List<string> { mexContentChecksum });
-            message.Headers.Add("Mex-Content-Encrypted", new List<string> { mexContentEncrypted });
-            message.Headers.Add("Mex-Encoding", new List<string> { mexEncoding });
-            message.Headers.Add("Mex-Chunk-Range", new List<string> { mexChunkRange });
-            message.Headers.Add("Content-Type", new List<string> { contentType });
-
-            return message;
-        }
-
-        private static Message CreateRandomSendFile(
             string mexFrom,
             string mexTo,
             string mexWorkflowId,

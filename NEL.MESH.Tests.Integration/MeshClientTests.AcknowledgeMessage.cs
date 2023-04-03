@@ -1,10 +1,10 @@
-// ---------------------------------------------------------------
+﻿// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-namespace NEL.MESH.Tests.Integration.Brokers
+namespace NEL.MESH.Tests.Integration
 {
-    public partial class MeshBrokerTests
+    public partial class MeshClientTests
     {
         //[Fact]
         //public async Task ShouldAcknowledgeMessageAsync()

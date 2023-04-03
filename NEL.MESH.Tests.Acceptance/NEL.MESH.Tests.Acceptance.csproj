@@ -35,6 +35,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Update="local.appsettings.integration.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	  <None Update="local.appsettings.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
