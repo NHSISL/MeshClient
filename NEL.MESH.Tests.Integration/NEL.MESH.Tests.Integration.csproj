@@ -43,6 +43,9 @@
 		<None Update="appsettings.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="local.appsettings.acceptance.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="local.appsettings.integration.json">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
