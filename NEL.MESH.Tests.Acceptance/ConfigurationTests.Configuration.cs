@@ -29,7 +29,6 @@ namespace NEL.MESH.Tests.Acceptance
             password.Should().NotBeNullOrEmpty();
             key.Should().NotBeNullOrEmpty();
             rootCertificate.Should().NotBeNullOrEmpty();
-            Assert.True(intermediates.Length > 0, intermediates);
             intermediates.Should().NotBeNullOrEmpty();
             intermediateCertificates.Count().Should().BeGreaterThan(0);
             clientCertificate.Should().NotBeNullOrEmpty();
