@@ -16,30 +16,25 @@ namespace NEL.MESH.Tests.Integration
         public async Task ShouldTrackMessageAsync()
         {
             // given
-            string mexFrom = this.meshConfigurations.MailboxId;
-            string mexTo = this.meshConfigurations.MailboxId;
-            string mexWorkflowId = "INTEGRATION TEST";
-            string mexLocalId = GetRandomString();
-            string mexSubject = GetRandomString();
-            string mexFileName = GetRandomString();
-            string mexContentChecksum = GetRandomString();
-            string mexContentEncrypted = GetRandomString();
-            string mexEncoding = GetRandomString();
-            string mexChunkRange = GetRandomString();
-            string contentType = "text/plain";
+            string sender = this.meshConfigurations.MailboxId;
+            string recipient = this.meshConfigurations.MailboxId;
+            string workflowId = "INTEGRATION TEST";
 
             Message randomMessage = CreateRandomSendMessage(
-                mexFrom,
-                mexTo,
-                mexWorkflowId,
-                mexLocalId,
-                mexSubject,
-                mexFileName,
-                mexContentChecksum,
-                mexContentEncrypted,
-                mexEncoding,
-                mexChunkRange,
-                contentType);
+                mexFrom: sender,
+                mexTo: recipient,
+                mexWorkflowId: workflowId,
+                mexLocalId: GetRandomString(),
+                mexSubject: "INTEGRATION TEST -  ShouldTrackMessageAsync",
+                mexFileName: $"ShouldTrackMessageAsync.csv",
+                mexContentChecksum: null,
+                mexContentEncrypted: null,
+                mexEncoding: null,
+                mexChunkRange: null,
+                contentType: "text/plain",
+                content: GetRandomString());
+
+            Message expectedMessage = randomMessage;
 
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(randomMessage);
@@ -49,6 +44,10 @@ namespace NEL.MESH.Tests.Integration
 
             // then
             trackedMessage.MessageId.Should().BeEquivalentTo(sendMessageResponse.MessageId);
+            trackedMessage.TrackingInfo.Should().NotBeNull();
+            trackedMessage.TrackingInfo.Sender.Should().BeEquivalentTo(sender);
+            trackedMessage.TrackingInfo.Recipient.Should().BeEquivalentTo(recipient);
+            trackedMessage.TrackingInfo.WorkflowId.Should().BeEquivalentTo(workflowId);
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
         }
     }

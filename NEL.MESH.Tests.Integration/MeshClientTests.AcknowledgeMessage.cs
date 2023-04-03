@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -16,43 +17,29 @@ namespace NEL.MESH.Tests.Integration
         public async Task ShouldAcknowledgeMessageAsync()
         {
             // given
-            string mexFrom = this.meshConfigurations.MailboxId;
-            string mexTo = this.meshConfigurations.MailboxId;
-            string mexWorkflowId = "INTEGRATION TEST";
-            string mexLocalId = GetRandomString();
-            string mexSubject = GetRandomString();
-            string mexFileName = GetRandomString();
-            string mexContentChecksum = GetRandomString();
-            string mexContentEncrypted = GetRandomString();
-            string mexEncoding = GetRandomString();
-            string mexChunkRange = GetRandomString();
-            string contentType = "text/plain";
-
             Message randomMessage = CreateRandomSendMessage(
-                mexFrom,
-                mexTo,
-                mexWorkflowId,
-                mexLocalId,
-                mexSubject,
-                mexFileName,
-                mexContentChecksum,
-                mexContentEncrypted,
-                mexEncoding,
-                mexChunkRange,
-                contentType);
+                mexFrom: this.meshConfigurations.MailboxId,
+                mexTo: this.meshConfigurations.MailboxId,
+                mexWorkflowId: "INTEGRATION TEST",
+                mexLocalId: GetRandomString(),
+                mexSubject: "INTEGRATION TEST -  ShouldAcknowledgeMessageAsync",
+                mexFileName: $"ShouldAcknowledgeMessageAsync.csv",
+                mexContentChecksum: null,
+                mexContentEncrypted: null,
+                mexEncoding: null,
+                mexChunkRange: null,
+                contentType: "text/plain",
+                content: GetRandomString());
 
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(randomMessage);
 
             // when
-            Message retrievedMessage =
-                await this.meshClient.Mailbox.RetrieveMessageAsync(sendMessageResponse.MessageId);
+            await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
+            List<string> messageList = await this.meshClient.Mailbox.RetrieveMessagesAsync();
 
             // then
-            retrievedMessage.MessageId.Should().BeEquivalentTo(sendMessageResponse.MessageId);
-            retrievedMessage.StringContent.Should().BeEquivalentTo(sendMessageResponse.StringContent);
-            await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
-
+            messageList.Should().NotContain(sendMessageResponse.MessageId);
         }
     }
 }

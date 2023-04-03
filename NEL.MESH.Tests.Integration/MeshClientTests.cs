@@ -23,8 +23,7 @@ namespace NEL.MESH.Tests.Integration
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                //.AddEnvironmentVariables("NEL_MESH_CLIENT_INTEGRATION_");
-                .AddEnvironmentVariables("NEL_MESH_CLIENT_ACCEPTANCE_");
+                .AddEnvironmentVariables("NEL_MESH_CLIENT_INTEGRATION_");
 
             IConfiguration configuration = configurationBuilder.Build();
 
@@ -98,9 +97,10 @@ namespace NEL.MESH.Tests.Integration
             string mexContentEncrypted,
             string mexEncoding,
             string mexChunkRange,
-            string contentType)
+            string contentType,
+            string content)
         {
-            var message = CreateMessageFiller().Create();
+            var message = CreateMessageFiller(content).Create();
             message.Headers.Add("Mex-From", new List<string> { mexFrom });
             message.Headers.Add("Mex-To", new List<string> { mexTo });
             message.Headers.Add("Mex-WorkflowID", new List<string> { mexWorkflowId });
@@ -116,11 +116,12 @@ namespace NEL.MESH.Tests.Integration
             return message;
         }
 
-        private static Filler<Message> CreateMessageFiller()
+        private static Filler<Message> CreateMessageFiller(string content)
         {
             var filler = new Filler<Message>();
 
             filler.Setup()
+                .OnProperty(message => message.StringContent).Use(content)
                 .OnProperty(message => message.Headers).Use(new Dictionary<string, List<string>>());
 
             return filler;

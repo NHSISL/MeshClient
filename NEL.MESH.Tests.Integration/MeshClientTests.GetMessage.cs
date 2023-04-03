@@ -16,30 +16,21 @@ namespace NEL.MESH.Tests.Integration
         public async Task ShouldGetMessageAsync()
         {
             // given
-            string mexFrom = this.meshConfigurations.MailboxId;
-            string mexTo = this.meshConfigurations.MailboxId;
-            string mexWorkflowId = "INTEGRATION TEST";
-            string mexLocalId = GetRandomString();
-            string mexSubject = GetRandomString();
-            string mexFileName = GetRandomString();
-            string mexContentChecksum = GetRandomString();
-            string mexContentEncrypted = GetRandomString();
-            string mexEncoding = GetRandomString();
-            string mexChunkRange = GetRandomString();
-            string contentType = "text/plain";
-
             Message randomMessage = CreateRandomSendMessage(
-                mexFrom,
-                mexTo,
-                mexWorkflowId,
-                mexLocalId,
-                mexSubject,
-                mexFileName,
-                mexContentChecksum,
-                mexContentEncrypted,
-                mexEncoding,
-                mexChunkRange,
-                contentType);
+                mexFrom: this.meshConfigurations.MailboxId,
+                mexTo: this.meshConfigurations.MailboxId,
+                mexWorkflowId: "INTEGRATION TEST",
+                mexLocalId: GetRandomString(),
+                mexSubject: "INTEGRATION TEST -  ShouldGetMessageAsync",
+                mexFileName: $"ShouldGetMessageAsync.csv",
+                mexContentChecksum: null,
+                mexContentEncrypted: null,
+                mexEncoding: null,
+                mexChunkRange: null,
+                contentType: "text/plain",
+                content: GetRandomString());
+
+            Message expectedMessage = randomMessage;
 
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(randomMessage);
@@ -50,7 +41,7 @@ namespace NEL.MESH.Tests.Integration
 
             // then
             retrievedMessage.MessageId.Should().BeEquivalentTo(sendMessageResponse.MessageId);
-            retrievedMessage.StringContent.Should().BeEquivalentTo(sendMessageResponse.StringContent);
+            retrievedMessage.StringContent.Should().BeEquivalentTo(expectedMessage.StringContent);
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
         }
     }
