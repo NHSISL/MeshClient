@@ -40,18 +40,9 @@ namespace NEL.MESH.Tests.Integration
             string[] intermediateCertificatesArray =
                 configuration.GetSection("MeshConfiguration:IntermediateCertificates").Get<string[]>();
 
-            //X509Certificate2 rootCertificate = GetCertificate(rootCert);
-            //X509Certificate2Collection intermediateCertificates = GetCertificates(intermediateCertificatesArray);
-            //X509Certificate2 clientCertificate = GetCertificate(clientCert);
-
-            X509Certificate2 rootCertificate =
-                new X509Certificate2(".\\Resources\\dev_RA_Cert.cer");
-
-            X509Certificate2Collection intermediateCertificates =
-                new X509Certificate2Collection() { new X509Certificate2(".\\Resources\\dev_IA_Cert.cer") };
-
-            X509Certificate2 clientCertificate =
-                new X509Certificate2(".\\Resources\\client_Cert_dev.pfx");
+            X509Certificate2 rootCertificate = GetCertificate(rootCert);
+            X509Certificate2Collection intermediateCertificates = GetCertificates(intermediateCertificatesArray);
+            X509Certificate2 clientCertificate = GetCertificate(clientCert);
 
             this.meshConfigurations = new MeshConfiguration
             {
