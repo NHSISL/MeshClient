@@ -22,7 +22,6 @@ namespace NEL.MESH.Tests.Integration
             var rootCertificate = this.configuration["MeshConfiguration:RootCertificate"];
             var intermediates = this.configuration["MeshConfiguration:IntermediateCertificates"];
             List<string> intermediateCertificates = JsonConvert.DeserializeObject<List<string>>(intermediates);
-
             var clientCertificate = this.configuration["MeshConfiguration:ClientCertificate"];
 
             // then
@@ -30,8 +29,9 @@ namespace NEL.MESH.Tests.Integration
             password.Should().NotBeNullOrEmpty();
             key.Should().NotBeNullOrEmpty();
             rootCertificate.Should().NotBeNullOrEmpty();
-            intermediateCertificates.Should().NotBeNullOrEmpty();
-            intermediates.Count().Should().BeGreaterThan(0);
+            Assert.True(intermediates.Length > 0, intermediates);
+            intermediates.Should().NotBeNullOrEmpty();
+            intermediateCertificates.Count().Should().BeGreaterThan(0);
             clientCertificate.Should().NotBeNullOrEmpty();
         }
     }
