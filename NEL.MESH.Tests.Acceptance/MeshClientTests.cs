@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using NEL.MESH.Clients;
 using NEL.MESH.Models.Configurations;
 using NEL.MESH.Models.Foundations.Mesh;
+using Newtonsoft.Json;
 using Tynamix.ObjectFiller;
 using WireMock.Server;
 
@@ -39,9 +40,8 @@ namespace NEL.MESH.Tests.Acceptance
             var key = configuration["MeshConfiguration:Key"];
             var clientCert = configuration["MeshConfiguration:ClientCertificate"];
             var rootCert = configuration["MeshConfiguration:RootCertificate"];
-
-            string[] intermediateCertificates =
-                configuration.GetSection("MeshConfiguration:IntermediateCertificates").Get<string[]>();
+            var intermediates = configuration["MeshConfiguration:IntermediateCertificates"];
+            List<string> intermediateCertificates = JsonConvert.DeserializeObject<List<string>>(intermediates);
 
             this.meshConfigurations = new MeshConfiguration
             {
@@ -52,7 +52,7 @@ namespace NEL.MESH.Tests.Acceptance
                 Password = password,
                 Key = key,
                 RootCertificate = GetCertificate(rootCert),
-                IntermediateCertificates = GetCertificates(intermediateCertificates),
+                IntermediateCertificates = GetCertificates(intermediateCertificates.ToArray()),
                 ClientCertificate = GetCertificate(clientCert),
                 Url = this.wireMockServer.Url
             };

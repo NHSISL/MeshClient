@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using NEL.MESH.Clients;
 using NEL.MESH.Models.Configurations;
 using NEL.MESH.Models.Foundations.Mesh;
+using Newtonsoft.Json;
 using Tynamix.ObjectFiller;
 
 namespace NEL.MESH.Tests.Integration
@@ -36,13 +37,8 @@ namespace NEL.MESH.Tests.Integration
             var clientCert = configuration["MeshConfiguration:ClientCertificate"];
             var rootCert = configuration["MeshConfiguration:RootCertificate"];
             var url = configuration["MeshConfiguration:Url"];
-
-            string[] intermediateCertificatesArray =
-                configuration.GetSection("MeshConfiguration:IntermediateCertificates").Get<string[]>();
-
-            X509Certificate2 rootCertificate = GetCertificate(rootCert);
-            X509Certificate2Collection intermediateCertificates = GetCertificates(intermediateCertificatesArray);
-            X509Certificate2 clientCertificate = GetCertificate(clientCert);
+            var intermediates = configuration["MeshConfiguration:IntermediateCertificates"];
+            List<string> intermediateCertificates = JsonConvert.DeserializeObject<List<string>>(intermediates);
 
             this.meshConfigurations = new MeshConfiguration
             {
@@ -52,9 +48,9 @@ namespace NEL.MESH.Tests.Integration
                 MexOSVersion = mexOSVersion,
                 Password = password,
                 Key = key,
-                RootCertificate = rootCertificate,
-                IntermediateCertificates = intermediateCertificates,
-                ClientCertificate = clientCertificate,
+                RootCertificate = GetCertificate(rootCert),
+                IntermediateCertificates = GetCertificates(intermediateCertificates.ToArray()),
+                ClientCertificate = GetCertificate(clientCert),
                 Url = url
             };
 
