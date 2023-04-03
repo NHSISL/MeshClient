@@ -24,7 +24,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         public ValueTask<bool> HandshakeAsync() =>
             TryCatch(async () =>
             {
-                return await this.meshService.HandshakeAsync();
+                string token = await this.tokenService.GenerateTokenAsync();
+                ValidateToken(token);
+
+                return await this.meshService.HandshakeAsync(authorizationToken: token);
             });
 
         public ValueTask<Message> SendMessageAsync(Message message) =>

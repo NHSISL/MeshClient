@@ -15,10 +15,15 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         public async Task ShouldDoHandShakeAsync()
         {
             // given
+            string randomToken = GetRandomString();
             bool expectedResult = true;
 
+            this.tokenServiceMock.Setup(service =>
+              service.GenerateTokenAsync())
+                  .ReturnsAsync(randomToken);
+
             this.meshServiceMock.Setup(service =>
-                service.HandshakeAsync())
+                service.HandshakeAsync(randomToken))
                     .ReturnsAsync(expectedResult);
 
             // when
@@ -28,7 +33,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualResult.Should().BeTrue();
 
             this.meshServiceMock.Verify(service =>
-                service.HandshakeAsync(),
+                service.HandshakeAsync(randomToken),
                     Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();

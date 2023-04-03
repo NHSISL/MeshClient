@@ -26,10 +26,11 @@ namespace NEL.MESH.Brokers.Mesh
 
         public MeshConfiguration MeshConfiguration { get; private set; }
 
-        public async ValueTask<HttpResponseMessage> HandshakeAsync()
+        public async ValueTask<HttpResponseMessage> HandshakeAsync(string authorizationToken)
         {
             string path = $"/messageexchange/{this.MeshConfiguration.MailboxId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
+            request.Headers.Add("Authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
 
             return response;
