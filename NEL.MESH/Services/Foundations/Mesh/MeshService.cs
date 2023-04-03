@@ -25,6 +25,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
         public ValueTask<bool> HandshakeAsync(string authorizationToken) =>
             TryCatch(async () =>
             {
+                ValidateOnHandshake(authorizationToken);
                 HttpResponseMessage response = await this.meshBroker.HandshakeAsync(authorizationToken);
                 ValidateResponse(response);
 

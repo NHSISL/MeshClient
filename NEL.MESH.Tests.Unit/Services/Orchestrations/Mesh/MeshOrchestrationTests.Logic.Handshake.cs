@@ -32,6 +32,10 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // then
             actualResult.Should().BeTrue();
 
+            this.tokenServiceMock.Verify(service =>
+                service.GenerateTokenAsync(),
+                    Times.Once);
+
             this.meshServiceMock.Verify(service =>
                 service.HandshakeAsync(randomToken),
                     Times.Once);

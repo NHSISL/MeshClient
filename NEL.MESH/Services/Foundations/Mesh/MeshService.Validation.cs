@@ -41,6 +41,12 @@ namespace NEL.MESH.Services.Foundations.Mesh
             }
         }
 
+        private static void ValidateOnHandshake(string authorizationToken)
+        {
+            Validate<InvalidMeshArgsException>(
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+        }
+
         private static void ValidateMeshMessageOnSendMessage(Message message, string authorizationToken)
         {
             ValidateMessageIsNotNull(message);
