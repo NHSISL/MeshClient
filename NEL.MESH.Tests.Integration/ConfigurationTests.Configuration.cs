@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace NEL.MESH.Tests.Integration
@@ -20,8 +20,11 @@ namespace NEL.MESH.Tests.Integration
             var password = this.configuration["MeshConfiguration:Password"];
             var key = this.configuration["MeshConfiguration:Key"];
             var rootCertificate = this.configuration["MeshConfiguration:RootCertificate"];
-            var intermediates = this.configuration["MeshConfiguration:IntermediateCertificates"];
-            List<string> intermediateCertificates = JsonConvert.DeserializeObject<List<string>>(intermediates);
+
+            var intermediateCertificates =
+                this.configuration.GetSection("MeshConfiguration:IntermediateCertificates")
+                    .Get<List<string>>();
+
             var clientCertificate = this.configuration["MeshConfiguration:ClientCertificate"];
 
             // then
@@ -29,7 +32,6 @@ namespace NEL.MESH.Tests.Integration
             password.Should().NotBeNullOrEmpty();
             key.Should().NotBeNullOrEmpty();
             rootCertificate.Should().NotBeNullOrEmpty();
-            intermediates.Should().NotBeNullOrEmpty();
             intermediateCertificates.Count().Should().BeGreaterThan(0);
             clientCertificate.Should().NotBeNullOrEmpty();
         }
