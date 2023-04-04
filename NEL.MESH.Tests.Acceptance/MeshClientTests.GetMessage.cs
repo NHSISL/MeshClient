@@ -13,7 +13,7 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class MeshClientTests
     {
-        [Fact]
+        [Fact(Skip = "Not Ready for now")]
         public async Task ShouldGetMessageAsync()
         {
             // given

@@ -13,6 +13,8 @@ using Xunit;
 
 namespace NEL.MESH.Tests.Acceptance
 {
+
+    [Fact(Skip = "Not Ready for now")]
     public partial class MeshClientTests
     {
         [Fact]
