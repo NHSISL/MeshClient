@@ -43,7 +43,7 @@ namespace NEL.MESH.Tests.Acceptance
                         .WithSuccess()
                         .WithBody(randomMessage.StringContent));
 
-            // randomMessage
+            // when
             Message actualGetMessageResult =
                 await this.meshClient.Mailbox.RetrieveMessageAsync(randomMessage.MessageId);
 

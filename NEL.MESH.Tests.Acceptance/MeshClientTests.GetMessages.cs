@@ -29,7 +29,6 @@ namespace NEL.MESH.Tests.Acceptance
             };
 
             string serialisedResponseMessage = JsonConvert.SerializeObject(responseMessages);
-
             List<string> expectedGetMessagesResult = randomMessages;
 
             this.wireMockServer

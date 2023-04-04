@@ -88,7 +88,6 @@ namespace NEL.MESH.Brokers.Mesh
             string authorizationToken,
             byte[] fileContents)
         {
-
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox";
 
             var request = new HttpRequestMessage(HttpMethod.Post, path)
