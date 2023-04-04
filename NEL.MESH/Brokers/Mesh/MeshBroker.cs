@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -89,23 +88,27 @@ namespace NEL.MESH.Brokers.Mesh
             string authorizationToken,
             byte[] fileContents)
         {
-            var stream = new MemoryStream(fileContents);
-            var content = new ByteArrayContent(stream.ToArray());
-            content.Headers.Add("Authorization", authorizationToken);
-            content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            content.Headers.Add("Mex-From", this.MeshConfiguration.MailboxId);
-            content.Headers.Add("Mex-To", mailboxTo);
-            content.Headers.Add("Mex-WorkflowID", workflowId);
-            content.Headers.Add("Mex-LocalID", localId);
-            content.Headers.Add("Mex-Subject", subject);
-            content.Headers.Add("Mex-FileName", fileName);
-            content.Headers.Add("Mex-Content-Checksum", contentChecksum);
-            content.Headers.Add("Mex-Content-Encrypted", contentEncrypted);
-            content.Headers.Add("Mex-Encoding", encoding);
-            content.Headers.Add("Mex-Chunk-Range", chunkRange);
+            var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox";
 
-            var response = await this.httpClient
-                .PostAsync($"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox", content);
+            var request = new HttpRequestMessage(HttpMethod.Post, path)
+            {
+                Content = new ByteArrayContent(fileContents)
+            };
+
+            request.Headers.Add("Mex-From", this.MeshConfiguration.MailboxId);
+            request.Headers.Add("Mex-To", mailboxTo);
+            request.Headers.Add("Mex-WorkflowID", workflowId);
+            request.Headers.Add("Mex-LocalID", localId);
+            request.Headers.Add("Mex-Subject", subject);
+            request.Headers.Add("Mex-FileName", fileName);
+            request.Headers.Add("Mex-Content-Checksum", contentChecksum);
+            request.Headers.Add("Mex-Content-Encrypted", contentEncrypted);
+            request.Headers.Add("Mex-Encoding", encoding);
+            request.Headers.Add("Mex-Chunk-Range", chunkRange);
+            request.Headers.Add("Authorization", authorizationToken);
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
+            var response = await this.httpClient.SendAsync(request);
 
             return response;
         }

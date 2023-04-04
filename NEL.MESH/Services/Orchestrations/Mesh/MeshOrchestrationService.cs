@@ -69,7 +69,9 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 ValidateTrackMessageArgs(messageId);
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
-                Message outputMessage = await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token);
+                
+                Message outputMessage =
+                    await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token);
 
                 return outputMessage;
             });

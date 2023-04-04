@@ -138,7 +138,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
             TryCatch(async () =>
             {
                 ValidateRetrieveMessageArguments(messageId, authorizationToken);
-                HttpResponseMessage responseMessage = await this.meshBroker.GetMessageAsync(messageId, authorizationToken);
+
+                HttpResponseMessage responseMessage =
+                    await this.meshBroker.GetMessageAsync(messageId, authorizationToken);
+
                 ValidateResponse(responseMessage);
                 string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
 
