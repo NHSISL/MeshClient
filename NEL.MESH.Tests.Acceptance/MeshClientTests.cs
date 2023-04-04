@@ -19,6 +19,8 @@ namespace NEL.MESH.Tests.Acceptance
         private readonly MeshClient meshClient;
         private readonly WireMockServer wireMockServer;
         private readonly MeshConfiguration meshConfigurations;
+        private readonly bool runAcceptanceTests;
+        private readonly bool runIntegrationTests;
 
         public MeshClientTests()
         {
@@ -28,9 +30,9 @@ namespace NEL.MESH.Tests.Acceptance
                 .AddEnvironmentVariables("NEL_MESH_CLIENT_ACCEPTANCE_");
 
             IConfiguration configuration = configurationBuilder.Build();
-
             this.wireMockServer = WireMockServer.Start();
-
+            bool RunAcceptanceTests = configuration.GetSection("RunAcceptanceTests").Get<bool>();
+            bool RunIntegrationTests = configuration.GetSection("RunIntegrationTests").Get<bool>();
             var mailboxId = configuration["MeshConfiguration:MailboxId"];
             var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"];
             var mexOSName = configuration["MeshConfiguration:MexOSName"];

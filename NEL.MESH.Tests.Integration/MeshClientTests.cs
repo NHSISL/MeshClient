@@ -26,7 +26,8 @@ namespace NEL.MESH.Tests.Integration
                 .AddEnvironmentVariables("NEL_MESH_CLIENT_INTEGRATION_");
 
             IConfiguration configuration = configurationBuilder.Build();
-
+            bool RunAcceptanceTests = configuration.GetSection("RunAcceptanceTests").Get<bool>();
+            bool RunIntegrationTests = configuration.GetSection("RunIntegrationTests").Get<bool>();
             var mailboxId = configuration["MeshConfiguration:MailboxId"];
             var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"];
             var mexOSName = configuration["MeshConfiguration:MexOSName"];
