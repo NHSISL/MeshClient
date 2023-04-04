@@ -19,6 +19,8 @@ namespace NEL.MESH.Tests.Acceptance
         private readonly MeshClient meshClient;
         private readonly WireMockServer wireMockServer;
         private readonly MeshConfiguration meshConfigurations;
+        private readonly bool runAcceptanceTests;
+        private readonly bool runIntegrationTests;
 
         public MeshClientTests()
         {
@@ -28,9 +30,9 @@ namespace NEL.MESH.Tests.Acceptance
                 .AddEnvironmentVariables("NEL_MESH_CLIENT_ACCEPTANCE_");
 
             IConfiguration configuration = configurationBuilder.Build();
-
             this.wireMockServer = WireMockServer.Start();
-
+            bool RunAcceptanceTests = configuration.GetSection("RunAcceptanceTests").Get<bool>();
+            bool RunIntegrationTests = configuration.GetSection("RunIntegrationTests").Get<bool>();
             var mailboxId = configuration["MeshConfiguration:MailboxId"];
             var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"];
             var mexOSName = configuration["MeshConfiguration:MexOSName"];
@@ -40,8 +42,14 @@ namespace NEL.MESH.Tests.Acceptance
             var clientCert = configuration["MeshConfiguration:ClientCertificate"];
             var rootCert = configuration["MeshConfiguration:RootCertificate"];
 
-            string[] intermediateCertificates =
-                configuration.GetSection("MeshConfiguration:IntermediateCertificates").Get<string[]>();
+            List<string> intermediateCertificates =
+                configuration.GetSection("MeshConfiguration:IntermediateCertificates")
+                    .Get<List<string>>();
+
+            if (intermediateCertificates == null)
+            {
+                intermediateCertificates = new List<string>();
+            }
 
             this.meshConfigurations = new MeshConfiguration
             {
@@ -52,7 +60,7 @@ namespace NEL.MESH.Tests.Acceptance
                 Password = password,
                 Key = key,
                 RootCertificate = GetCertificate(rootCert),
-                IntermediateCertificates = GetCertificates(intermediateCertificates),
+                IntermediateCertificates = GetCertificates(intermediateCertificates.ToArray()),
                 ClientCertificate = GetCertificate(clientCert),
                 Url = this.wireMockServer.Url
             };
@@ -112,9 +120,10 @@ namespace NEL.MESH.Tests.Acceptance
             string mexContentEncrypted,
             string mexEncoding,
             string mexChunkRange,
-            string contentType)
+            string contentType,
+            string content)
         {
-            var message = CreateMessageFiller().Create();
+            var message = CreateMessageFiller(content).Create();
             message.Headers.Add("Mex-From", new List<string> { mexFrom });
             message.Headers.Add("Mex-To", new List<string> { mexTo });
             message.Headers.Add("Mex-WorkflowID", new List<string> { mexWorkflowId });
@@ -164,6 +173,7 @@ namespace NEL.MESH.Tests.Acceptance
             var filler = new Filler<Message>();
 
             filler.Setup()
+                .OnProperty(message => message.StringContent).Use(content)
                 .OnProperty(message => message.Headers).Use(new Dictionary<string, List<string>>());
 
             return filler;

@@ -12,7 +12,7 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class MeshClientTests
     {
-        [Fact(Skip = "Not Ready for now")]
+        [Fact(Skip = "Excluded")]
         public async Task ShouldDoHandshakeAsync()
         {
             // given

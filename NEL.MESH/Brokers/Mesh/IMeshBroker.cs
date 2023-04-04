@@ -12,7 +12,7 @@ namespace NEL.MESH.Brokers.Mesh
     {
         MeshConfiguration MeshConfiguration { get; }
 
-        ValueTask<HttpResponseMessage> HandshakeAsync();
+        ValueTask<HttpResponseMessage> HandshakeAsync(string authorizationToken);
 
         ValueTask<HttpResponseMessage> SendMessageAsync(
             string mailboxTo,

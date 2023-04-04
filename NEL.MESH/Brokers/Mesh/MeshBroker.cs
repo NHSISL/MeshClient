@@ -25,10 +25,11 @@ namespace NEL.MESH.Brokers.Mesh
 
         public MeshConfiguration MeshConfiguration { get; private set; }
 
-        public async ValueTask<HttpResponseMessage> HandshakeAsync()
+        public async ValueTask<HttpResponseMessage> HandshakeAsync(string authorizationToken)
         {
             string path = $"/messageexchange/{this.MeshConfiguration.MailboxId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
+            request.Headers.Add("Authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
 
             return response;
@@ -200,7 +201,8 @@ namespace NEL.MESH.Brokers.Mesh
                         chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
                         chain.ChainPolicy.CustomTrustStore.Add(this.MeshConfiguration.RootCertificate);
 
-                        if (this.MeshConfiguration.IntermediateCertificates != null)
+                        if (this.MeshConfiguration.IntermediateCertificates != null
+                            || this.MeshConfiguration.IntermediateCertificates.Count > 0)
                         {
                             chain.ChainPolicy.ExtraStore.AddRange(this.MeshConfiguration.IntermediateCertificates);
                         }

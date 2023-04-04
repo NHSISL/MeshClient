@@ -10,7 +10,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
 {
     internal interface IMeshService
     {
-        ValueTask<bool> HandshakeAsync();
+        ValueTask<bool> HandshakeAsync(string authorizationToken);
         ValueTask<Message> SendMessageAsync(Message message, string authorizationToken);
         ValueTask<Message> SendFileAsync(Message message, string authorizationToken);
         ValueTask<Message> TrackMessageAsync(string messageId, string authorizationToken);
