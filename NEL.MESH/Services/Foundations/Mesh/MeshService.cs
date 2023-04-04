@@ -22,10 +22,11 @@ namespace NEL.MESH.Services.Foundations.Mesh
             this.meshBroker = meshBroker;
         }
 
-        public ValueTask<bool> HandshakeAsync() =>
+        public ValueTask<bool> HandshakeAsync(string authorizationToken) =>
             TryCatch(async () =>
             {
-                HttpResponseMessage response = await this.meshBroker.HandshakeAsync();
+                ValidateOnHandshake(authorizationToken);
+                HttpResponseMessage response = await this.meshBroker.HandshakeAsync(authorizationToken);
                 ValidateResponse(response);
 
                 return response.IsSuccessStatusCode;

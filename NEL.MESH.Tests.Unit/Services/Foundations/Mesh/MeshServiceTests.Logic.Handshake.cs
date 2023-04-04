@@ -16,6 +16,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldDoHandshakeAsync()
         {
             // given
+            string authorizationToken = GetRandomString();
+
             HttpResponseMessage response = new HttpResponseMessage
             {
                 StatusCode = System.Net.HttpStatusCode.OK
@@ -24,17 +26,17 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             bool expectedResult = response.IsSuccessStatusCode;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.HandshakeAsync())
+                broker.HandshakeAsync(authorizationToken))
                     .ReturnsAsync(response);
 
             // when
-            var actualResult = await this.meshService.HandshakeAsync();
+            var actualResult = await this.meshService.HandshakeAsync(authorizationToken);
 
             // then
             actualResult.Should().Be(expectedResult);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.HandshakeAsync(),
+                broker.HandshakeAsync(authorizationToken),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

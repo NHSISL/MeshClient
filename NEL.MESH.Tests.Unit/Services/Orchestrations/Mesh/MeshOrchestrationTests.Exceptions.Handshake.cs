@@ -24,8 +24,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             new MeshOrchestrationDependencyValidationException(
                 dependancyValidationException.InnerException as Xeption);
 
-            this.meshServiceMock.Setup(service =>
-                service.HandshakeAsync())
+            this.tokenServiceMock.Setup(service =>
+                service.GenerateTokenAsync())
                     .ThrowsAsync(dependancyValidationException);
 
             // when
@@ -38,8 +38,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualMeshOrchestrationDependencyValidationException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationDependencyValidationException);
 
-            this.meshServiceMock.Verify(service =>
-                service.HandshakeAsync(),
+            this.tokenServiceMock.Verify(service =>
+                service.GenerateTokenAsync(),
                     Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
@@ -56,8 +56,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             new MeshOrchestrationDependencyException(
                 dependancyException.InnerException as Xeption);
 
-            this.meshServiceMock.Setup(service =>
-                service.HandshakeAsync())
+            this.tokenServiceMock.Setup(service =>
+                service.GenerateTokenAsync())
                     .ThrowsAsync(dependancyException);
 
             // when
@@ -70,8 +70,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualMeshOrchestrationDependencyException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationDependencyException);
 
-            this.meshServiceMock.Verify(service =>
-                service.HandshakeAsync(),
+            this.tokenServiceMock.Verify(service =>
+                service.GenerateTokenAsync(),
                     Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
@@ -92,8 +92,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             var expectedMeshOrchestrationServiceException =
             new MeshOrchestrationServiceException(failedMeshOrchestrationServiceException);
 
-            this.meshServiceMock.Setup(service =>
-                service.HandshakeAsync())
+            this.tokenServiceMock.Setup(service =>
+                service.GenerateTokenAsync())
                     .ThrowsAsync(serviceException);
 
             // when
@@ -106,8 +106,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualMeshOrchestrationServiceException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationServiceException);
 
-            this.meshServiceMock.Verify(service =>
-                service.HandshakeAsync(),
+            this.tokenServiceMock.Verify(service =>
+                service.GenerateTokenAsync(),
                     Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();

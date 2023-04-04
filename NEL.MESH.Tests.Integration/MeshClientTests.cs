@@ -26,7 +26,8 @@ namespace NEL.MESH.Tests.Integration
                 .AddEnvironmentVariables("NEL_MESH_CLIENT_INTEGRATION_");
 
             IConfiguration configuration = configurationBuilder.Build();
-
+            bool RunAcceptanceTests = configuration.GetSection("RunAcceptanceTests").Get<bool>();
+            bool RunIntegrationTests = configuration.GetSection("RunIntegrationTests").Get<bool>();
             var mailboxId = configuration["MeshConfiguration:MailboxId"];
             var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"];
             var mexOSName = configuration["MeshConfiguration:MexOSName"];
@@ -37,21 +38,9 @@ namespace NEL.MESH.Tests.Integration
             var rootCert = configuration["MeshConfiguration:RootCertificate"];
             var url = configuration["MeshConfiguration:Url"];
 
-            string[] intermediateCertificatesArray =
-                configuration.GetSection("MeshConfiguration:IntermediateCertificates").Get<string[]>();
-
-            //X509Certificate2 rootCertificate = GetCertificate(rootCert);
-            //X509Certificate2Collection intermediateCertificates = GetCertificates(intermediateCertificatesArray);
-            //X509Certificate2 clientCertificate = GetCertificate(clientCert);
-
-            X509Certificate2 rootCertificate =
-                new X509Certificate2(".\\Resources\\dev_RA_Cert.cer");
-
-            X509Certificate2Collection intermediateCertificates =
-                new X509Certificate2Collection() { new X509Certificate2(".\\Resources\\dev_IA_Cert.cer") };
-
-            X509Certificate2 clientCertificate =
-                new X509Certificate2(".\\Resources\\client_Cert_dev.pfx");
+            var intermediateCertificates =
+                configuration.GetSection("MeshConfiguration:IntermediateCertificates")
+                    .Get<List<string>>();
 
             this.meshConfigurations = new MeshConfiguration
             {
@@ -61,9 +50,9 @@ namespace NEL.MESH.Tests.Integration
                 MexOSVersion = mexOSVersion,
                 Password = password,
                 Key = key,
-                RootCertificate = rootCertificate,
-                IntermediateCertificates = intermediateCertificates,
-                ClientCertificate = clientCertificate,
+                RootCertificate = GetCertificate(rootCert),
+                IntermediateCertificates = GetCertificates(intermediateCertificates.ToArray()),
+                ClientCertificate = GetCertificate(clientCert),
                 Url = url
             };
 
@@ -106,9 +95,10 @@ namespace NEL.MESH.Tests.Integration
             string mexContentEncrypted,
             string mexEncoding,
             string mexChunkRange,
-            string contentType)
+            string contentType,
+            string content)
         {
-            var message = CreateMessageFiller().Create();
+            var message = CreateMessageFiller(content).Create();
             message.Headers.Add("Mex-From", new List<string> { mexFrom });
             message.Headers.Add("Mex-To", new List<string> { mexTo });
             message.Headers.Add("Mex-WorkflowID", new List<string> { mexWorkflowId });
@@ -124,11 +114,12 @@ namespace NEL.MESH.Tests.Integration
             return message;
         }
 
-        private static Filler<Message> CreateMessageFiller()
+        private static Filler<Message> CreateMessageFiller(string content)
         {
             var filler = new Filler<Message>();
 
             filler.Setup()
+                .OnProperty(message => message.StringContent).Use(content)
                 .OnProperty(message => message.Headers).Use(new Dictionary<string, List<string>>());
 
             return filler;

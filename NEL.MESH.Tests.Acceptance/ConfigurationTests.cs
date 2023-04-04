@@ -19,7 +19,5 @@ namespace NEL.MESH.Tests.Acceptance
 
             this.configuration = configurationBuilder.Build();
         }
-
-
     }
 }

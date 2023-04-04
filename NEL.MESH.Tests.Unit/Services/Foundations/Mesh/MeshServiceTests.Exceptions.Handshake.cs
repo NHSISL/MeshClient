@@ -20,10 +20,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage dependencyValidationResponseMessage)
         {
             // given
+            string authorizationToken = GetRandomString();
             HttpResponseMessage response = dependencyValidationResponseMessage;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.HandshakeAsync())
+                broker.HandshakeAsync(authorizationToken))
                     .ReturnsAsync(dependencyValidationResponseMessage);
 
             var httpRequestException =
@@ -37,7 +38,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<bool> handshakeTask =
-                this.meshService.HandshakeAsync();
+                this.meshService.HandshakeAsync(authorizationToken);
 
             MeshDependencyValidationException actualMeshDependencyValidationException =
                 await Assert.ThrowsAsync<MeshDependencyValidationException>(handshakeTask.AsTask);
@@ -46,7 +47,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshDependencyValidationException.Should().BeEquivalentTo(expectedMeshDependencyValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.HandshakeAsync(),
+                broker.HandshakeAsync(authorizationToken),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -58,10 +59,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage dependencyResponseMessage)
         {
             // given
+            string authorizationToken = GetRandomString();
             HttpResponseMessage response = dependencyResponseMessage;
 
             this.meshBrokerMock.Setup(broker =>
-                broker.HandshakeAsync())
+                broker.HandshakeAsync(authorizationToken))
                     .ReturnsAsync(dependencyResponseMessage);
 
             var httpRequestException =
@@ -75,7 +77,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<bool> handshakeTask =
-                this.meshService.HandshakeAsync();
+                this.meshService.HandshakeAsync(authorizationToken);
 
             MeshDependencyException actualMeshDependencyException =
                 await Assert.ThrowsAsync<MeshDependencyException>(handshakeTask.AsTask);
@@ -84,7 +86,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshDependencyException.Should().BeEquivalentTo(expectedMeshDependencyException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.HandshakeAsync(),
+                broker.HandshakeAsync(authorizationToken),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -94,13 +96,15 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         public async Task ShouldThrowServiceExceptionIfServiceErrorOccursOnHandshakeAsync()
         {
             // given
+            string authorizationToken = GetRandomString();
+
             HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.MovedPermanently)
             {
                 ReasonPhrase = GetRandomString()
             };
 
             this.meshBrokerMock.Setup(broker =>
-                broker.HandshakeAsync())
+                broker.HandshakeAsync(authorizationToken))
                     .ReturnsAsync(response);
 
             var httpRequestException =
@@ -114,7 +118,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<bool> handshakeTask =
-                this.meshService.HandshakeAsync();
+                this.meshService.HandshakeAsync(authorizationToken);
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>(handshakeTask.AsTask);
@@ -123,7 +127,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshServiceException.Should().BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.HandshakeAsync(),
+                broker.HandshakeAsync(authorizationToken),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

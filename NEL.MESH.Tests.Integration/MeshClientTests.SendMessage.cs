@@ -2,37 +2,41 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Threading.Tasks;
+using FluentAssertions;
+using NEL.MESH.Models.Foundations.Mesh;
+using Xunit;
+
 namespace NEL.MESH.Tests.Integration
 {
     public partial class MeshClientTests
     {
-        //[Fact]
-        //public async Task ShouldSendMessageAsync()
-        //{
-        //    // given
-        //    string message = GetRandomString();
-        //    string mailboxTo = this.meshApiConfiguration.MailboxId;
-        //    string workflowId = GetRandomString();
-        //    string contentType = GetRandomString();
+        [Fact(Skip = "Excluded")]
+        [Trait("Category", "Integration")]
+        public async Task ShouldSendMessageAsync()
+        {
+            // given
+            Message randomMessage = CreateRandomSendMessage(
+                mexFrom: this.meshConfigurations.MailboxId,
+                mexTo: this.meshConfigurations.MailboxId,
+                mexWorkflowId: "INTEGRATION TEST",
+                mexLocalId: GetRandomString(),
+                mexSubject: "INTEGRATION TEST -  ShouldSendMessageAsync",
+                mexFileName: $"ShouldSendMessageAsync.csv",
+                mexContentChecksum: null,
+                mexContentEncrypted: null,
+                mexEncoding: null,
+                mexChunkRange: null,
+                contentType: "text/plain",
+                content: GetRandomString());
 
-        //    // when
-        //    HttpResponseMessage sendMessageResponse =
-        //        await this.meshBroker.SendMessageAsync(mailboxTo, workflowId, message, contentType);
+            // when
+            Message sendMessageResponse =
+                await this.meshClient.Mailbox.SendMessageAsync(randomMessage);
 
-        //    var sendMessageResponseBody = await sendMessageResponse.Content.ReadAsStringAsync();
-        //    var headers = GetHeaders(sendMessageResponse.Headers);
-        //    string messageId = (JsonConvert.DeserializeObject<SendMessageResponse>(sendMessageResponseBody)).MessageId;
-
-        //    var receivedMessageResponse =
-        //        await this.meshBroker.GetMessageAsync(messageId);
-
-        //    var receivedMessageResponseBody = await receivedMessageResponse.Content.ReadAsStringAsync();
-
-        //    // then
-        //    sendMessageResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.Accepted);
-        //    receivedMessageResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        //    receivedMessageResponseBody.Should().BeEquivalentTo(message);
-        //    await this.meshBroker.AcknowledgeMessageAsync(messageId);
-        //}
+            // then
+            sendMessageResponse.MessageId.Should().NotBeNullOrEmpty();
+            await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
+        }
     }
 }

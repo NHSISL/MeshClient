@@ -2,37 +2,53 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Threading.Tasks;
+using FluentAssertions;
+using NEL.MESH.Models.Foundations.Mesh;
+using Xunit;
+
 namespace NEL.MESH.Tests.Integration
 {
     public partial class MeshClientTests
     {
-        //[Fact]
-        //public async Task ShouldTrackMessageAsync()
-        //{
-        //    // given
-        //    string message = GetRandomString();
-        //    string mailboxTo = this.meshApiConfiguration.MailboxId;
-        //    string workflowId = GetRandomString();
-        //    string contentType = GetRandomString();
+        [Fact(Skip = "Excluded")]
+        [Trait("Category", "Integration")]
+        public async Task ShouldTrackMessageAsync()
+        {
+            // given
+            string sender = this.meshConfigurations.MailboxId;
+            string recipient = this.meshConfigurations.MailboxId;
+            string workflowId = "INTEGRATION TEST";
 
+            Message randomMessage = CreateRandomSendMessage(
+                mexFrom: sender,
+                mexTo: recipient,
+                mexWorkflowId: workflowId,
+                mexLocalId: GetRandomString(),
+                mexSubject: "INTEGRATION TEST -  ShouldTrackMessageAsync",
+                mexFileName: $"ShouldTrackMessageAsync.csv",
+                mexContentChecksum: null,
+                mexContentEncrypted: null,
+                mexEncoding: null,
+                mexChunkRange: null,
+                contentType: "text/plain",
+                content: GetRandomString());
 
-        //    HttpResponseMessage sendMessageResponse =
-        //        await this.meshBroker.SendMessageAsync(mailboxTo, workflowId, message, contentType);
+            Message expectedMessage = randomMessage;
 
-        //    var sendMessageResponseBody = await sendMessageResponse.Content.ReadAsStringAsync();
-        //    string messageId = (JsonConvert.DeserializeObject<SendMessageResponse>(sendMessageResponseBody)).MessageId;
+            Message sendMessageResponse =
+                await this.meshClient.Mailbox.SendMessageAsync(randomMessage);
 
-        //    // when
-        //    var trackMessageResponse =
-        //        await this.meshBroker.TrackMessageAsync(messageId);
+            // when
+            Message trackedMessage = await this.meshClient.Mailbox.TrackMessageAsync(sendMessageResponse.MessageId);
 
-        //    var trackMessageResponseBody = await trackMessageResponse.Content.ReadAsStringAsync();
-
-        //    // then
-        //    sendMessageResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.Accepted);
-        //    trackMessageResponse.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-        //    await this.meshBroker.GetMessageAsync(messageId);
-        //    await this.meshBroker.AcknowledgeMessageAsync(messageId);
-        //}
+            // then
+            trackedMessage.MessageId.Should().BeEquivalentTo(sendMessageResponse.MessageId);
+            trackedMessage.TrackingInfo.Should().NotBeNull();
+            trackedMessage.TrackingInfo.Sender.Should().BeEquivalentTo(sender);
+            trackedMessage.TrackingInfo.Recipient.Should().BeEquivalentTo(recipient);
+            trackedMessage.TrackingInfo.WorkflowId.Should().BeEquivalentTo(workflowId);
+            await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
+        }
     }
 }
