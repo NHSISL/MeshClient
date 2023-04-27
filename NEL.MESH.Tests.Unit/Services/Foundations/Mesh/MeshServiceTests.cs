@@ -216,7 +216,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static Message GetMessageWithStringContentFromHttpResponseMessage(HttpResponseMessage responseMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
-            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Content.Headers);
+            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
 
 
             Message message = new Message
@@ -232,7 +232,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static Message GetMessageWithFileContentFromHttpResponseMessage(HttpResponseMessage responseMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
-            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Content.Headers);
+            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
 
             Message message = new Message
             {
@@ -249,7 +249,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage responseMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
-            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Content.Headers);
+            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
 
             Message message = new Message
             {
@@ -372,7 +372,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             };
         }
 
-        private static Dictionary<string, List<string>> GetHeaders(HttpContentHeaders headers)
+        private static Dictionary<string, List<string>> GetHeaders(HttpResponseHeaders headers)
         {
             var dictionary = new Dictionary<string, List<string>>();
 
