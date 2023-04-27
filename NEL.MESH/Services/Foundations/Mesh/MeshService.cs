@@ -151,7 +151,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     StringContent = responseMessageBody,
                 };
 
-                foreach (var header in responseMessage.Content.Headers)
+                foreach (var header in responseMessage.Headers)
                 {
                     outputMessage.Headers.Add(header.Key, header.Value.ToList());
                 }
