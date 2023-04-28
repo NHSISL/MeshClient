@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -25,6 +26,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message randomMessage = CreateRandomMessage();
             randomMessage.MessageId = inputMessageId;
 
+            Dictionary<string, List<string>> contentHeaders = new Dictionary<string, List<string>>
+            {
+                { "Content-Type", new List<string>() { "application/json; charset=utf-8" } },
+                { "Content-Length", new List<string>() }
+            };
+
             randomMessage.TrackingInfo =
                 MapDynamicObjectToTrackingInfo(randomTrackingProperties);
 
@@ -38,7 +45,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 broker.TrackMessageAsync(inputMessageId, authorizationToken))
                     .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage);
+            Message expectedMessage =
+                GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage, contentHeaders);
 
             // when
             var actualMessage = await this.meshService.TrackMessageAsync(inputMessageId, authorizationToken);

@@ -156,6 +156,11 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     outputMessage.Headers.Add(header.Key, header.Value.ToList());
                 }
 
+                foreach (var header in responseMessage.Content.Headers)
+                {
+                    outputMessage.Headers.Add(header.Key, header.Value.ToList());
+                }
+
                 return outputMessage;
             });
 

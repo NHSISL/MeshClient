@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -30,6 +31,24 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message randomMessage = CreateRandomMessage();
             randomMessage.MessageId = inputMessageId;
 
+            Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>
+            {
+                { "Content-Encoding", new List<string>() },
+                { "Mex-FileName", new List<string>() },
+                { "Mex-From", new List<string>() },
+                { "Mex-To", new List<string>() },
+                { "Mex-WorkflowID", new List<string>() },
+                { "Mex-Chunk-Range", new List<string>() },
+                { "Mex-LocalID", new List<string>() },
+                { "Mex-Subject", new List<string>() },
+                { "Mex-Content-Checksum", new List<string>() },
+                { "Mex-Content-Encrypted", new List<string>() },
+                { "Mex-ClientVersion", new List<string>() },
+                { "Mex-OSVersion", new List<string>() },
+                { "Mex-OSArchitecture", new List<string>() },
+                { "Mex-JavaVersion", new List<string>() }
+            };
+
             randomMessage.TrackingInfo =
                 MapDynamicObjectToTrackingInfo(randomTrackingProperties);
 
@@ -41,9 +60,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Setup(broker =>
                 broker.TrackMessageAsync(inputMessageId, invalidAuthorizationToken))
-                    .ReturnsAsync(responseMessage);
+            .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage);
+            Message expectedMessage =
+                GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage, headers);
 
             var invalidMeshArgsException =
                 new InvalidMeshArgsException();

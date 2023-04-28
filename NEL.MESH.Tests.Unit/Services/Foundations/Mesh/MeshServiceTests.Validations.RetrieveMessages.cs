@@ -25,7 +25,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             string invalidAuthorizationToken = invalidText;
             Message randomMessage = CreateRandomMessage();
             Message inputMessage = randomMessage;
-            HttpResponseMessage responseMessage = CreateHttpResponseMessage(inputMessage);
+
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessage(
+                inputMessage,
+                new Dictionary<string, List<string>>(),
+                new Dictionary<string, List<string>>());
 
             this.meshBrokerMock.Setup(broker =>
               broker.GetMessagesAsync(inputMessage.MessageId))
