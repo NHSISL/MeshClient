@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -20,7 +21,27 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             string authorizationToken = GetRandomString();
             Message randomFileMessage = CreateRandomSendFileMessage();
             Message inputFileMessage = randomFileMessage;
-            HttpResponseMessage responseMessage = CreateHttpResponseMessage(inputFileMessage);
+
+            Dictionary<string, List<string>> contentHeaders = new Dictionary<string, List<string>>
+            {
+                { "Content-Type", new List<string>() { "application/octet-stream" }},
+                { "Content-Encoding", new List<string>() },
+                { "Mex-FileName", new List<string>() },
+                { "Mex-From", new List<string>() },
+                { "Mex-To", new List<string>() },
+                { "Mex-WorkflowID", new List<string>() },
+                { "Mex-Chunk-Range", new List<string>() },
+                { "Mex-LocalID", new List<string>() },
+                { "Mex-Subject", new List<string>() },
+                { "Mex-Content-Checksum", new List<string>() },
+                { "Mex-Content-Encrypted", new List<string>() },
+                { "Mex-ClientVersion", new List<string>() },
+                { "Mex-OSVersion", new List<string>() },
+                { "Mex-OSArchitecture", new List<string>() },
+                { "Mex-JavaVersion", new List<string>() }
+            };
+
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessage(inputFileMessage, contentHeaders);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendFileAsync(

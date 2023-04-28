@@ -41,9 +41,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Setup(broker =>
                 broker.TrackMessageAsync(inputMessageId, invalidAuthorizationToken))
-                    .ReturnsAsync(responseMessage);
+            .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage);
+            Message expectedMessage =
+                GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage);
 
             var invalidMeshArgsException =
                 new InvalidMeshArgsException();

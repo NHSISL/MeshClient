@@ -150,7 +150,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 : string.Empty;
         }
 
-        private static HttpResponseMessage CreateHttpResponseMessage(Message message)
+        private static HttpResponseMessage CreateHttpResponseContentMessage(
+            Message message,
+            Dictionary<string, List<string>> contentHeaders,
+            Dictionary<string, List<string>> headers = null)
         {
 
             string contentType = message.Headers.ContainsKey("Content-Type")
@@ -159,40 +162,32 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             if (string.IsNullOrEmpty(contentType))
             {
-                contentType = "application/json";
+                contentType = "text/plain";
             }
 
             HttpResponseMessage responseMessage = new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("{\"messageID\": \"" + message.MessageId + "\"}", Encoding.UTF8, contentType)
+                Content =
+                    new StringContent("{\"messageID\": \"" + message.MessageId + "\"}", Encoding.UTF8, contentType)
             };
 
-            responseMessage.Content.Headers.Add("Content-Encoding", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-FileName", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-From", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-To", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-WorkflowID", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-Chunk-Range", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-LocalID", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-Subject", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-Content-Checksum", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-Content-Encrypted", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-ClientVersion", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-OSVersion", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-OSArchitecture", string.Empty);
-            responseMessage.Content.Headers.Add("Mex-JavaVersion", string.Empty);
-
-            foreach (var item in message.Headers)
+            foreach (var item in contentHeaders)
             {
-                if (message.Headers.ContainsKey(item.Key))
+                if (item.Key != "Content-Type")
                 {
-                    responseMessage.Content.Headers.Remove(item.Key);
                     responseMessage.Content.Headers.Add(item.Key, item.Value);
                 }
-                else
+            }
+
+            if (headers != null)
+            {
+                foreach (var item in headers)
                 {
-                    responseMessage.Content.Headers.Add(item.Key, item.Value);
+                    if (item.Key != "Content-Type")
+                    {
+                        responseMessage.Content.Headers.Add(item.Key, item.Value);
+                    }
                 }
             }
 
@@ -216,15 +211,26 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static Message GetMessageWithStringContentFromHttpResponseMessage(HttpResponseMessage responseMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
-            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Content.Headers);
+            Dictionary<string, List<string>> contentHeaders = GetContentHeaders(responseMessage.Content.Headers);
+            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
+
 
 
             Message message = new Message
             {
                 MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
                 StringContent = responseMessageBody,
-                Headers = headers
             };
+
+            foreach (var item in contentHeaders)
+            {
+                message.Headers.Add(item.Key, item.Value);
+            }
+
+            foreach (var item in headers)
+            {
+                message.Headers.Add(item.Key, item.Value);
+            }
 
             return message;
         }
@@ -232,7 +238,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static Message GetMessageWithFileContentFromHttpResponseMessage(HttpResponseMessage responseMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
-            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Content.Headers);
+            Dictionary<string, List<string>> headers = GetContentHeaders(responseMessage.Content.Headers);
 
             Message message = new Message
             {
@@ -249,7 +255,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage responseMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
-            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Content.Headers);
+            Dictionary<string, List<string>> headers = GetContentHeaders(responseMessage.Content.Headers);
 
             Message message = new Message
             {
@@ -372,7 +378,19 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             };
         }
 
-        private static Dictionary<string, List<string>> GetHeaders(HttpContentHeaders headers)
+        private static Dictionary<string, List<string>> GetHeaders(HttpResponseHeaders headers)
+        {
+            var dictionary = new Dictionary<string, List<string>>();
+
+            foreach (var header in headers)
+            {
+                dictionary.Add(header.Key, header.Value.ToList());
+            }
+
+            return dictionary;
+        }
+
+        private static Dictionary<string, List<string>> GetContentHeaders(HttpContentHeaders headers)
         {
             var dictionary = new Dictionary<string, List<string>>();
 

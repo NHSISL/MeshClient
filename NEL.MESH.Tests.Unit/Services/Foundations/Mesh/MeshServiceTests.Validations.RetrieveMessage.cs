@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -25,7 +26,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message randomMessage = CreateRandomMessage();
             randomMessage.MessageId = invalidText;
             Message inputMessage = randomMessage;
-            HttpResponseMessage responseMessage = CreateHttpResponseMessage(inputMessage);
+
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessage(
+                inputMessage,
+                new Dictionary<string, List<string>>(),
+                new Dictionary<string, List<string>>());
 
             this.meshBrokerMock.Setup(broker =>
               broker.GetMessageAsync(inputMessage.MessageId, invalidAuthorizationToken))

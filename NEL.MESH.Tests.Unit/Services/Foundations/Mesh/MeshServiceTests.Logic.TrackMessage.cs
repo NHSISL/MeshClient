@@ -38,7 +38,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 broker.TrackMessageAsync(inputMessageId, authorizationToken))
                     .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage);
+            Message expectedMessage =
+                GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage);
 
             // when
             var actualMessage = await this.meshService.TrackMessageAsync(inputMessageId, authorizationToken);
