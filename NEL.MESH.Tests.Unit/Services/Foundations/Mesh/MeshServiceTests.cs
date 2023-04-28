@@ -252,10 +252,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
         private static Message GetMessageFromTrackingHttpResponseMessage(
             string messageId,
-            HttpResponseMessage responseMessage,
-            Dictionary<string, List<string>> headers)
+            HttpResponseMessage responseMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+            Dictionary<string, List<string>> headers = GetContentHeaders(responseMessage.Content.Headers);
 
             Message message = new Message
             {
