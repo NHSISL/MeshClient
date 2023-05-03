@@ -28,9 +28,9 @@ namespace NEL.MESH.Tests.Acceptance
                     Request.Create()
                         .WithPath(path)
                         .UsingPut()
-                        .WithHeader("Mex-ClientVersion", this.meshConfigurations.MexClientVersion, MatchBehaviour.AcceptOnMatch)
-                        .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName, MatchBehaviour.AcceptOnMatch)
-                        .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion, MatchBehaviour.AcceptOnMatch)
+                        .WithHeader("Mex-ClientVersion", "*", MatchBehaviour.AcceptOnMatch)
+                        .WithHeader("Mex-OSName", "*", MatchBehaviour.AcceptOnMatch)
+                        .WithHeader("Mex-OSVersion", "*", MatchBehaviour.AcceptOnMatch)
                         .WithHeader("Authorization", "*", MatchBehaviour.AcceptOnMatch)
                         )
                 .RespondWith(
