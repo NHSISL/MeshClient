@@ -5,31 +5,63 @@
 [![The Standard - COMPLIANT](https://img.shields.io/badge/The_Standard-COMPLIANT-2ea44f)](https://github.com/hassanhabib/The-Standard)
 [![Nuget](https://img.shields.io/nuget/v/NEL.MESH?logo=nuget)](https://www.nuget.org/packages/NEL.MESH)
 ![Nuget](https://img.shields.io/nuget/dt/NEL.MESH?color=blue&label=Downloads)
-
-## Introduction
+<br/><br/>
+# Introduction
 Nel.Mesh is a Standard-Compliant .NET library built on top of (MESH) to enable software engineers to develop Mesh compliant solutions in .NET
 ```MESH
 MESH - the Message Exchange for Social Care and Health  providing the ability to share data directly between health and care organisations and is the nationally recognised mechanism for this method of data sharing.
 ```
 [Link to NHS Digital](https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-mesh)
-
-## Standard-Compliance
+<br/><br/>
+# Standard-Compliance
 This library was built according to The Standard. The library follows engineering principles, patterns and tooling as recommended by The Standard.
 
 This library was also built to be a community lead effort in order to eventually have all mesh end points covered.
+<br/><br/>
 
-## Install library?
+# Install library?
 
 You can get Nel.Mesh [Nuget](https://www.nuget.org/packages/NEL.MESH/) package by typing:
 ```powershell
 Install-Package NEL.MESH
 ```
-## Prerequisites
+<br/>
 
-Add Links and tasks to complete here
+# Prerequisites
 
+You'll need some things at different stages of your development to integrate with the MESH API. For each environment you use, you'll need a:
+- MESH mailbox ID and password
+- Transport Layer Security (TLS) certificate
+- Shared secret to include in the MESH authorization header
 
-## Current Mesh Functionality
+To get started you will need to sign in or create a [developer account](https://onboarding.prod.api.platform.nhs.uk/).
+
+In My applications and Teams Create a new application for the environments needed and from here after a max of 10 days you will be given the appropriate Active Api Keys.
+
+## - Request a MESH mailbox
+Once we've approved your request to use the MESH API, you'll need to request a MESH Mailbox to use in a 'Path to Live integration environment'. This is how you'll interact with the MESH API. A MESH Mailbox is secure and only your organisation can access it.
+
+To request a MESH Mailbox, you'll need to fill in an online form. It takes 5 to 10 minutes to complete.
+
+You'll need to know:
+
+- Your ODS code.
+- The workflow groups or IDs for the files you plan to send or receive.
+- The contact details of the person who will be managing the mailbox in your organisation.
+
+[Apply Here For Mailbox](https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-mesh/messaging-exchange-for-social-care-and-health-apply-for-a-mailbox)
+
+**NOTE**: This could also take a few days to come pack with the details.
+
+## - Prerequisites For Live **ONLY**
+This is also called digital onboarding. You'll need to submit information that demonstrates:
+- You have a valid use case
+- You can manage risks
+- Your software conforms technically with the requirements for this API
+- This API can only be used where there is a legal basis to do so and you will be asked you to demonstrate this as part of the digital onboarding process before your software goes live.
+<br/><br/>
+
+# Current Mesh Functionality
 
 |   Method                      | Description   | Links to NHS Digital Mesh Documentation |
 | --------                      | -----------   | --------------------------- |
@@ -41,9 +73,7 @@ Add Links and tasks to complete here
 | RetrieveMessageById           | Use this endpoint to retrieve a message based on the message identifier obtained from the 'Check Inbox' endpoint. Note: Headers should be treated case insensitively, most http clients will do this for you automatically, but please do not rely on explicit case. /messageexchange/{mailbox_id}/inbox/{message_id} | [Get Message By Id](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/-mailbox_id-/inbox/-message_id-)|
 | AcknowledgeMessageById| Use this endpoint to acknowledge the successful download of a message.This operation: <ul><li>Closes the message transaction on Spine.</li><li>Removes the message from your mailbox inbox, which means that the message_id does not appear in subsequent calls to the 'Check inbox' endpoint and cannot be downloaded again Note: If you fail to acknowledge a message after five days in the inbox this sends a non-delivery report to the sender's inbox.</li></ul> | [Acknowledge](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#put-/messageexchange/-mailbox_id-/inbox/-message_id-/status/acknowledged)
 
-
-
-## How to Contribute
+# How to Contribute
 If you want to contribute to this project please before hand review the following documents to gain an understanding of the patterns and practices used in building this package:
 - [The Standard](https://github.com/hassanhabib/The-Standard)
 - [C# Coding Standard](https://github.com/hassanhabib/CSharpCodingStandard)
