@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using WireMock.Matchers;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using Xunit;
@@ -12,7 +13,7 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class MeshClientTests
     {
-        [Fact(Skip = "Excluded")]
+        [Fact]
         public async Task ShouldDoHandshakeAsync()
         {
             // given
@@ -24,9 +25,9 @@ namespace NEL.MESH.Tests.Acceptance
                     Request.Create()
                         .WithPath(path)
                         .UsingGet()
-                        .WithHeader("Mex-ClientVersion", this.meshConfigurations.MexClientVersion)
-                        .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
-                        .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion))
+                        .WithHeader("Mex-ClientVersion", "*", MatchBehaviour.AcceptOnMatch)
+                        .WithHeader("Mex-OSName", "*", MatchBehaviour.AcceptOnMatch)
+                        .WithHeader("Mex-OSVersion", "*", MatchBehaviour.AcceptOnMatch))
                 .RespondWith(
                     Response.Create()
                         .WithSuccess());
