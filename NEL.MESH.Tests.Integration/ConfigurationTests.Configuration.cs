@@ -12,7 +12,7 @@ namespace NEL.MESH.Tests.Integration
 {
     public partial class ConfigurationTests
     {
-        [Fact(Skip = "Excluded")]
+        [Fact]
         public void ShouldGetConfigurationSettings()
         {
             // given
@@ -34,6 +34,7 @@ namespace NEL.MESH.Tests.Integration
             rootCertificate.Should().NotBeNullOrEmpty();
             intermediateCertificates.Count().Should().BeGreaterThan(0);
             clientCertificate.Should().NotBeNullOrEmpty();
+            intermediateCertificates.Count.Should().Be(1);
         }
     }
 }
