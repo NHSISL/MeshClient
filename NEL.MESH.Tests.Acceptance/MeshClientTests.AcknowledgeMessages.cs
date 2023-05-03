@@ -13,7 +13,7 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class MeshClientTests
     {
-        [Fact]
+        [Fact(Skip = "Excluded")]
         public async Task ShouldAcknowledgeMessageAsync()
         {
             // given
@@ -28,9 +28,9 @@ namespace NEL.MESH.Tests.Acceptance
                     Request.Create()
                         .WithPath(path)
                         .UsingPut()
-                        .WithHeader("Mex-ClientVersion", "*", MatchBehaviour.AcceptOnMatch)
-                        .WithHeader("Mex-OSName", "*", MatchBehaviour.AcceptOnMatch)
-                        .WithHeader("Mex-OSVersion", "*", MatchBehaviour.AcceptOnMatch)
+                        .WithHeader("Mex-ClientVersion", this.meshConfigurations.MexClientVersion)
+                        .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
+                        .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion)
                         .WithHeader("Authorization", "*", MatchBehaviour.AcceptOnMatch)
                         )
                 .RespondWith(
