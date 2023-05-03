@@ -13,7 +13,7 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class MeshClientTests
     {
-        [Fact(Skip = "Excluded")]
+        [Fact]
         public async Task ShouldAcknowledgeMessageAsync()
         {
             // given
