@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using WireMock.Matchers;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using Xunit;
@@ -24,9 +25,9 @@ namespace NEL.MESH.Tests.Acceptance
                     Request.Create()
                         .WithPath(path)
                         .UsingGet()
-                        .WithHeader("Mex-ClientVersion")
-                        .WithHeader("Mex-OSName")
-                        .WithHeader("Mex-OSVersion"))
+                        .WithHeader("Mex-ClientVersion", "*", MatchBehaviour.AcceptOnMatch)
+                        .WithHeader("Mex-OSName", "*", MatchBehaviour.AcceptOnMatch)
+                        .WithHeader("Mex-OSVersion", "*", MatchBehaviour.AcceptOnMatch))
                 .RespondWith(
                     Response.Create()
                         .WithSuccess());
