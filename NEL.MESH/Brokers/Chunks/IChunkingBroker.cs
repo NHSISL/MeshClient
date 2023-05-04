@@ -6,6 +6,6 @@ namespace NEL.MESH.Brokers.Chunks
 {
     internal interface IChunkingBroker
     {
-        float ChunkSizeInMegabytes { get; }
+        int ChunkSizeInBytes { get; }
     }
 }

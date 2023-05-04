@@ -15,6 +15,6 @@ namespace NEL.MESH.Brokers.Chunks
             this.meshConfiguration = meshConfiguration;
         }
 
-        public float ChunkSizeInMegabytes => this.meshConfiguration.ChunkSizeInMegabytes;
+        public int ChunkSizeInBytes => this.meshConfiguration.ChunkSizeInBytes;
     }
 }
