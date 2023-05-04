@@ -16,18 +16,17 @@ namespace NEL.MESH.Brokers.Mesh
     internal class MeshBroker : IMeshBroker
     {
         private readonly HttpClient httpClient;
+        private readonly MeshConfiguration meshConfiguration;
 
-        public MeshBroker(MeshConfiguration MeshConfiguration)
+        public MeshBroker(MeshConfiguration meshConfiguration)
         {
-            this.MeshConfiguration = MeshConfiguration;
+            this.meshConfiguration = meshConfiguration;
             this.httpClient = SetupHttpClient();
         }
 
-        public MeshConfiguration MeshConfiguration { get; private set; }
-
         public async ValueTask<HttpResponseMessage> HandshakeAsync(string authorizationToken)
         {
-            string path = $"/messageexchange/{this.MeshConfiguration.MailboxId}";
+            string path = $"/messageexchange/{this.meshConfiguration.MailboxId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("Authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
@@ -49,14 +48,14 @@ namespace NEL.MESH.Brokers.Mesh
             string authorizationToken,
             string stringConent)
         {
-            var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox";
+            var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/outbox";
 
             var request = new HttpRequestMessage(HttpMethod.Post, path)
             {
                 Content = new StringContent(stringConent, Encoding.UTF8, contentType)
             };
 
-            request.Headers.Add("Mex-From", this.MeshConfiguration.MailboxId);
+            request.Headers.Add("Mex-From", this.meshConfiguration.MailboxId);
             request.Headers.Add("Mex-To", mailboxTo);
             request.Headers.Add("Mex-WorkflowID", workflowId);
             request.Headers.Add("Mex-LocalID", localId);
@@ -88,14 +87,14 @@ namespace NEL.MESH.Brokers.Mesh
             string authorizationToken,
             byte[] fileContents)
         {
-            var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox";
+            var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/outbox";
 
             var request = new HttpRequestMessage(HttpMethod.Post, path)
             {
                 Content = new ByteArrayContent(fileContents)
             };
 
-            request.Headers.Add("Mex-From", this.MeshConfiguration.MailboxId);
+            request.Headers.Add("Mex-From", this.meshConfiguration.MailboxId);
             request.Headers.Add("Mex-To", mailboxTo);
             request.Headers.Add("Mex-WorkflowID", workflowId);
             request.Headers.Add("Mex-LocalID", localId);
@@ -115,7 +114,7 @@ namespace NEL.MESH.Brokers.Mesh
 
         public async ValueTask<HttpResponseMessage> TrackMessageAsync(string messageId, string authorizationToken)
         {
-            var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox/tracking?messageID={messageId}";
+            var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/outbox/tracking?messageID={messageId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("Authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
@@ -125,7 +124,7 @@ namespace NEL.MESH.Brokers.Mesh
 
         public async ValueTask<HttpResponseMessage> GetMessagesAsync(string authorizationToken)
         {
-            var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox";
+            var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/inbox";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("Authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
@@ -135,7 +134,7 @@ namespace NEL.MESH.Brokers.Mesh
 
         public async ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, string authorizationToken)
         {
-            var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}";
+            var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/inbox/{messageId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("Authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
@@ -145,7 +144,7 @@ namespace NEL.MESH.Brokers.Mesh
 
         public async ValueTask<HttpResponseMessage> AcknowledgeMessageAsync(string messageId, string authorizationToken)
         {
-            var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}/status/acknowledged";
+            var path = $"/messageexchange/{this.meshConfiguration.MailboxId}/inbox/{messageId}/status/acknowledged";
             var request = new HttpRequestMessage(HttpMethod.Put, path);
             request.Headers.Add("Authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
@@ -159,20 +158,20 @@ namespace NEL.MESH.Brokers.Mesh
 
             var httpClient = new HttpClient(handler)
             {
-                BaseAddress = new Uri(this.MeshConfiguration.Url)
+                BaseAddress = new Uri(this.meshConfiguration.Url)
             };
 
             httpClient.DefaultRequestHeaders.Add(
                 name: "Mex-ClientVersion",
-                value: this.MeshConfiguration.MexClientVersion);
+                value: this.meshConfiguration.MexClientVersion);
 
             httpClient.DefaultRequestHeaders.Add(
                 name: "Mex-OSName",
-                value: this.MeshConfiguration.MexOSName);
+                value: this.meshConfiguration.MexOSName);
 
             httpClient.DefaultRequestHeaders.Add(
                 name: "Mex-OSVersion",
-                value: this.MeshConfiguration.MexOSVersion);
+                value: this.meshConfiguration.MexOSVersion);
 
             return httpClient;
         }
@@ -186,24 +185,24 @@ namespace NEL.MESH.Brokers.Mesh
                 CheckCertificateRevocationList = false,
             };
 
-            if (this.MeshConfiguration.ClientCertificate != null)
+            if (this.meshConfiguration.ClientCertificate != null)
             {
-                handler.ClientCertificates.Add(this.MeshConfiguration.ClientCertificate);
+                handler.ClientCertificates.Add(this.meshConfiguration.ClientCertificate);
             }
 
-            if (this.MeshConfiguration.RootCertificate != null)
+            if (this.meshConfiguration.RootCertificate != null)
             {
                 handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
                 {
                     if (chain != null)
                     {
                         chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
-                        chain.ChainPolicy.CustomTrustStore.Add(this.MeshConfiguration.RootCertificate);
+                        chain.ChainPolicy.CustomTrustStore.Add(this.meshConfiguration.RootCertificate);
 
-                        if (this.MeshConfiguration.IntermediateCertificates != null
-                            || this.MeshConfiguration.IntermediateCertificates.Count > 0)
+                        if (this.meshConfiguration.IntermediateCertificates != null
+                            || this.meshConfiguration.IntermediateCertificates.Count > 0)
                         {
-                            chain.ChainPolicy.ExtraStore.AddRange(this.MeshConfiguration.IntermediateCertificates);
+                            chain.ChainPolicy.ExtraStore.AddRange(this.meshConfiguration.IntermediateCertificates);
                         }
 
                         chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;

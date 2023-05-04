@@ -4,14 +4,11 @@
 
 using System.Net.Http;
 using System.Threading.Tasks;
-using NEL.MESH.Models.Configurations;
 
 namespace NEL.MESH.Brokers.Mesh
 {
     internal interface IMeshBroker
     {
-        MeshConfiguration MeshConfiguration { get; }
-
         ValueTask<HttpResponseMessage> HandshakeAsync(string authorizationToken);
 
         ValueTask<HttpResponseMessage> SendMessageAsync(

@@ -6,7 +6,6 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using NEL.MESH.Models.Configurations;
 using NEL.MESH.Models.Foundations.Token.Exceptions;
 using Xeptions;
 using Xunit;
@@ -19,21 +18,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
         public async Task ShouldThrowServiceExceptionIfServiceErrorOccursOnGenerateTokenAsync()
         {
             // given
-            string mailboxId = GetRandomString();
-            string password = GetRandomString();
-            string key = GetRandomString();
-
-            MeshConfiguration meshConfiguration = new MeshConfiguration
-            {
-                MailboxId = mailboxId,
-                Password = password,
-                Key = key
-            };
-
-            this.meshBrokerMock.Setup(broker =>
-                broker.MeshConfiguration)
-                    .Returns(meshConfiguration);
-
             string someMessage = GetRandomString();
             Exception someException = new Exception(someMessage);
 

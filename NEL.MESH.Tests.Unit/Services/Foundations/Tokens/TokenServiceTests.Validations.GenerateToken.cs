@@ -8,6 +8,7 @@ using FluentAssertions;
 using Moq;
 using NEL.MESH.Models.Configurations;
 using NEL.MESH.Models.Foundations.Token.Exceptions;
+using NEL.MESH.Services.Foundations.Tokens;
 using Xunit;
 
 namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
@@ -25,17 +26,17 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
             string password = invalidText;
             string key = invalidText;
 
-            MeshConfiguration meshConfiguration = new MeshConfiguration
+            var configuration = new MeshConfiguration
             {
-                MailboxId = mailboxId,
-                Password = password,
-                Key = key
+                MailboxId = invalidText,
+                Password = invalidText,
+                Key = invalidText
             };
 
-            this.meshBrokerMock.Setup(broker =>
-                broker.MeshConfiguration)
-                    .Returns(meshConfiguration);
-
+            var tokenService = new TokenService(
+                dateTimeBroker: dateTimeBrokerMock.Object,
+                identifierBroker: identifierBrokerMock.Object,
+                meshConfiguration: configuration);
 
             Guid identifier = Guid.NewGuid();
             DateTimeOffset randomDateTimeOffset = new DateTime(2022, 3, 24, 12, 00, 00);
@@ -69,8 +70,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
                     validationSummary: GetValidationSummary(InvalidTokenArgsException.Data));
 
             // when
-            ValueTask<string> getTokenTask =
-                this.tokenService.GenerateTokenAsync();
+            ValueTask<string> getTokenTask = tokenService.GenerateTokenAsync();
 
             TokenValidationException actualTokenValidationException =
                 await Assert.ThrowsAsync<TokenValidationException>(() =>
