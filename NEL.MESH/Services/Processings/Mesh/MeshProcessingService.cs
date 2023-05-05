@@ -54,8 +54,13 @@ namespace NEL.MESH.Services.Processings.Mesh
                 return sentMessage;
             });
 
-        public async ValueTask<Message> TrackMessageAsync(string messageId, string authorizationToken) =>
-            await this.meshService.TrackMessageAsync(messageId, authorizationToken);
+        public ValueTask<Message> TrackMessageAsync(string messageId, string authorizationToken) =>
+            TryCatch(async () =>
+            {
+                ValidateOnTrackMessage(messageId, authorizationToken);
+
+                return await this.meshService.TrackMessageAsync(messageId, authorizationToken);
+            });
 
         public ValueTask<List<string>> RetrieveMessagesAsync(string authorizationToken) =>
             throw new System.NotImplementedException();
