@@ -10,7 +10,7 @@ namespace NEL.MESH.Tests.Integration
 {
     public partial class MeshClientTests
     {
-        [Fact(Skip = "Excluded")]
+        [Fact]
         [Trait("Category", "Integration")]
         public async Task ShouldDoHandshakeAsync()
         {

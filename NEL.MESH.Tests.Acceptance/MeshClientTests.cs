@@ -19,8 +19,6 @@ namespace NEL.MESH.Tests.Acceptance
         private readonly MeshClient meshClient;
         private readonly WireMockServer wireMockServer;
         private readonly MeshConfiguration meshConfigurations;
-        private readonly bool runAcceptanceTests;
-        private readonly bool runIntegrationTests;
 
         public MeshClientTests()
         {
