@@ -2,8 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using Moq;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Processings.Mesh;
@@ -72,6 +74,41 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
             // then
             actualMeshProcessingDependencyException.Should()
                 .BeEquivalentTo(expectedMeshProcessingDependencyException);
+
+            this.meshServiceMock.Verify(service =>
+                service.HandshakeAsync(authorizationToken),
+                    Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnHandshakeIfServiceErrorOccurs()
+        {
+            // given
+            string authorizationToken = GetRandomString();
+            var serviceException = new Exception();
+
+            var failedMeshProcessingServiceException =
+                new FailedMeshProcessingServiceException(serviceException);
+
+            var expectedMeshProcessingServiceException =
+                new MeshProcessingServiceException(failedMeshProcessingServiceException);
+
+            this.meshServiceMock.Setup(service =>
+                service.HandshakeAsync(authorizationToken))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<bool> HandshakeTask =
+                this.meshProcessingService.HandshakeAsync(authorizationToken);
+
+            MeshProcessingServiceException actualMeshProcessingServiceException =
+                await Assert.ThrowsAsync<MeshProcessingServiceException>(HandshakeTask.AsTask);
+
+            // then
+            actualMeshProcessingServiceException.Should()
+                .BeEquivalentTo(expectedMeshProcessingServiceException);
 
             this.meshServiceMock.Verify(service =>
                 service.HandshakeAsync(authorizationToken),
