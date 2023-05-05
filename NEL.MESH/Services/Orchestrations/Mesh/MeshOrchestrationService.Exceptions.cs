@@ -221,10 +221,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
 
         private MeshOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
-            var meshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(exception, validationSummary);
+            var meshOrchestrationValidationException = new MeshOrchestrationValidationException(exception);
 
             return meshOrchestrationValidationException;
         }

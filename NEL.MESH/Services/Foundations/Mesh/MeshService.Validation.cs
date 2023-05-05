@@ -3,11 +3,9 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xeptions;
@@ -43,7 +41,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
         private static void ValidateOnHandshake(string authorizationToken)
         {
-            Validate<InvalidMeshArgsException>(
+            Validate<InvalidArgumentsMeshException>(
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
@@ -79,28 +77,28 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
         public static void ValidateTrackMessageArguments(string messageId, string authorizationToken)
         {
-            Validate<InvalidMeshArgsException>(
+            Validate<InvalidArgumentsMeshException>(
                (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
         public static void ValidateRetrieveMessageArguments(string messageId, string authorizationToken)
         {
-            Validate<InvalidMeshArgsException>(
+            Validate<InvalidArgumentsMeshException>(
                (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
         public static void ValidateRetrieveMessagesArguments(string authorizationToken)
         {
-            Validate<InvalidMeshArgsException>(
+            Validate<InvalidArgumentsMeshException>(
                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
 
         public static void ValidateAcknowledgeMessageArguments(string messageId, string authorizationToken)
         {
-            Validate<InvalidMeshArgsException>(
+            Validate<InvalidArgumentsMeshException>(
                (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
@@ -199,22 +197,6 @@ namespace NEL.MESH.Services.Foundations.Mesh
             }
 
             invalidDataException.ThrowIfContainsErrors();
-        }
-
-        private string GetValidationSummary(IDictionary data)
-        {
-            StringBuilder validationSummary = new StringBuilder();
-
-            foreach (DictionaryEntry entry in data)
-            {
-                string errorSummary = ((List<string>)entry.Value)
-                    .Select((string value) => value)
-                    .Aggregate((string current, string next) => current + ", " + next);
-
-                validationSummary.Append($"{entry.Key} => {errorSummary};  ");
-            }
-
-            return validationSummary.ToString();
         }
     }
 }

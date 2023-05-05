@@ -23,7 +23,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 return await returningBooleanFunction();
             }
-            catch (InvalidMeshArgsException invalidArgumentMeshException)
+            catch (InvalidArgumentsMeshException invalidArgumentMeshException)
             {
                 throw CreateAndLogValidationException(invalidArgumentMeshException);
             }
@@ -58,7 +58,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 throw CreateAndLogValidationException(nullHeadersException);
             }
-            catch (InvalidMeshArgsException invalidArgumentMeshException)
+            catch (InvalidArgumentsMeshException invalidArgumentMeshException)
             {
                 throw CreateAndLogValidationException(invalidArgumentMeshException);
             }
@@ -97,7 +97,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 throw CreateAndLogDependencyException(failedMeshClientException);
             }
-            catch (InvalidMeshArgsException invalidArgumentMeshException)
+            catch (InvalidArgumentsMeshException invalidArgumentMeshException)
             {
                 throw CreateAndLogValidationException(invalidArgumentMeshException);
             }
@@ -112,10 +112,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
         private MeshValidationException CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
-            var meshValidationException =
-                new MeshValidationException(exception, validationSummary);
+            var meshValidationException = new MeshValidationException(exception);
 
             return meshValidationException;
         }

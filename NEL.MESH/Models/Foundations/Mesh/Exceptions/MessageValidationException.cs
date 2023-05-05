@@ -8,13 +8,9 @@ namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
 {
     internal class MeshValidationException : Xeption
     {
-        private const string validationMessage = "Message validation errors occurred, please try again.";
-
-        public MeshValidationException(Xeption innerException, string validationSummary = "")
+        public MeshValidationException(Xeption innerException)
             : base(
-                  message: validationSummary.Length > 0
-                    ? $"{validationMessage}  Validation errors: {validationSummary}"
-                    : validationMessage,
+                  message: "Message validation errors occurred, please try again.",
                   innerException)
         { }
     }

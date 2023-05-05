@@ -6,7 +6,7 @@ using Xeptions;
 
 namespace NEL.MESH.Models.Orchestrations.Mesh.Exceptions
 {
-    internal class NullMeshMessageException : Xeption
+    public class NullMeshMessageException : Xeption
     {
         public NullMeshMessageException()
             : base(message: "Message is null.") { }

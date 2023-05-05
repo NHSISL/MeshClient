@@ -64,9 +64,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
                 values: "Text is required");
 
             var expectedTokenValidationException =
-                 new TokenValidationException(
-                    innerException: InvalidTokenArgsException,
-                    validationSummary: GetValidationSummary(InvalidTokenArgsException.Data));
+                 new TokenValidationException(innerException: InvalidTokenArgsException);
 
             // when
             ValueTask<string> getTokenTask =

@@ -34,9 +34,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 values: "Text is required");
 
             var expectedMeshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(
-                    innerException: invalidMeshOrchestrationArgsException,
-                    validationSummary: GetValidationSummary(invalidMeshOrchestrationArgsException.Data));
+                new MeshOrchestrationValidationException(innerException: invalidMeshOrchestrationArgsException);
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
@@ -76,9 +74,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 values: "Text is required");
 
             var expectedMeshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(
-                    innerException: invalidTokenException,
-                    validationSummary: GetValidationSummary(invalidTokenException.Data));
+                new MeshOrchestrationValidationException(innerException: invalidTokenException);
 
             this.tokenServiceMock.Setup(service =>
                 service.GenerateTokenAsync())

@@ -7,7 +7,7 @@ using Xeptions;
 
 namespace NEL.MESH.Models.Orchestrations.Mesh.Exceptions
 {
-    internal class FailedMeshOrchestrationServiceException : Xeption
+    public class FailedMeshOrchestrationServiceException : Xeption
     {
         public FailedMeshOrchestrationServiceException(Exception innerException)
             : base(message: "Failed mesh orchestration service occurred, please contact support", innerException) { }

@@ -6,10 +6,11 @@ using Xeptions;
 
 namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
 {
-    internal class InvalidMeshArgsException : Xeption
+    public class InvalidArgumentsMeshException : Xeption
     {
-        public InvalidMeshArgsException()
-            : base(message: "Invalid Mesh argument(s), please correct the errors and try again.")
+        public InvalidArgumentsMeshException()
+            : base(message:
+                  "Invalid argument(s) MESH valiation errors occurred, please correct the errors and try again.")
         { }
     }
 }

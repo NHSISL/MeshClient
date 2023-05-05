@@ -6,7 +6,7 @@ using Xeptions;
 
 namespace NEL.MESH.Models.Orchestrations.Mesh.Exceptions
 {
-    internal class InvalidTokenException : Xeption
+    public class InvalidTokenException : Xeption
     {
         public InvalidTokenException()
             : base(message: "Token is invalid.") { }

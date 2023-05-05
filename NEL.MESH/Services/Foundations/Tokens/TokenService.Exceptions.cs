@@ -34,10 +34,8 @@ namespace NEL.MESH.Services.Foundations.Tokens
 
         private TokenValidationException CreateAndLogValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
             var tokenValidationException =
-                new TokenValidationException(exception, validationSummary);
+                new TokenValidationException(exception);
 
             return tokenValidationException;
         }
