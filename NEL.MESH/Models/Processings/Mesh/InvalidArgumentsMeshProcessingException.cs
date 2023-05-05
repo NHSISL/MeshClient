@@ -10,8 +10,8 @@ namespace NEL.MESH.Models.Processings.Mesh
     {
         public InvalidArgumentsMeshProcessingException()
             : base(message:
-                  "Invalid argument(s) MESH processing valiation errors occurred, "
-                  + "please correct the errors and try again.")
+                "Invalid argument(s) MESH processing valiation errors occurred, "
+                + "please correct the errors and try again.")
         { }
     }
 }
