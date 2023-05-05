@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -75,6 +76,41 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
             // then
             actualMeshProcessingDependencyException.Should()
                 .BeEquivalentTo(expectedMeshProcessingDependencyException);
+
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessagesAsync(authorizationToken),
+                    Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRetrieveMessagesIfServiceErrorOccurs()
+        {
+            // given
+            string authorizationToken = GetRandomString();
+            var serviceException = new Exception();
+
+            var failedMeshProcessingServiceException =
+                new FailedMeshProcessingServiceException(serviceException);
+
+            var expectedMeshProcessingServiceException =
+                new MeshProcessingServiceException(failedMeshProcessingServiceException);
+
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveMessagesAsync(authorizationToken))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<List<string>> RetrieveMessagesTask =
+                this.meshProcessingService.RetrieveMessagesAsync(authorizationToken);
+
+            MeshProcessingServiceException actualMeshProcessingServiceException =
+                await Assert.ThrowsAsync<MeshProcessingServiceException>(RetrieveMessagesTask.AsTask);
+
+            // then
+            actualMeshProcessingServiceException.Should()
+                .BeEquivalentTo(expectedMeshProcessingServiceException);
 
             this.meshServiceMock.Verify(service =>
                 service.RetrieveMessagesAsync(authorizationToken),
