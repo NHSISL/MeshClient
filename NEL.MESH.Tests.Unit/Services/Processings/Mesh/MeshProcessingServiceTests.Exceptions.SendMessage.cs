@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -77,6 +78,42 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
             // then
             actualMeshProcessingDependencyException.Should()
                 .BeEquivalentTo(expectedMeshProcessingDependencyException);
+
+            this.meshServiceMock.Verify(service =>
+                service.SendMessageAsync(It.IsAny<Message>(), It.IsAny<string>()),
+                    Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnSendMessageIfServiceErrorOccurs()
+        {
+            // given
+            string someAuthorizationToken = GetRandomString();
+            Message someMessage = CreateRandomMessage();
+            var serviceException = new Exception();
+
+            var failedMeshProcessingServiceException =
+                new FailedMeshProcessingServiceException(serviceException);
+
+            var expectedMeshProcessingServiceException =
+                new MeshProcessingServiceException(failedMeshProcessingServiceException);
+
+            this.meshServiceMock.Setup(service =>
+                service.SendMessageAsync(It.IsAny<Message>(), It.IsAny<string>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<Message> sendMessageTask =
+                this.meshProcessingService.SendMessageAsync(someMessage, someAuthorizationToken);
+
+            MeshProcessingServiceException actualMeshProcessingServiceException =
+                await Assert.ThrowsAsync<MeshProcessingServiceException>(sendMessageTask.AsTask);
+
+            // then
+            actualMeshProcessingServiceException.Should()
+                .BeEquivalentTo(expectedMeshProcessingServiceException);
 
             this.meshServiceMock.Verify(service =>
                 service.SendMessageAsync(It.IsAny<Message>(), It.IsAny<string>()),
