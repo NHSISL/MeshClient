@@ -5,7 +5,7 @@
 using System;
 using Xeptions;
 
-namespace NEL.MESH.Models.Foundations.Token.Exceptions
+namespace NEL.MESH.Models.Foundations.Tokens.Exceptions
 {
     public class FailedTokenServiceException : Xeption
     {

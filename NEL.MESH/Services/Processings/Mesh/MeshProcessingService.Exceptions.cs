@@ -4,7 +4,6 @@
 
 using System;
 using System.Threading.Tasks;
-using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Processings.Mesh;

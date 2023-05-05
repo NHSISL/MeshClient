@@ -7,7 +7,7 @@ using System.Linq;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
-using NEL.MESH.Models.Foundations.Token.Exceptions;
+using NEL.MESH.Models.Foundations.Tokens.Exceptions;
 using NEL.MESH.Services.Foundations.Mesh;
 using NEL.MESH.Services.Foundations.Tokens;
 using NEL.MESH.Services.Orchestrations.Mesh;

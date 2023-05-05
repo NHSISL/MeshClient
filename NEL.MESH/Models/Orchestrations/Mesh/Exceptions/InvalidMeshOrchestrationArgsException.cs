@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace NEL.MESH.Models.Foundations.Token.Exceptions
+namespace NEL.MESH.Models.Orchestrations.Mesh.Exceptions
 {
     public class InvalidMeshOrchestrationArgsException : Xeption
     {

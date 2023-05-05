@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
-using NEL.MESH.Models.Foundations.Token.Exceptions;
+using NEL.MESH.Models.Foundations.Tokens.Exceptions;
 using NEL.MESH.Models.Orchestrations.Mesh.Exceptions;
 using Xeptions;
 

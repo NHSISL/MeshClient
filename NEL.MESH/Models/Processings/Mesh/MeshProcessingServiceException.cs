@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace LHDS.Core.Models.Processings.Mesh.Exceptions
+namespace NEL.MESH.Models.Processings.Mesh
 {
     internal class MeshProcessingServiceException : Xeption
     {

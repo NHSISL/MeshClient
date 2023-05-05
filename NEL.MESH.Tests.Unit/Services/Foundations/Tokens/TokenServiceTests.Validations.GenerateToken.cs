@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NEL.MESH.Models.Configurations;
-using NEL.MESH.Models.Foundations.Token.Exceptions;
+using NEL.MESH.Models.Foundations.Tokens.Exceptions;
 using Xunit;
 
 namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens

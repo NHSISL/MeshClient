@@ -5,7 +5,7 @@
 using System;
 using Xeptions;
 
-namespace LHDS.Core.Models.Processings.Mesh.Exceptions
+namespace NEL.MESH.Models.Processings.Mesh
 {
     public class FailedMeshProcessingServiceException : Xeption
     {

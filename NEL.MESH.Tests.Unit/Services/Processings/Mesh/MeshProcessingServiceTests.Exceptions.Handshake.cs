@@ -5,7 +5,6 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using Moq;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Processings.Mesh;

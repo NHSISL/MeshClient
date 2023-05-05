@@ -4,7 +4,7 @@
 
 using System;
 using NEL.MESH.Models.Configurations;
-using NEL.MESH.Models.Foundations.Token.Exceptions;
+using NEL.MESH.Models.Foundations.Tokens.Exceptions;
 using Xeptions;
 
 namespace NEL.MESH.Services.Foundations.Tokens
