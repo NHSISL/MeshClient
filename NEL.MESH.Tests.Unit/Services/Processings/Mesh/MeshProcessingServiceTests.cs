@@ -3,9 +3,12 @@
 // ---------------------------------------------------------------
 
 using Moq;
+using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Services.Foundations.Mesh;
 using NEL.MESH.Services.Processings.Mesh;
 using Tynamix.ObjectFiller;
+using Xeptions;
+using Xunit;
 
 namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
 {
@@ -25,5 +28,18 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
+
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new MeshValidationException(innerException),
+                new MeshDependencyValidationException(innerException)
+            };
+        }
     }
 }
