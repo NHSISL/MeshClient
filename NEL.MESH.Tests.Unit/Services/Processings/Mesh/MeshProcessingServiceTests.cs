@@ -41,5 +41,18 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
                 new MeshDependencyValidationException(innerException)
             };
         }
+
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new MeshDependencyException(innerException),
+                new MeshServiceException(innerException)
+            };
+        }
     }
 }
