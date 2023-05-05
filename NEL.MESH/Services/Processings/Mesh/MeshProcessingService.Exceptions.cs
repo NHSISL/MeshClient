@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
+using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Processings.Mesh;
@@ -53,6 +55,16 @@ namespace NEL.MESH.Services.Processings.Mesh
                     new MeshProcessingDependencyException(meshServiceException);
 
                 throw meshProcessingDependencyException;
+            }
+            catch (Exception exception)
+            {
+                var failedMeshProcessingServiceException =
+                    new FailedMeshProcessingServiceException(exception);
+
+                var meshProcessingServiceException = new
+                    MeshProcessingServiceException(failedMeshProcessingServiceException);
+
+                throw meshProcessingServiceException;
             }
         }
     }
