@@ -93,6 +93,14 @@ namespace NEL.MESH.Services.Processings.Mesh
             {
                 throw CreateProcessingValidationException(invalidArgumentsMeshProcessingException);
             }
+            catch (MeshValidationException meshValidationException)
+            {
+                throw CreateProcessingDependencyValidationException(meshValidationException);
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateProcessingDependencyValidationException(meshDependencyValidationException);
+            }
         }
 
         private static MeshProcessingValidationException CreateProcessingValidationException(Xeption exception)
