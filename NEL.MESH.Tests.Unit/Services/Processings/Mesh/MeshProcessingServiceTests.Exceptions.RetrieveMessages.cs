@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
+using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Processings.Mesh;
 using Xeptions;
 using Xunit;
@@ -40,6 +41,40 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
             // then
             actualMeshProcessingDependencyValidationException.Should()
                 .BeEquivalentTo(expectedMeshProcessingDependencyValidationException);
+
+            this.meshServiceMock.Verify(service =>
+                service.RetrieveMessagesAsync(authorizationToken),
+                    Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnRetrieveMessagesIfDependencyErrorOccurs(
+            Xeption dependencyException)
+        {
+            // given
+            string authorizationToken = GetRandomString();
+
+            var expectedMeshProcessingDependencyException =
+                new MeshProcessingDependencyException(
+                    dependencyException.InnerException as Xeption);
+
+            this.meshServiceMock.Setup(service =>
+                service.RetrieveMessagesAsync(authorizationToken))
+                    .ThrowsAsync(dependencyException);
+
+            // when
+            ValueTask<List<string>> RetrieveMessagesTask =
+                this.meshProcessingService.RetrieveMessagesAsync(authorizationToken);
+
+            MeshProcessingDependencyException actualMeshProcessingDependencyException =
+                await Assert.ThrowsAsync<MeshProcessingDependencyException>(RetrieveMessagesTask.AsTask);
+
+            // then
+            actualMeshProcessingDependencyException.Should()
+                .BeEquivalentTo(expectedMeshProcessingDependencyException);
 
             this.meshServiceMock.Verify(service =>
                 service.RetrieveMessagesAsync(authorizationToken),
