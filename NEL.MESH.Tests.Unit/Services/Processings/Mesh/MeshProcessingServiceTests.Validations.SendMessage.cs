@@ -67,5 +67,37 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
                 this.meshServiceMock.VerifyNoOtherCalls();
             }
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIsNullAsync()
+        {
+            // given
+            string authorizationToken = GetRandomString();
+            Message nullSendMessage = null;
+
+            var invalidArgumentsMeshProcessingException =
+                new InvalidArgumentsMeshProcessingException();
+
+            invalidArgumentsMeshProcessingException.AddData(
+                key: "Token",
+                values: "Text is required");
+
+            var expectedMeshProcessingValidationException =
+                 new MeshProcessingValidationException(innerException: invalidArgumentsMeshProcessingException);
+
+            // when
+            ValueTask<Message> getMessagesTask =
+                this.meshProcessingService.SendMessageAsync(nullSendMessage, authorizationToken);
+
+            MeshProcessingValidationException actualMeshProcessingValidationException =
+                await Assert.ThrowsAsync<MeshProcessingValidationException>(() =>
+                    getMessagesTask.AsTask());
+
+            // then
+            actualMeshProcessingValidationException.Should()
+                .BeEquivalentTo(expectedMeshProcessingValidationException);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+        }
     }
 }
