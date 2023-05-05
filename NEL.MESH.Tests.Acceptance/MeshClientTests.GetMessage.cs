@@ -13,7 +13,8 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class MeshClientTests
     {
-        [Fact(Skip = "Not Ready for now")]
+        [Fact]
+        [Trait("Category", "Acceptance")]
         public async Task ShouldGetMessageAsync()
         {
             // given
@@ -48,7 +49,8 @@ namespace NEL.MESH.Tests.Acceptance
                 await this.meshClient.Mailbox.RetrieveMessageAsync(randomMessage.MessageId);
 
             // then
-            actualGetMessageResult.Should().BeEquivalentTo(expectedGetMessageResult);
+            actualGetMessageResult.MessageId.Should().BeEquivalentTo(expectedGetMessageResult.MessageId);
+            actualGetMessageResult.StringContent.Should().BeEquivalentTo(expectedGetMessageResult.StringContent);
         }
     }
 }

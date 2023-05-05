@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using WireMock.Matchers;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using Xunit;
@@ -12,7 +13,8 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class MeshClientTests
     {
-        [Fact(Skip = "Not Ready for now")]
+        [Fact]
+        [Trait("Category", "Acceptance")]
         public async Task ShouldAcknowledgeMessageAsync()
         {
             // given
@@ -30,7 +32,7 @@ namespace NEL.MESH.Tests.Acceptance
                         .WithHeader("Mex-ClientVersion", this.meshConfigurations.MexClientVersion)
                         .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
                         .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion)
-                        .WithHeader("Authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
+                        .WithHeader("Authorization", "*", MatchBehaviour.AcceptOnMatch)
                         )
                 .RespondWith(
                     Response.Create()

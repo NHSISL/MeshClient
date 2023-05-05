@@ -11,7 +11,7 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class ConfigurationTests
     {
-        [Fact(Skip = "Excluded")]
+        [Fact]
         public void ShouldGetConfigurationSettings()
         {
             // given
@@ -37,6 +37,7 @@ namespace NEL.MESH.Tests.Acceptance
             key.Should().NotBeNullOrEmpty();
             rootCertificate.Should().NotBeNullOrEmpty();
             clientCertificate.Should().NotBeNullOrEmpty();
+            intermediateCertificates.Count.Should().Be(1);
         }
     }
 }
