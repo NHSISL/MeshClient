@@ -45,11 +45,16 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
                      new MeshProcessingValidationException(innerException: invalidArgumentsMeshProcessingException);
 
                 // when
-                var actualMessage = await this.meshProcessingService
-                .SendMessageAsync(inputMessage, invalidAuthorizationToken);
+                ValueTask<Message> getMessagesTask =
+                    this.meshProcessingService.SendMessageAsync(inputMessage, invalidAuthorizationToken);
+
+                MeshProcessingValidationException actualMeshProcessingValidationException =
+                    await Assert.ThrowsAsync<MeshProcessingValidationException>(() =>
+                        getMessagesTask.AsTask());
 
                 // then
-                actualMessage.Should().BeEquivalentTo(expectedMessage);
+                actualMeshProcessingValidationException.Should()
+                    .BeEquivalentTo(expectedMeshProcessingValidationException);
 
                 this.meshServiceMock.Verify(service =>
                     service.SendMessageAsync(inputMessage, invalidAuthorizationToken),

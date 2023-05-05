@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Processings.Mesh;
 using Xeptions;
 
@@ -11,6 +12,12 @@ namespace NEL.MESH.Services.Processings.Mesh
     internal partial class MeshProcessingService : IMeshProcessingService
     {
         private static void ValidateOnHandshake(string authorizationToken)
+        {
+            Validate<InvalidArgumentsMeshProcessingException>(
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+        }
+
+        private static void ValidateOnSendMessage(Message message, string authorizationToken)
         {
             Validate<InvalidArgumentsMeshProcessingException>(
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));

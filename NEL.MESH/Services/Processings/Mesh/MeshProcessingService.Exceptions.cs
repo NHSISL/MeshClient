@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
+using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Processings.Mesh;
 using Xeptions;
@@ -14,6 +15,7 @@ namespace NEL.MESH.Services.Processings.Mesh
     internal partial class MeshProcessingService : IMeshProcessingService
     {
         private delegate ValueTask<bool> ReturningBooleanFunction();
+        private delegate ValueTask<Message> ReturningMessageFunction();
 
         private async ValueTask<bool> TryCatch(ReturningBooleanFunction returningBooleanFunction)
         {
@@ -69,6 +71,21 @@ namespace NEL.MESH.Services.Processings.Mesh
                     MeshProcessingServiceException(failedMeshProcessingServiceException);
 
                 throw meshProcessingServiceException;
+            }
+        }
+
+        private async ValueTask<Message> TryCatch(ReturningMessageFunction returningMessageFunction)
+        {
+            try
+            {
+                return await returningMessageFunction();
+            }
+            catch (InvalidArgumentsMeshProcessingException invalidArgumentsMeshProcessingException)
+            {
+                var meshProcessingValidationException =
+                    new MeshProcessingValidationException(invalidArgumentsMeshProcessingException);
+
+                throw meshProcessingValidationException;
             }
         }
     }
