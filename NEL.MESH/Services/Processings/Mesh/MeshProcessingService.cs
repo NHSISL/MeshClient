@@ -19,7 +19,7 @@ namespace NEL.MESH.Services.Processings.Mesh
         }
 
         public ValueTask<bool> HandshakeAsync(string authorizationToken) =>
-            throw new System.NotImplementedException();
+            this.meshService.HandshakeAsync(authorizationToken);
 
         public ValueTask<Message> SendMessageAsync(Message message, string authorizationToken) =>
             throw new System.NotImplementedException();
