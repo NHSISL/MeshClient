@@ -20,6 +20,7 @@ namespace NEL.MESH.Services.Processings.Mesh
         private static void ValidateOnSendMessage(Message message, string authorizationToken)
         {
             Validate<InvalidArgumentsMeshProcessingException>(
+                (Rule: IsInvalid(message), Parameter: nameof(Message)),
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
@@ -27,6 +28,12 @@ namespace NEL.MESH.Services.Processings.Mesh
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(Message message) => new
+        {
+            Condition = message is null,
+            Message = "Message is required"
         };
 
         private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
