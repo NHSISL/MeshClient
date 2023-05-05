@@ -4,12 +4,12 @@
 
 using Xeptions;
 
-namespace NEL.MESH.Models.Foundations.Tokens.Exceptions
+namespace NEL.MESH.Models.Processings.Mesh
 {
-    internal class TokenServiceException : Xeption
+    internal class MeshProcessingServiceException : Xeption
     {
-        public TokenServiceException(Xeption innerException)
-          : base(message: "Token service error occurred, contact support.",
+        public MeshProcessingServiceException(Xeption innerException)
+            : base(message: "Mesh processing service error occurred, contact support.",
                 innerException)
         { }
     }

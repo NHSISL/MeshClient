@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace NEL.MESH.Models.Foundations.Token.Exceptions
+namespace NEL.MESH.Models.Foundations.Tokens.Exceptions
 {
     internal class TokenDependencyValidationException : Xeption
     {

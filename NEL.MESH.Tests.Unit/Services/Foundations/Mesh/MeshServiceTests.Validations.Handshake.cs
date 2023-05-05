@@ -47,16 +47,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage responseMessage = CreateHttpResponseContentMessage(inputMessage, contentHeaders);
 
             var InvalidMeshArgsException =
-                new InvalidMeshArgsException();
+                new InvalidArgumentsMeshException();
 
             InvalidMeshArgsException.AddData(
                 key: "Token",
                 values: "Text is required");
 
             var expectedMeshValidationException =
-                 new MeshValidationException(
-                    innerException: InvalidMeshArgsException,
-                    validationSummary: GetValidationSummary(InvalidMeshArgsException.Data));
+                 new MeshValidationException(innerException: InvalidMeshArgsException);
 
             // when
             ValueTask<bool> getMessagesTask =

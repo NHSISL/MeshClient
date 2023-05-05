@@ -47,7 +47,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage);
 
             var invalidMeshArgsException =
-                new InvalidMeshArgsException();
+                new InvalidArgumentsMeshException();
 
             invalidMeshArgsException.AddData(
                 key: nameof(Message.MessageId),
@@ -58,9 +58,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 values: "Text is required");
 
             var expectedMeshValidationException =
-                new MeshValidationException(
-                   innerException: invalidMeshArgsException,
-                   validationSummary: GetValidationSummary(invalidMeshArgsException.Data));
+                new MeshValidationException(innerException: invalidMeshArgsException);
 
             // when
             ValueTask<Message> trackMessageTask =

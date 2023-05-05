@@ -4,7 +4,7 @@
 
 using System;
 using System.Threading.Tasks;
-using NEL.MESH.Models.Foundations.Token.Exceptions;
+using NEL.MESH.Models.Foundations.Tokens.Exceptions;
 using Xeptions;
 
 namespace NEL.MESH.Services.Foundations.Tokens
@@ -21,28 +21,26 @@ namespace NEL.MESH.Services.Foundations.Tokens
             }
             catch (InvalidTokenArgsException invalidArgumentTokenException)
             {
-                throw CreateAndLogValidationException(invalidArgumentTokenException);
+                throw CreateValidationException(invalidArgumentTokenException);
             }
             catch (Exception exception)
             {
                 var failedTokenServiceException =
                     new FailedTokenServiceException(exception);
 
-                throw CreateAndLogServiceException(failedTokenServiceException);
+                throw CreateServiceException(failedTokenServiceException);
             }
         }
 
-        private TokenValidationException CreateAndLogValidationException(Xeption exception)
+        private TokenValidationException CreateValidationException(Xeption exception)
         {
-            string validationSummary = GetValidationSummary(exception.Data);
-
             var tokenValidationException =
-                new TokenValidationException(exception, validationSummary);
+                new TokenValidationException(exception);
 
             return tokenValidationException;
         }
 
-        private TokenServiceException CreateAndLogServiceException(Xeption exception)
+        private TokenServiceException CreateServiceException(Xeption exception)
         {
             var tokenServiceException = new
                 TokenServiceException(exception);

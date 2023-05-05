@@ -37,7 +37,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                   .ReturnsAsync(responseMessage);
 
             var InvalidMeshArgsException =
-                new InvalidMeshArgsException();
+                new InvalidArgumentsMeshException();
 
             InvalidMeshArgsException.AddData(
                key: nameof(Message.MessageId),
@@ -48,9 +48,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 values: "Text is required");
 
             var expectedMeshValidationException =
-                 new MeshValidationException(
-                    innerException: InvalidMeshArgsException,
-                    validationSummary: GetValidationSummary(InvalidMeshArgsException.Data));
+                 new MeshValidationException(innerException: InvalidMeshArgsException);
 
             // when
             ValueTask<Message> getMessageTask =

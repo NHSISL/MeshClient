@@ -3,20 +3,17 @@
 // ---------------------------------------------------------------
 
 using System;
-using NEL.MESH.Models.Configurations;
-using NEL.MESH.Models.Foundations.Tokens.Exceptions;
+using NEL.MESH.Models.Processings.Mesh;
 using Xeptions;
 
-namespace NEL.MESH.Services.Foundations.Tokens
+namespace NEL.MESH.Services.Processings.Mesh
 {
-    internal partial class TokenService : ITokenService
+    internal partial class MeshProcessingService : IMeshProcessingService
     {
-        public static void ValidateGenerateTokenArgs(string mailboxId, string password, string key)
+        private static void ValidateOnHandshake(string authorizationToken)
         {
-            Validate<InvalidTokenArgsException>(
-               (Rule: IsInvalid(mailboxId), Parameter: nameof(MeshConfiguration.MailboxId)),
-               (Rule: IsInvalid(password), Parameter: nameof(MeshConfiguration.Password)),
-               (Rule: IsInvalid(key), Parameter: nameof(MeshConfiguration.Key)));
+            Validate<InvalidArgumentsMeshProcessingException>(
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
         private static dynamic IsInvalid(string text) => new

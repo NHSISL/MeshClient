@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
-using NEL.MESH.Models.Foundations.Token.Exceptions;
+using NEL.MESH.Models.Foundations.Tokens.Exceptions;
 using NEL.MESH.Models.Orchestrations.Mesh.Exceptions;
 using Xeptions;
 
@@ -27,15 +27,15 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             }
             catch (NullMeshMessageException nullMeshMessageException)
             {
-                throw CreateAndLogValidationException(nullMeshMessageException);
+                throw CreateValidationException(nullMeshMessageException);
             }
             catch (InvalidTokenException invalidTokenException)
             {
-                throw CreateAndLogValidationException(invalidTokenException);
+                throw CreateValidationException(invalidTokenException);
             }
             catch (InvalidMeshOrchestrationArgsException invalidMeshOrchestrationArgsException)
             {
-                throw CreateAndLogValidationException(invalidMeshOrchestrationArgsException);
+                throw CreateValidationException(invalidMeshOrchestrationArgsException);
             }
             catch (TokenValidationException tokenValidationException)
             {
@@ -55,26 +55,26 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             }
             catch (TokenDependencyException tokenDependencyException)
             {
-                throw CreateAndLogDependencyException(tokenDependencyException);
+                throw CreateDependencyException(tokenDependencyException);
             }
             catch (TokenServiceException tokenServiceException)
             {
-                throw CreateAndLogDependencyException(tokenServiceException);
+                throw CreateDependencyException(tokenServiceException);
             }
             catch (MeshDependencyException meshDependencyException)
             {
-                throw CreateAndLogDependencyException(meshDependencyException);
+                throw CreateDependencyException(meshDependencyException);
             }
             catch (MeshServiceException meshServiceException)
             {
-                throw CreateAndLogDependencyException(meshServiceException);
+                throw CreateDependencyException(meshServiceException);
             }
             catch (Exception exception)
             {
                 var failedMeshOrchestrationServiceException =
                     new FailedMeshOrchestrationServiceException(exception);
 
-                throw CreateAndLogServiceException(failedMeshOrchestrationServiceException);
+                throw CreateServiceException(failedMeshOrchestrationServiceException);
             }
         }
 
@@ -86,15 +86,15 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             }
             catch (NullMeshMessageException nullMeshMessageException)
             {
-                throw CreateAndLogValidationException(nullMeshMessageException);
+                throw CreateValidationException(nullMeshMessageException);
             }
             catch (InvalidTokenException invalidTokenException)
             {
-                throw CreateAndLogValidationException(invalidTokenException);
+                throw CreateValidationException(invalidTokenException);
             }
             catch (InvalidMeshOrchestrationArgsException invalidMeshOrchestrationArgsException)
             {
-                throw CreateAndLogValidationException(invalidMeshOrchestrationArgsException);
+                throw CreateValidationException(invalidMeshOrchestrationArgsException);
             }
             catch (TokenValidationException tokenValidationException)
             {
@@ -114,26 +114,26 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             }
             catch (TokenDependencyException tokenDependencyException)
             {
-                throw CreateAndLogDependencyException(tokenDependencyException);
+                throw CreateDependencyException(tokenDependencyException);
             }
             catch (TokenServiceException tokenServiceException)
             {
-                throw CreateAndLogDependencyException(tokenServiceException);
+                throw CreateDependencyException(tokenServiceException);
             }
             catch (MeshDependencyException meshDependencyException)
             {
-                throw CreateAndLogDependencyException(meshDependencyException);
+                throw CreateDependencyException(meshDependencyException);
             }
             catch (MeshServiceException meshServiceException)
             {
-                throw CreateAndLogDependencyException(meshServiceException);
+                throw CreateDependencyException(meshServiceException);
             }
             catch (Exception exception)
             {
                 var failedMeshOrchestrationServiceException =
                     new FailedMeshOrchestrationServiceException(exception);
 
-                throw CreateAndLogServiceException(failedMeshOrchestrationServiceException);
+                throw CreateServiceException(failedMeshOrchestrationServiceException);
             }
         }
 
@@ -145,11 +145,11 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             }
             catch (InvalidTokenException invalidTokenException)
             {
-                throw CreateAndLogValidationException(invalidTokenException);
+                throw CreateValidationException(invalidTokenException);
             }
             catch (InvalidMeshOrchestrationArgsException invalidMeshOrchestrationArgsException)
             {
-                throw CreateAndLogValidationException(invalidMeshOrchestrationArgsException);
+                throw CreateValidationException(invalidMeshOrchestrationArgsException);
             }
             catch (TokenValidationException tokenValidationException)
             {
@@ -169,26 +169,26 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             }
             catch (TokenDependencyException tokenDependencyException)
             {
-                throw CreateAndLogDependencyException(tokenDependencyException);
+                throw CreateDependencyException(tokenDependencyException);
             }
             catch (TokenServiceException tokenServiceException)
             {
-                throw CreateAndLogDependencyException(tokenServiceException);
+                throw CreateDependencyException(tokenServiceException);
             }
             catch (MeshDependencyException meshDependencyException)
             {
-                throw CreateAndLogDependencyException(meshDependencyException);
+                throw CreateDependencyException(meshDependencyException);
             }
             catch (MeshServiceException meshServiceException)
             {
-                throw CreateAndLogDependencyException(meshServiceException);
+                throw CreateDependencyException(meshServiceException);
             }
             catch (Exception exception)
             {
                 var failedMeshOrchestrationServiceException =
                     new FailedMeshOrchestrationServiceException(exception);
 
-                throw CreateAndLogServiceException(failedMeshOrchestrationServiceException);
+                throw CreateServiceException(failedMeshOrchestrationServiceException);
             }
         }
 
@@ -201,8 +201,14 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             return meshOrchestrationDependencyValidationException;
         }
 
-        private MeshOrchestrationDependencyException
-            CreateAndLogDependencyException(Xeption exception)
+        private MeshOrchestrationValidationException CreateValidationException(Xeption exception)
+        {
+            var meshOrchestrationValidationException = new MeshOrchestrationValidationException(exception);
+
+            return meshOrchestrationValidationException;
+        }
+
+        private MeshOrchestrationDependencyException CreateDependencyException(Xeption exception)
         {
             var meshOrchestrationDependencyException =
                 new MeshOrchestrationDependencyException(exception.InnerException as Xeption);
@@ -210,23 +216,12 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             throw meshOrchestrationDependencyException;
         }
 
-        private MeshOrchestrationServiceException
-            CreateAndLogServiceException(Xeption exception)
+        private MeshOrchestrationServiceException CreateServiceException(Xeption exception)
         {
             var meshOrchestrationServiceException =
                 new MeshOrchestrationServiceException(exception);
 
             throw meshOrchestrationServiceException;
-        }
-
-        private MeshOrchestrationValidationException CreateAndLogValidationException(Xeption exception)
-        {
-            string validationSummary = GetValidationSummary(exception.Data);
-
-            var meshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(exception, validationSummary);
-
-            return meshOrchestrationValidationException;
         }
     }
 }

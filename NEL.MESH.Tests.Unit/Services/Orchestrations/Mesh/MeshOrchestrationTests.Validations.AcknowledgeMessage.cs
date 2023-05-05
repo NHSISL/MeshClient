@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Models.Foundations.Token.Exceptions;
 using NEL.MESH.Models.Orchestrations.Mesh.Exceptions;
 using Xunit;
 
@@ -18,7 +17,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAknowledgeMessageIfMessageIsNullAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnAknowledgeMessageIfMessageIsNullAndLogItAsync(
+            string invalidText)
         {
             // given
             string invalidMessageId = invalidText;
@@ -33,9 +33,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 values: "Text is required");
 
             var expectedMeshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(
-                    innerException: invalidMeshOrchestrationArgsException,
-                    validationSummary: GetValidationSummary(invalidMeshOrchestrationArgsException.Data));
+                new MeshOrchestrationValidationException(innerException: invalidMeshOrchestrationArgsException);
 
             // when
             ValueTask<bool> messageTask = this.meshOrchestrationService
@@ -60,7 +58,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAcknowledgeMessageIfTokenIsNullAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnAcknowledgeMessageIfTokenIsNullAndLogItAsync(
+            string invalidText)
         {
             // given
             string randomMssageId = GetRandomString();
@@ -75,9 +74,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 values: "Text is required");
 
             var expectedMeshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(
-                    innerException: invalidTokenException,
-                    validationSummary: GetValidationSummary(invalidTokenException.Data));
+                new MeshOrchestrationValidationException(innerException: invalidTokenException);
 
             this.tokenServiceMock.Setup(service =>
                 service.GenerateTokenAsync())
