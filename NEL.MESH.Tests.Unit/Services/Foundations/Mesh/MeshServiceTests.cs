@@ -443,8 +443,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static Filler<Message> CreateMessageFiller()
         {
             var filler = new Filler<Message>();
-            filler.Setup().OnProperty(message => message.Headers)
-                .Use(new Dictionary<string, List<string>>());
+            filler.Setup()
+                .OnProperty(message => message.Headers).Use(new Dictionary<string, List<string>>());
 
             return filler;
         }
