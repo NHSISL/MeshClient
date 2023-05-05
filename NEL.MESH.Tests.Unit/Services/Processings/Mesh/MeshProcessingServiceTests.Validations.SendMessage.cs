@@ -18,36 +18,34 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
         [InlineData(" ")]
         public async Task ShouldThrowValidationExceptionOnSendMessageIfTokenIsNullOrEmptyAsync(string invalidText)
         {
-            {
-                // given
-                string invalidAuthorizationToken = invalidText;
-                Message randomSendMessage = CreateRandomMessage();
-                Message inputMessage = randomSendMessage;
+            // given
+            string invalidAuthorizationToken = invalidText;
+            Message randomSendMessage = CreateRandomMessage();
+            Message inputMessage = randomSendMessage;
 
-                var invalidArgumentsMeshProcessingException =
-                    new InvalidArgumentsMeshProcessingException();
+            var invalidArgumentsMeshProcessingException =
+                new InvalidArgumentsMeshProcessingException();
 
-                invalidArgumentsMeshProcessingException.AddData(
-                    key: "Token",
-                    values: "Text is required");
+            invalidArgumentsMeshProcessingException.AddData(
+                key: "Token",
+                values: "Text is required");
 
-                var expectedMeshProcessingValidationException =
-                     new MeshProcessingValidationException(innerException: invalidArgumentsMeshProcessingException);
+            var expectedMeshProcessingValidationException =
+                 new MeshProcessingValidationException(innerException: invalidArgumentsMeshProcessingException);
 
-                // when
-                ValueTask<Message> getMessagesTask =
-                    this.meshProcessingService.SendMessageAsync(inputMessage, invalidAuthorizationToken);
+            // when
+            ValueTask<Message> getMessagesTask =
+                this.meshProcessingService.SendMessageAsync(inputMessage, invalidAuthorizationToken);
 
-                MeshProcessingValidationException actualMeshProcessingValidationException =
-                    await Assert.ThrowsAsync<MeshProcessingValidationException>(() =>
-                        getMessagesTask.AsTask());
+            MeshProcessingValidationException actualMeshProcessingValidationException =
+                await Assert.ThrowsAsync<MeshProcessingValidationException>(() =>
+                    getMessagesTask.AsTask());
 
-                // then
-                actualMeshProcessingValidationException.Should()
-                    .BeEquivalentTo(expectedMeshProcessingValidationException);
+            // then
+            actualMeshProcessingValidationException.Should()
+                .BeEquivalentTo(expectedMeshProcessingValidationException);
 
-                this.meshServiceMock.VerifyNoOtherCalls();
-            }
+            this.meshServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
