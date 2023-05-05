@@ -9,7 +9,7 @@ namespace NEL.MESH.Models.Foundations.Token.Exceptions
     public class InvalidMeshOrchestrationArgsException : Xeption
     {
         public InvalidMeshOrchestrationArgsException()
-            : base(message: "Invalid mesh orchestraction argument(s), please correct the errors and try again.")
+            : base(message: "Invalid mesh orchestraction argument valiation errors occurred, please correct the errors and try again.")
         { }
     }
 }

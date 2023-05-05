@@ -10,7 +10,7 @@ namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
     {
         public InvalidArgumentsMeshException()
             : base(message:
-                  "Invalid argument(s) MESH valiation errors occurred, please correct the errors and try again.")
+                  "Invalid MESH argument valiation errors occurred, please correct the errors and try again.")
         { }
     }
 }

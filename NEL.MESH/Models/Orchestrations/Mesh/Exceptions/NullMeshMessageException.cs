@@ -9,6 +9,7 @@ namespace NEL.MESH.Models.Orchestrations.Mesh.Exceptions
     public class NullMeshMessageException : Xeption
     {
         public NullMeshMessageException()
-            : base(message: "Message is null.") { }
+            : base(message: "Message is null.") 
+        { }
     }
 }
