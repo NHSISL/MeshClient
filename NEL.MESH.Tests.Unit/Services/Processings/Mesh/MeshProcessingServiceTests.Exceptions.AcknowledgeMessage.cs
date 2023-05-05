@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
+using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Processings.Mesh;
 using Xeptions;
 using Xunit;
@@ -40,6 +41,41 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
             // then
             actualMeshProcessingDependencyValidationException.Should()
                 .BeEquivalentTo(expectedMeshProcessingDependencyValidationException);
+
+            this.meshServiceMock.Verify(service =>
+                service.AcknowledgeMessageAsync(It.IsAny<string>(), It.IsAny<string>()),
+                    Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(DependencyExceptions))]
+        public async Task ShouldThrowDependencyExceptionOnAcknowledgeMessageIfDependencyErrorOccurs(
+            Xeption dependencyException)
+        {
+            // given
+            string someMessageId = GetRandomString();
+            string someAuthorizationToken = GetRandomString();
+
+            var expectedMeshProcessingDependencyException =
+                new MeshProcessingDependencyException(
+                    dependencyException.InnerException as Xeption);
+
+            this.meshServiceMock.Setup(service =>
+                service.AcknowledgeMessageAsync(It.IsAny<string>(), It.IsAny<string>()))
+                    .ThrowsAsync(dependencyException);
+
+            // when
+            ValueTask<bool> sendMessageTask =
+                this.meshProcessingService.AcknowledgeMessageAsync(someMessageId, someAuthorizationToken);
+
+            MeshProcessingDependencyException actualMeshProcessingDependencyException =
+                await Assert.ThrowsAsync<MeshProcessingDependencyException>(sendMessageTask.AsTask);
+
+            // then
+            actualMeshProcessingDependencyException.Should()
+                .BeEquivalentTo(expectedMeshProcessingDependencyException);
 
             this.meshServiceMock.Verify(service =>
                 service.AcknowledgeMessageAsync(It.IsAny<string>(), It.IsAny<string>()),
