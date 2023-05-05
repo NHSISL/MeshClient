@@ -9,7 +9,7 @@ namespace NEL.MESH.Models.Processings.Mesh
     internal class MeshProcessingServiceException : Xeption
     {
         public MeshProcessingServiceException(Xeption innerException)
-          : base(message: "Mesh processing service error occurred, contact support.",
+            : base(message: "Mesh processing service error occurred, contact support.",
                 innerException)
         { }
     }

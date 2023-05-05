@@ -9,7 +9,6 @@ namespace NEL.MESH.Models.Orchestrations.Mesh.Exceptions
     public class InvalidTokenException : Xeption
     {
         public InvalidTokenException()
-            : base(message: "Token is invalid.") 
-        { }
+            : base(message: "Token is invalid."){ }
     }
 }

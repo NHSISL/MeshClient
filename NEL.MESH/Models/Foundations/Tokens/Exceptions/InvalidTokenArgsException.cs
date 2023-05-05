@@ -9,7 +9,6 @@ namespace NEL.MESH.Models.Foundations.Tokens.Exceptions
     public class InvalidTokenArgsException : Xeption
     {
         public InvalidTokenArgsException()
-            : base(message: "Invalid token argument valiation errors occurred, please correct the errors and try again.")
-        { }
+            : base(message: "Invalid token argument valiation errors occurred, please correct the errors and try again."){ }
     }
 }
