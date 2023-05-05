@@ -8,6 +8,7 @@ using LHDS.Core.Models.Processings.Mesh.Exceptions;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Processings.Mesh;
+using Xeptions;
 
 namespace NEL.MESH.Services.Processings.Mesh
 {
@@ -31,28 +32,32 @@ namespace NEL.MESH.Services.Processings.Mesh
             catch (MeshValidationException meshValidationException)
             {
                 var meshProcessingDependencyValidationException =
-                    new MeshProcessingDependencyValidationException(meshValidationException);
+                    new MeshProcessingDependencyValidationException(
+                        meshValidationException.InnerException as Xeption);
 
                 throw meshProcessingDependencyValidationException;
             }
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
                 var meshProcessingDependencyValidationException =
-                    new MeshProcessingDependencyValidationException(meshDependencyValidationException);
+                    new MeshProcessingDependencyValidationException(
+                        meshDependencyValidationException.InnerException as Xeption);
 
                 throw meshProcessingDependencyValidationException;
             }
             catch (MeshDependencyException meshDependencyException)
             {
                 var meshProcessingDependencyException =
-                    new MeshProcessingDependencyException(meshDependencyException);
+                    new MeshProcessingDependencyException(
+                        meshDependencyException.InnerException as Xeption);
 
                 throw meshProcessingDependencyException;
             }
             catch (MeshServiceException meshServiceException)
             {
                 var meshProcessingDependencyException =
-                    new MeshProcessingDependencyException(meshServiceException);
+                    new MeshProcessingDependencyException(
+                        meshServiceException.InnerException as Xeption);
 
                 throw meshProcessingDependencyException;
             }

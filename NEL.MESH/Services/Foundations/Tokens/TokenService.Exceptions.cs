@@ -21,18 +21,18 @@ namespace NEL.MESH.Services.Foundations.Tokens
             }
             catch (InvalidTokenArgsException invalidArgumentTokenException)
             {
-                throw CreateAndLogValidationException(invalidArgumentTokenException);
+                throw CreateValidationException(invalidArgumentTokenException);
             }
             catch (Exception exception)
             {
                 var failedTokenServiceException =
                     new FailedTokenServiceException(exception);
 
-                throw CreateAndLogServiceException(failedTokenServiceException);
+                throw CreateServiceException(failedTokenServiceException);
             }
         }
 
-        private TokenValidationException CreateAndLogValidationException(Xeption exception)
+        private TokenValidationException CreateValidationException(Xeption exception)
         {
             var tokenValidationException =
                 new TokenValidationException(exception);
@@ -40,7 +40,7 @@ namespace NEL.MESH.Services.Foundations.Tokens
             return tokenValidationException;
         }
 
-        private TokenServiceException CreateAndLogServiceException(Xeption exception)
+        private TokenServiceException CreateServiceException(Xeption exception)
         {
             var tokenServiceException = new
                 TokenServiceException(exception);

@@ -25,7 +25,8 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
             string authorizationToken = GetRandomString();
 
             var expectedMeshProcessingDependencyValidationException =
-                new MeshProcessingDependencyValidationException(dependencyValidationException);
+                new MeshProcessingDependencyValidationException(
+                    dependencyValidationException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
                 service.HandshakeAsync(authorizationToken))
@@ -58,7 +59,8 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
             string authorizationToken = GetRandomString();
 
             var expectedMeshProcessingDependencyException =
-                new MeshProcessingDependencyException(dependencyException);
+                new MeshProcessingDependencyException(
+                    dependencyException.InnerException as Xeption);
 
             this.meshServiceMock.Setup(service =>
                 service.HandshakeAsync(authorizationToken))
