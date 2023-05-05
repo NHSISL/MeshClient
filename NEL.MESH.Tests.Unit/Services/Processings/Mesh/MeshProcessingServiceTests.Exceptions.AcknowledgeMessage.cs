@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -76,6 +77,42 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
             // then
             actualMeshProcessingDependencyException.Should()
                 .BeEquivalentTo(expectedMeshProcessingDependencyException);
+
+            this.meshServiceMock.Verify(service =>
+                service.AcknowledgeMessageAsync(It.IsAny<string>(), It.IsAny<string>()),
+                    Times.Once);
+
+            this.meshServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnAcknowledgeMessageIfServiceErrorOccurs()
+        {
+            // given
+            string someMessageId = GetRandomString();
+            string someAuthorizationToken = GetRandomString();
+            var serviceException = new Exception();
+
+            var failedMeshProcessingServiceException =
+                new FailedMeshProcessingServiceException(serviceException);
+
+            var expectedMeshProcessingServiceException =
+                new MeshProcessingServiceException(failedMeshProcessingServiceException);
+
+            this.meshServiceMock.Setup(service =>
+                service.AcknowledgeMessageAsync(It.IsAny<string>(), It.IsAny<string>()))
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<bool> sendMessageTask =
+                this.meshProcessingService.AcknowledgeMessageAsync(someMessageId, someAuthorizationToken);
+
+            MeshProcessingServiceException actualMeshProcessingServiceException =
+                await Assert.ThrowsAsync<MeshProcessingServiceException>(sendMessageTask.AsTask);
+
+            // then
+            actualMeshProcessingServiceException.Should()
+                .BeEquivalentTo(expectedMeshProcessingServiceException);
 
             this.meshServiceMock.Verify(service =>
                 service.AcknowledgeMessageAsync(It.IsAny<string>(), It.IsAny<string>()),
