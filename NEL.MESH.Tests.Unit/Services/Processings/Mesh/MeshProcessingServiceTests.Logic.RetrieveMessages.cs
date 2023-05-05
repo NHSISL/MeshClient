@@ -33,7 +33,7 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
             actualStringList.Should().BeEquivalentTo(expectedStringList);
 
             this.meshServiceMock.Verify(service =>
-                service.HandshakeAsync(authorizationToken),
+                service.RetrieveMessagesAsync(authorizationToken),
                     Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
