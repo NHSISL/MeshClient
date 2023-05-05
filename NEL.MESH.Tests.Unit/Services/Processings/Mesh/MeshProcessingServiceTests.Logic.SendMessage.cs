@@ -19,9 +19,11 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
             // given
             string authorizationToken = GetRandomString();
             Message randomSendMessage = CreateRandomMessage();
+            randomSendMessage.FileContent = null;
             Message inputMessage = randomSendMessage;
             Message ouputMessage = inputMessage.DeepClone();
             inputMessage.MessageId = null;
+            inputMessage.TrackingInfo = null;
             Message randomTrackingMessage = CreateRandomMessage();
             Message trackingOutputMessage = randomTrackingMessage;
             Message expectedMessage = ouputMessage.DeepClone();
@@ -40,7 +42,7 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
                 .SendMessageAsync(inputMessage, authorizationToken);
 
             // then
-            actualMessage.Should().Be(expectedMessage);
+            actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             this.meshServiceMock.Verify(service =>
                 service.SendMessageAsync(inputMessage, authorizationToken),
