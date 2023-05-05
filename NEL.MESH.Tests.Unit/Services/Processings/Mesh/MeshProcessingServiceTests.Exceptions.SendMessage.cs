@@ -42,6 +42,10 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
             actualMeshProcessingDependencyValidationException.Should()
                 .BeEquivalentTo(expectedMeshProcessingDependencyValidationException);
 
+            this.meshServiceMock.Verify(service =>
+                service.SendMessageAsync(It.IsAny<Message>(), It.IsAny<string>()),
+                    Times.Once);
+
             this.meshServiceMock.VerifyNoOtherCalls();
         }
     }

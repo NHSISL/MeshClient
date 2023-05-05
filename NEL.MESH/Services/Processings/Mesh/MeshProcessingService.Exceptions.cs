@@ -87,6 +87,22 @@ namespace NEL.MESH.Services.Processings.Mesh
 
                 throw meshProcessingValidationException;
             }
+            catch (MeshValidationException meshValidationException)
+            {
+                var meshProcessingDependencyValidationException =
+                    new MeshProcessingDependencyValidationException(
+                        meshValidationException.InnerException as Xeption);
+
+                throw meshProcessingDependencyValidationException;
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                var meshProcessingDependencyValidationException =
+                    new MeshProcessingDependencyValidationException(
+                        meshDependencyValidationException.InnerException as Xeption);
+
+                throw meshProcessingDependencyValidationException;
+            }
         }
     }
 }
