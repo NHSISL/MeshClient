@@ -19,7 +19,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnretrieveMessagesIfMessageIdIsNullOrEmptyAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnretrieveMessagesIfMessageIdIsNullOrEmptyAsync(
+            string invalidText)
         {
             // given
             string invalidAuthorizationToken = invalidText;
