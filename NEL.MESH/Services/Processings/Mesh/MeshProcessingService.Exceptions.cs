@@ -101,6 +101,14 @@ namespace NEL.MESH.Services.Processings.Mesh
             {
                 throw CreateProcessingDependencyValidationException(meshDependencyValidationException);
             }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw CreateProcessingDependencyException(meshDependencyException);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw CreateProcessingDependencyException(meshServiceException);
+            }
         }
 
         private static MeshProcessingValidationException CreateProcessingValidationException(Xeption exception)
