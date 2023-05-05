@@ -24,7 +24,7 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
 
             var expectedMeshProcessingDependencyValidationException =
                 new MeshProcessingDependencyValidationException(
-                    dependencyValidationException.InnerException as Xeption);
+                    dependencyValidationException);
 
             this.meshServiceMock.Setup(service =>
                 service.HandshakeAsync(authorizationToken))

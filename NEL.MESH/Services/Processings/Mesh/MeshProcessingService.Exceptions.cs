@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
+using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Processings.Mesh;
 
 namespace NEL.MESH.Services.Processings.Mesh
@@ -23,6 +24,20 @@ namespace NEL.MESH.Services.Processings.Mesh
                     new MeshProcessingValidationException(invalidArgumentsMeshProcessingException);
 
                 throw meshProcessingValidationException;
+            }
+            catch (MeshValidationException meshValidationException)
+            {
+                var meshProcessingDependencyValidationException =
+                    new MeshProcessingDependencyValidationException(meshValidationException);
+
+                throw meshProcessingDependencyValidationException;
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                var meshProcessingDependencyValidationException =
+                    new MeshProcessingDependencyValidationException(meshDependencyValidationException);
+
+                throw meshProcessingDependencyValidationException;
             }
         }
     }
