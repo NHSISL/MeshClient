@@ -78,7 +78,12 @@ namespace NEL.MESH.Services.Processings.Mesh
                 return await this.meshService.RetrieveMessageAsync(messageId, authorizationToken);
             });
 
-        public async ValueTask<bool> AcknowledgeMessageAsync(string messageId, string authorizationToken) =>
-            await this.meshService.AcknowledgeMessageAsync(messageId, authorizationToken);
+        public ValueTask<bool> AcknowledgeMessageAsync(string messageId, string authorizationToken) =>
+            TryCatch(async () =>
+            {
+                ValidateOnAcknowledgeMessage(messageId, authorizationToken);
+
+                return await this.meshService.AcknowledgeMessageAsync(messageId, authorizationToken);
+            });
     }
 }
