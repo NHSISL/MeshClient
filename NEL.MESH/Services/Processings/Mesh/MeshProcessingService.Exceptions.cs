@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -16,6 +17,7 @@ namespace NEL.MESH.Services.Processings.Mesh
     {
         private delegate ValueTask<bool> ReturningBooleanFunction();
         private delegate ValueTask<Message> ReturningMessageFunction();
+        private delegate ValueTask<List<string>> ReturningStringsMeshFunction();
 
         private async ValueTask<bool> TryCatch(ReturningBooleanFunction returningBooleanFunction)
         {
@@ -54,6 +56,38 @@ namespace NEL.MESH.Services.Processings.Mesh
             try
             {
                 return await returningMessageFunction();
+            }
+            catch (InvalidArgumentsMeshProcessingException invalidArgumentsMeshProcessingException)
+            {
+                throw CreateProcessingValidationException(invalidArgumentsMeshProcessingException);
+            }
+            catch (MeshValidationException meshValidationException)
+            {
+                throw CreateProcessingDependencyValidationException(meshValidationException);
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateProcessingDependencyValidationException(meshDependencyValidationException);
+            }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw CreateProcessingDependencyException(meshDependencyException);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw CreateProcessingDependencyException(meshServiceException);
+            }
+            catch (Exception exception)
+            {
+                throw CreateProcessingServiceException(exception);
+            }
+        }
+
+        private async ValueTask<List<string>> TryCatch(ReturningStringsMeshFunction returningStringsMeshFunction)
+        {
+            try
+            {
+                return await returningStringsMeshFunction();
             }
             catch (InvalidArgumentsMeshProcessingException invalidArgumentsMeshProcessingException)
             {

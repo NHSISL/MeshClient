@@ -19,7 +19,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnretrieveMessagesIfMessageIdIsNullOrEmptyAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnretrieveMessagesIfMessageIdIsNullOrEmptyAsync(
+            string invalidText)
         {
             // given
             string invalidAuthorizationToken = invalidText;
@@ -32,8 +33,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new Dictionary<string, List<string>>());
 
             this.meshBrokerMock.Setup(broker =>
-              broker.GetMessagesAsync(inputMessage.MessageId))
-                  .ReturnsAsync(responseMessage);
+                broker.GetMessagesAsync(inputMessage.MessageId))
+                    .ReturnsAsync(responseMessage);
 
             var InvalidMeshArgsException =
                 new InvalidArgumentsMeshException();
@@ -43,7 +44,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 values: "Text is required");
 
             var expectedMeshValidationException =
-                 new MeshValidationException(innerException: InvalidMeshArgsException);
+                new MeshValidationException(innerException: InvalidMeshArgsException);
 
             // when
             ValueTask<List<string>> getMessagesTask =

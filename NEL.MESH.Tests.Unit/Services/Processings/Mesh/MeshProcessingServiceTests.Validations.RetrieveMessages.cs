@@ -2,10 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Processings.Mesh;
 using Xunit;
 
@@ -17,29 +17,24 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnTrackMessageIfTokenIsNullOrEmptyAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnRetrieveMessagesIfTokenIsNullOrEmptyAsync(string invalidText)
         {
             // given
-            string invalidMessageId = invalidText;
             string invalidAuthorizationToken = invalidText;
 
             var invalidArgumentsMeshProcessingException =
                 new InvalidArgumentsMeshProcessingException();
 
             invalidArgumentsMeshProcessingException.AddData(
-                key: nameof(Message.MessageId),
-                values: "Text is required");
-
-            invalidArgumentsMeshProcessingException.AddData(
                 key: "Token",
                 values: "Text is required");
 
             var expectedMeshProcessingValidationException =
-                new MeshProcessingValidationException(innerException: invalidArgumentsMeshProcessingException);
+                 new MeshProcessingValidationException(innerException: invalidArgumentsMeshProcessingException);
 
             // when
-            ValueTask<Message> getMessagesTask =
-                this.meshProcessingService.TrackMessageAsync(invalidMessageId, invalidAuthorizationToken);
+            ValueTask<List<string>> getMessagesTask =
+               this.meshProcessingService.RetrieveMessagesAsync(invalidAuthorizationToken);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =
                 await Assert.ThrowsAsync<MeshProcessingValidationException>(() =>
@@ -49,8 +44,8 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
             actualMeshProcessingValidationException.Should()
                 .BeEquivalentTo(expectedMeshProcessingValidationException);
 
-            this.meshServiceMock.Verify(service =>
-                service.TrackMessageAsync(invalidMessageId, invalidAuthorizationToken),
+            this.meshServiceMock.Verify(broker =>
+                broker.RetrieveMessagesAsync(invalidAuthorizationToken),
                     Times.Never);
 
             this.meshServiceMock.VerifyNoOtherCalls();

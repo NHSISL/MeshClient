@@ -38,6 +38,12 @@ namespace NEL.MESH.Services.Processings.Mesh
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
+        private static void ValidateOnRetrieveMessages(string authorizationToken)
+        {
+            Validate<InvalidArgumentsMeshProcessingException>(
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+        }
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),

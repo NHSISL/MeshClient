@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
@@ -27,6 +28,13 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
 
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+
+        private static List<string> GetRandomStringList()
+        {
+            return Enumerable.Range(2, GetRandomNumber())
+               .Select(item => GetRandomString())
+               .ToList();
+        }
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
