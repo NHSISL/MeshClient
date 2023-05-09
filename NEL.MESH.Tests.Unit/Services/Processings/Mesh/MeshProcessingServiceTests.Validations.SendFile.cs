@@ -31,7 +31,7 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
                 values: "Text is required");
 
             var expectedMeshProcessingValidationException =
-                 new MeshProcessingValidationException(innerException: invalidArgumentsMeshProcessingException);
+                new MeshProcessingValidationException(innerException: invalidArgumentsMeshProcessingException);
 
             // when
             ValueTask<Message> getMessagesTask =
