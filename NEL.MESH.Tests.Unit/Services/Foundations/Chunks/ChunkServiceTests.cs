@@ -34,8 +34,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             int maxCharacters = bytesToGenerate / Encoding.UTF8.GetMaxByteCount(1);
             string randomString = new string(Enumerable.Range(0, maxCharacters).Select(_ => (char)random.Next(0x80, 0x7FF)).ToArray());
             byte[] buffer = Encoding.UTF8.GetBytes(randomString);
-
-            // Truncate the buffer to ensure the resulting string is the desired length
             byte[] truncatedBuffer = new byte[bytesToGenerate];
             Array.Copy(buffer, truncatedBuffer, Math.Min(buffer.Length, bytesToGenerate));
 
