@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NEL.MESH.Models.Clients.Token.Exceptions;
+using NEL.MESH.Models.Processings.Mesh;
+using NEL.MESH.Models.Processings.Token;
 using NEL.MESH.Models.Processings.Tokens;
 using Xeptions;
 using Xunit;
@@ -49,7 +51,7 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Token
 
         [Theory]
         [MemberData(nameof(DependencyExceptions))]
-        public async Task ShouldThrowDependencyExceptionOnHandshakeIfDependencyErrorOccurs(
+        public async Task ShouldThrowDependencyExceptionOnGenerateTokenIfDependencyErrorOccurs(
             Xeption dependencyException)
         {
             // given
@@ -73,6 +75,40 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Token
             // then
             actualTokenProcessingDependencyException.Should()
                 .BeEquivalentTo(expectedTokenProcessingDependencyException);
+
+            this.tokenServiceMock.Verify(service =>
+                service.GenerateTokenAsync(),
+                    Times.Once);
+
+            this.tokenServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnGenerateTokenIfServiceErrorOccurs()
+        {
+            // given
+            var serviceException = new Exception();
+
+            var failedTokenProcessingServiceException =
+                new FailedTokenProcessingServiceException(serviceException);
+
+            var expectedTokenProcessingServiceException =
+                new TokenProcessingServiceException(failedTokenProcessingServiceException);
+
+            this.tokenServiceMock.Setup(service =>
+                service.GenerateTokenAsync())
+                    .ThrowsAsync(serviceException);
+
+            // when
+            ValueTask<string> GenerateTokenTask =
+                this.tokenProcessingService.GenerateTokenAsync();
+
+            TokenProcessingServiceException actualTokenProcessingServiceException =
+                await Assert.ThrowsAsync<TokenProcessingServiceException>(GenerateTokenTask.AsTask);
+
+            // then
+            actualTokenProcessingServiceException.Should()
+                .BeEquivalentTo(expectedTokenProcessingServiceException);
 
             this.tokenServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),
