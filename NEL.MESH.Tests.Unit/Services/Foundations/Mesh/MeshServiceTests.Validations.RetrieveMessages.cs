@@ -33,8 +33,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new Dictionary<string, List<string>>());
 
             this.meshBrokerMock.Setup(broker =>
-              broker.GetMessagesAsync(inputMessage.MessageId))
-                  .ReturnsAsync(responseMessage);
+                broker.GetMessagesAsync(inputMessage.MessageId))
+                    .ReturnsAsync(responseMessage);
 
             var InvalidMeshArgsException =
                 new InvalidArgumentsMeshException();
