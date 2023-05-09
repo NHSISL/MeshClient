@@ -5,9 +5,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Moq;
+using NEL.MESH.Models.Foundations.Mesh.Exceptions;
+using NEL.MESH.Models.Foundations.Tokens.Exceptions;
 using NEL.MESH.Services.Foundations.Tokens;
 using NEL.MESH.Services.Processings.Tokens;
 using Tynamix.ObjectFiller;
+using Xeptions;
+using Xunit;
 
 namespace NEL.MESH.Tests.Unit.Services.Processings.Token
 {
@@ -34,5 +38,18 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Token
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
+
+        public static TheoryData DependencyValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new TokenValidationException(innerException),
+                new TokenDependencyValidationException(innerException)
+            };
+        }
     }
 }
