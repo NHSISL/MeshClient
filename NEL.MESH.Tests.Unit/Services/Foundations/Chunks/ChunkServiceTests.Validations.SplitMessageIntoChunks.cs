@@ -31,8 +31,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
                 this.chunkService.SplitMessageIntoChunks(message: nullMessage);
 
             ChunkValidationException actualChunkValidationException =
-               Assert.Throws<ChunkValidationException>(() =>
-                   splitMessageIntoChunksAction);
+               Assert.Throws<ChunkValidationException>(splitMessageIntoChunksAction);
 
             // then
             actualChunkValidationException.Should()

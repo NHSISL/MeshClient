@@ -19,23 +19,25 @@ namespace NEL.MESH.Services.Foundations.Chunks
             this.meshConfigurationBroker = meshConfigurationBroker;
         }
 
-        public List<Message> SplitMessageIntoChunks(Message message)
-        {
-            int maxPartSize = this.meshConfigurationBroker.MaxChunkSizeInBytes;
-
-            if (string.IsNullOrEmpty(message.StringContent))
+        public List<Message> SplitMessageIntoChunks(Message message) =>
+            TryCatch(() =>
             {
-                SetMexChunkRange(message, item: 1, itemCount: 1);
+                ValidateMessageIsNotNull(message);
+                int maxPartSize = this.meshConfigurationBroker.MaxChunkSizeInBytes;
 
-                return new List<Message> { message };
-            }
+                if (string.IsNullOrEmpty(message.StringContent))
+                {
+                    SetMexChunkRange(message, item: 1, itemCount: 1);
 
-            List<string> parts = GetChunkedContent(message, maxPartSize);
-            List<Message> chunkedMessages = new List<Message>();
-            ComposeNewMessagesFromChunks(message, parts, chunkedMessages);
+                    return new List<Message> { message };
+                }
 
-            return chunkedMessages;
-        }
+                List<string> parts = GetChunkedContent(message, maxPartSize);
+                List<Message> chunkedMessages = new List<Message>();
+                ComposeNewMessagesFromChunks(message, parts, chunkedMessages);
+
+                return chunkedMessages;
+            });
 
         public List<Message> SplitFileMessageIntoChunks(Message message) =>
             throw new System.NotImplementedException();
