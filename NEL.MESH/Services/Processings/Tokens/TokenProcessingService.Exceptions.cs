@@ -5,9 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NEL.MESH.Models.Clients.Token.Exceptions;
 using NEL.MESH.Models.Foundations.Tokens.Exceptions;
 using NEL.MESH.Models.Processings.Tokens;
-using NEL.MESH.Services.Processings.Tokens;
 using Xeptions;
 
 namespace NEL.MESH.Services.Processings.Tokens
@@ -22,13 +22,21 @@ namespace NEL.MESH.Services.Processings.Tokens
             {
                 return await returningStringFunction();
             }
-            catch (TokenValidationException meshValidationException)
+            catch (TokenValidationException tokenValidationException)
             {
-                throw CreateProcessingDependencyValidationException(meshValidationException);
+                throw CreateProcessingDependencyValidationException(tokenValidationException);
             }
-            catch (TokenDependencyValidationException meshDependencyValidationException)
+            catch (TokenDependencyValidationException tokenDependencyValidationException)
             {
-                throw CreateProcessingDependencyValidationException(meshDependencyValidationException);
+                throw CreateProcessingDependencyValidationException(tokenDependencyValidationException);
+            }
+            catch (TokenDependencyException tokenDependencyException)
+            {
+                throw CreateProcessingDependencyException(tokenDependencyException);
+            }
+            catch (TokenServiceException tokenServiceException)
+            {
+                throw CreateProcessingDependencyException(tokenServiceException);
             }
         }
 
@@ -36,6 +44,12 @@ namespace NEL.MESH.Services.Processings.Tokens
             Xeption exception)
         {
             return new TokenProcessingDependencyValidationException(exception.InnerException as Xeption);
+        }
+
+        private static TokenProcessingDependencyException CreateProcessingDependencyException(
+            Xeption exception)
+        {
+            return new TokenProcessingDependencyException(exception.InnerException as Xeption);
         }
     }
 }
