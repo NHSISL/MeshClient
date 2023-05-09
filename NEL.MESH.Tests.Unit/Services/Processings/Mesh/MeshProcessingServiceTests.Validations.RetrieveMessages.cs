@@ -34,7 +34,7 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
 
             // when
             ValueTask<List<string>> getMessagesTask =
-               this.meshProcessingService.RetrieveMessagesAsync(invalidAuthorizationToken);
+                this.meshProcessingService.RetrieveMessagesAsync(invalidAuthorizationToken);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =
                 await Assert.ThrowsAsync<MeshProcessingValidationException>(() =>
