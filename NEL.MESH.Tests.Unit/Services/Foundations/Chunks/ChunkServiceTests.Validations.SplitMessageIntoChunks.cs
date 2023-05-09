@@ -15,7 +15,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
     public partial class ChunkServiceTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIsNullAsync()
+        public async Task ShouldThrowValidationExceptionOnSplitMessageIntoChunksIfMessageIsNullAsync()
         {
             // given
             Message nullMessage = null;
