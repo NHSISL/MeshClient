@@ -3,10 +3,11 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Clients.Token.Exceptions;
 using NEL.MESH.Models.Foundations.Tokens.Exceptions;
+using NEL.MESH.Models.Processings.Mesh;
+using NEL.MESH.Models.Processings.Token;
 using NEL.MESH.Models.Processings.Tokens;
 using Xeptions;
 
@@ -38,6 +39,10 @@ namespace NEL.MESH.Services.Processings.Tokens
             {
                 throw CreateProcessingDependencyException(tokenServiceException);
             }
+            catch (Exception exception)
+            {
+                throw CreateProcessingServiceException(exception);
+            }
         }
 
         private static TokenProcessingDependencyValidationException CreateProcessingDependencyValidationException(
@@ -50,6 +55,15 @@ namespace NEL.MESH.Services.Processings.Tokens
             Xeption exception)
         {
             return new TokenProcessingDependencyException(exception.InnerException as Xeption);
+        }
+
+        private static TokenProcessingServiceException CreateProcessingServiceException(
+            Exception exception)
+        {
+            var failedTokenProcessingServiceException =
+                new FailedTokenProcessingServiceException(exception);
+
+            return new TokenProcessingServiceException(failedTokenProcessingServiceException);
         }
     }
 }
