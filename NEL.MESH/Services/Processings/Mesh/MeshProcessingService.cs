@@ -79,6 +79,11 @@ namespace NEL.MESH.Services.Processings.Mesh
             });
 
         public ValueTask<bool> AcknowledgeMessageAsync(string messageId, string authorizationToken) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateOnAcknowledgeMessage(messageId, authorizationToken);
+
+                return await this.meshService.AcknowledgeMessageAsync(messageId, authorizationToken);
+            });
     }
 }
