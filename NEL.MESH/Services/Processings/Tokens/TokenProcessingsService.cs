@@ -22,7 +22,13 @@ namespace NEL.MESH.Services.Processings.Tokens
             this.tokenService = tokenService;
         }
 
-        public async ValueTask<string> GenerateTokenAsync() =>
-            await this.tokenService.GenerateTokenAsync();
+        public ValueTask<string> GenerateTokenAsync() =>
+             TryCatch(async () =>
+             {
+                 string token = await this.tokenService.GenerateTokenAsync();
+
+                 return token;
+             });
+
     }
 }
