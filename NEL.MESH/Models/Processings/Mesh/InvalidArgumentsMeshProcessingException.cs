@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
@@ -10,7 +10,7 @@ namespace NEL.MESH.Models.Processings.Mesh
     {
         public InvalidArgumentsMeshProcessingException()
             : base(message:
-                "Invalid argument(s) MESH processing valiation errors occurred, "
+                "Invalid MESH argument processing valiation errors occurred, "
                 + "please correct the errors and try again.")
         { }
     }

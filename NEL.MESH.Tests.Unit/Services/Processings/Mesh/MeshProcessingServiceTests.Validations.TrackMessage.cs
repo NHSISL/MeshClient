@@ -5,6 +5,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Processings.Mesh;
 using Xunit;
 
@@ -16,13 +17,18 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnHandshakeIfTokenIsNullOrEmptyAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnTrackMessageIfTokenIsNullOrEmptyAsync(string invalidText)
         {
             // given
+            string invalidMessageId = invalidText;
             string invalidAuthorizationToken = invalidText;
 
             var invalidArgumentsMeshProcessingException =
                 new InvalidArgumentsMeshProcessingException();
+
+            invalidArgumentsMeshProcessingException.AddData(
+                key: nameof(Message.MessageId),
+                values: "Text is required");
 
             invalidArgumentsMeshProcessingException.AddData(
                 key: "Token",
@@ -32,8 +38,8 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
                  new MeshProcessingValidationException(innerException: invalidArgumentsMeshProcessingException);
 
             // when
-            ValueTask<bool> getMessagesTask =
-               this.meshProcessingService.HandshakeAsync(invalidAuthorizationToken);
+            ValueTask<Message> getMessagesTask =
+                this.meshProcessingService.TrackMessageAsync(invalidMessageId, invalidAuthorizationToken);
 
             MeshProcessingValidationException actualMeshProcessingValidationException =
                 await Assert.ThrowsAsync<MeshProcessingValidationException>(() =>
@@ -43,8 +49,8 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
             actualMeshProcessingValidationException.Should()
                 .BeEquivalentTo(expectedMeshProcessingValidationException);
 
-            this.meshServiceMock.Verify(broker =>
-                broker.HandshakeAsync(invalidAuthorizationToken),
+            this.meshServiceMock.Verify(service =>
+                service.TrackMessageAsync(invalidMessageId, invalidAuthorizationToken),
                     Times.Never);
 
             this.meshServiceMock.VerifyNoOtherCalls();
