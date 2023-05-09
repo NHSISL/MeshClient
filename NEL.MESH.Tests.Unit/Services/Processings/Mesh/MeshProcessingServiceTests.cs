@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using Moq;
+using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Services.Foundations.Mesh;
 using NEL.MESH.Services.Processings.Mesh;
@@ -53,6 +55,18 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
                 new MeshDependencyException(innerException),
                 new MeshServiceException(innerException)
             };
+        }
+
+        private static Message CreateRandomMessage() =>
+            CreateMessageFiller().Create();
+
+        private static Filler<Message> CreateMessageFiller()
+        {
+            var filler = new Filler<Message>();
+            filler.Setup()
+                .OnProperty(message => message.Headers).Use(new Dictionary<string, List<string>>());
+
+            return filler;
         }
     }
 }

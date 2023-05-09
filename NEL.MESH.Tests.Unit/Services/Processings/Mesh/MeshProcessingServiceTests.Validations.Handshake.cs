@@ -48,7 +48,6 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh
                     Times.Never);
 
             this.meshServiceMock.VerifyNoOtherCalls();
-            // then
         }
     }
 }

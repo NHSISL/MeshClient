@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Processings.Mesh;
 using Xeptions;
 
@@ -16,10 +17,23 @@ namespace NEL.MESH.Services.Processings.Mesh
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
+        private static void ValidateOnSendMessage(Message message, string authorizationToken)
+        {
+            Validate<InvalidArgumentsMeshProcessingException>(
+                (Rule: IsInvalid(message), Parameter: nameof(Message)),
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+        }
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(Message message) => new
+        {
+            Condition = message is null,
+            Message = "Message is required"
         };
 
         private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)

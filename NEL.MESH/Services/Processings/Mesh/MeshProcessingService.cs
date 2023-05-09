@@ -27,7 +27,18 @@ namespace NEL.MESH.Services.Processings.Mesh
             });
 
         public ValueTask<Message> SendMessageAsync(Message message, string authorizationToken) =>
-            throw new System.NotImplementedException();
+            TryCatch(async () =>
+            {
+                ValidateOnSendMessage(message, authorizationToken);
+                Message sentMessage = await this.meshService.SendMessageAsync(message, authorizationToken);
+
+                Message trackingMessage =
+                    await this.meshService.TrackMessageAsync(sentMessage.MessageId, authorizationToken);
+
+                sentMessage.TrackingInfo = trackingMessage.TrackingInfo;
+
+                return sentMessage;
+            });
 
         public ValueTask<Message> SendFileAsync(Message message, string authorizationToken) =>
             throw new System.NotImplementedException();

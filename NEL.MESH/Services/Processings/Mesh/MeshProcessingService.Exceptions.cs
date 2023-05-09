@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
+using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Processings.Mesh;
 using Xeptions;
@@ -14,6 +15,7 @@ namespace NEL.MESH.Services.Processings.Mesh
     internal partial class MeshProcessingService : IMeshProcessingService
     {
         private delegate ValueTask<bool> ReturningBooleanFunction();
+        private delegate ValueTask<Message> ReturningMessageFunction();
 
         private async ValueTask<bool> TryCatch(ReturningBooleanFunction returningBooleanFunction)
         {
@@ -23,53 +25,86 @@ namespace NEL.MESH.Services.Processings.Mesh
             }
             catch (InvalidArgumentsMeshProcessingException invalidArgumentsMeshProcessingException)
             {
-                var meshProcessingValidationException =
-                    new MeshProcessingValidationException(invalidArgumentsMeshProcessingException);
-
-                throw meshProcessingValidationException;
+                throw CreateProcessingValidationException(invalidArgumentsMeshProcessingException);
             }
             catch (MeshValidationException meshValidationException)
             {
-                var meshProcessingDependencyValidationException =
-                    new MeshProcessingDependencyValidationException(
-                        meshValidationException.InnerException as Xeption);
-
-                throw meshProcessingDependencyValidationException;
+                throw CreateProcessingDependencyValidationException(meshValidationException);
             }
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
-                var meshProcessingDependencyValidationException =
-                    new MeshProcessingDependencyValidationException(
-                        meshDependencyValidationException.InnerException as Xeption);
-
-                throw meshProcessingDependencyValidationException;
+                throw CreateProcessingDependencyValidationException(meshDependencyValidationException);
             }
             catch (MeshDependencyException meshDependencyException)
             {
-                var meshProcessingDependencyException =
-                    new MeshProcessingDependencyException(
-                        meshDependencyException.InnerException as Xeption);
-
-                throw meshProcessingDependencyException;
+                throw CreateProcessingDependencyException(meshDependencyException);
             }
             catch (MeshServiceException meshServiceException)
             {
-                var meshProcessingDependencyException =
-                    new MeshProcessingDependencyException(
-                        meshServiceException.InnerException as Xeption);
-
-                throw meshProcessingDependencyException;
+                throw CreateProcessingDependencyException(meshServiceException);
             }
             catch (Exception exception)
             {
-                var failedMeshProcessingServiceException =
-                    new FailedMeshProcessingServiceException(exception);
-
-                var meshProcessingServiceException = new
-                    MeshProcessingServiceException(failedMeshProcessingServiceException);
-
-                throw meshProcessingServiceException;
+                throw CreateProcessingServiceException(exception);
             }
+        }
+
+        private async ValueTask<Message> TryCatch(ReturningMessageFunction returningMessageFunction)
+        {
+            try
+            {
+                return await returningMessageFunction();
+            }
+            catch (InvalidArgumentsMeshProcessingException invalidArgumentsMeshProcessingException)
+            {
+                throw CreateProcessingValidationException(invalidArgumentsMeshProcessingException);
+            }
+            catch (MeshValidationException meshValidationException)
+            {
+                throw CreateProcessingDependencyValidationException(meshValidationException);
+            }
+            catch (MeshDependencyValidationException meshDependencyValidationException)
+            {
+                throw CreateProcessingDependencyValidationException(meshDependencyValidationException);
+            }
+            catch (MeshDependencyException meshDependencyException)
+            {
+                throw CreateProcessingDependencyException(meshDependencyException);
+            }
+            catch (MeshServiceException meshServiceException)
+            {
+                throw CreateProcessingDependencyException(meshServiceException);
+            }
+            catch (Exception exception)
+            {
+                throw CreateProcessingServiceException(exception);
+            }
+        }
+
+        private static MeshProcessingValidationException CreateProcessingValidationException(Xeption exception)
+        {
+            return new MeshProcessingValidationException(exception);
+        }
+
+        private static MeshProcessingDependencyValidationException CreateProcessingDependencyValidationException(
+            Xeption exception)
+        {
+            return new MeshProcessingDependencyValidationException(exception.InnerException as Xeption);
+        }
+
+        private static MeshProcessingDependencyException CreateProcessingDependencyException(
+            Xeption exception)
+        {
+            return new MeshProcessingDependencyException(exception.InnerException as Xeption);
+        }
+
+        private static MeshProcessingServiceException CreateProcessingServiceException(
+            Exception exception)
+        {
+            var failedMeshProcessingServiceException =
+                new FailedMeshProcessingServiceException(exception);
+
+            return new MeshProcessingServiceException(failedMeshProcessingServiceException);
         }
     }
 }
