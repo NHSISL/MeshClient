@@ -51,5 +51,18 @@ namespace NEL.MESH.Tests.Unit.Services.Processings.Token
                 new TokenDependencyValidationException(innerException)
             };
         }
+
+        public static TheoryData DependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            string exceptionMessage = randomMessage;
+            var innerException = new Xeption(exceptionMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new TokenDependencyException(innerException),
+                new TokenServiceException(innerException)
+            };
+        }
     }
 }
