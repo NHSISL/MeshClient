@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Models.Foundations.Mesh.Exceptions;
-using NEL.MESH.Models.Foundations.Tokens.Exceptions;
-using NEL.MESH.Services.Foundations.Mesh;
-using NEL.MESH.Services.Foundations.Tokens;
+using NEL.MESH.Models.Processings.Mesh.Exceptions;
+using NEL.MESH.Models.Processings.Tokens.Exceptions;
 using NEL.MESH.Services.Orchestrations.Mesh;
+using NEL.MESH.Services.Processings.Mesh;
+using NEL.MESH.Services.Processings.Tokens;
 using Tynamix.ObjectFiller;
 using Xeptions;
 using Xunit;
@@ -19,18 +19,18 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 {
     public partial class MeshOrchestrationTests
     {
-        private readonly Mock<ITokenService> tokenServiceMock;
-        private readonly Mock<IMeshService> meshServiceMock;
+        private readonly Mock<ITokenProcessingService> tokenProcessingServiceMock;
+        private readonly Mock<IMeshProcessingService> meshProcessingServiceMock;
         private readonly IMeshOrchestrationService meshOrchestrationService;
 
         public MeshOrchestrationTests()
         {
-            this.tokenServiceMock = new Mock<ITokenService>();
-            this.meshServiceMock = new Mock<IMeshService>();
+            this.tokenProcessingServiceMock = new Mock<ITokenProcessingService>();
+            this.meshProcessingServiceMock = new Mock<IMeshProcessingService>();
 
             this.meshOrchestrationService = new MeshOrchestrationService(
-                tokenService: this.tokenServiceMock.Object,
-                meshService: this.meshServiceMock.Object);
+                tokenProcessingService: this.tokenProcessingServiceMock.Object,
+                meshProcessingService: this.meshProcessingServiceMock.Object);
         }
 
         private static string GetRandomString(int wordCount = 0)
@@ -59,10 +59,10 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             return new TheoryData<Xeption>
             {
-                new TokenValidationException(innerException),
-                new TokenDependencyValidationException(innerException),
-                new MeshValidationException(innerException),
-                new MeshDependencyValidationException(innerException),
+                new TokenProcessingValidationException(innerException),
+                new TokenProcessingDependencyValidationException(innerException),
+                new MeshProcessingValidationException(innerException),
+                new MeshProcessingDependencyValidationException(innerException),
             };
         }
 
@@ -74,10 +74,10 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             return new TheoryData<Xeption>
             {
-                new TokenDependencyException(innerException),
-                new TokenServiceException(innerException),
-                new MeshDependencyException(innerException),
-                new MeshServiceException(innerException),
+                new TokenProcessingDependencyException(innerException),
+                new TokenProcessingServiceException(innerException),
+                new MeshProcessingDependencyException(innerException),
+                new MeshProcessingServiceException(innerException),
             };
         }
 

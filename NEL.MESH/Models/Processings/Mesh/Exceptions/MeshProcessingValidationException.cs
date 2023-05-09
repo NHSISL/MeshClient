@@ -4,7 +4,7 @@
 
 using Xeptions;
 
-namespace NEL.MESH.Models.Processings.Mesh
+namespace NEL.MESH.Models.Processings.Mesh.Exceptions
 {
     internal class MeshProcessingValidationException : Xeption
     {

@@ -45,12 +45,12 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualMeshOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationValidationException);
 
-            this.tokenServiceMock.Verify(service =>
+            this.tokenProcessingServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),
                     Times.Never);
 
-            this.meshServiceMock.VerifyNoOtherCalls();
-            this.tokenServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.tokenProcessingServiceMock.VerifyNoOtherCalls();
         }
 
         [Theory]
@@ -74,7 +74,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             var expectedMeshOrchestrationValidationException =
                 new MeshOrchestrationValidationException(innerException: invalidTokenException);
 
-            this.tokenServiceMock.Setup(service =>
+            this.tokenProcessingServiceMock.Setup(service =>
                 service.GenerateTokenAsync())
                     .ReturnsAsync(invalidToken);
 
@@ -89,12 +89,12 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualMeshOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationValidationException);
 
-            this.tokenServiceMock.Verify(service =>
+            this.tokenProcessingServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),
                     Times.Once);
 
-            this.meshServiceMock.VerifyNoOtherCalls();
-            this.tokenServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.tokenProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

@@ -4,7 +4,7 @@
 
 using System;
 using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Models.Processings.Mesh;
+using NEL.MESH.Models.Processings.Mesh.Exceptions;
 using Xeptions;
 
 namespace NEL.MESH.Services.Processings.Mesh

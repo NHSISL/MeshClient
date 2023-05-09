@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Models.Processings.Mesh;
+using NEL.MESH.Models.Processings.Mesh.Exceptions;
 using Xunit;
 
 namespace NEL.MESH.Tests.Unit.Services.Processings.Mesh

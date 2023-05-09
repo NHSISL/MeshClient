@@ -24,11 +24,11 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             Message outputMessage = randomMessage.DeepClone();
             Message expectedMessage = outputMessage;
 
-            this.tokenServiceMock.Setup(service =>
+            this.tokenProcessingServiceMock.Setup(service =>
                 service.GenerateTokenAsync())
                     .ReturnsAsync(randomToken);
 
-            this.meshServiceMock.Setup(service =>
+            this.meshProcessingServiceMock.Setup(service =>
                 service.TrackMessageAsync(inputMessageId, randomToken))
                     .ReturnsAsync(outputMessage);
 
@@ -39,16 +39,16 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
 
-            this.tokenServiceMock.Verify(service =>
+            this.tokenProcessingServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),
                     Times.Once);
 
-            this.meshServiceMock.Verify(service =>
+            this.meshProcessingServiceMock.Verify(service =>
                 service.TrackMessageAsync(inputMessageId, randomToken),
                     Times.Once);
 
-            this.meshServiceMock.VerifyNoOtherCalls();
-            this.tokenServiceMock.VerifyNoOtherCalls();
+            this.meshProcessingServiceMock.VerifyNoOtherCalls();
+            this.tokenProcessingServiceMock.VerifyNoOtherCalls();
         }
     }
 }

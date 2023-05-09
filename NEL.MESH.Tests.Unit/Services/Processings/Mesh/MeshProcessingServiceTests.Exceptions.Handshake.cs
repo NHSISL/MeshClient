@@ -6,8 +6,7 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using NEL.MESH.Models.Clients.Mesh.Exceptions;
-using NEL.MESH.Models.Processings.Mesh;
+using NEL.MESH.Models.Processings.Mesh.Exceptions;
 using Xeptions;
 using Xunit;
 

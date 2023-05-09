@@ -5,38 +5,42 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Services.Foundations.Mesh;
-using NEL.MESH.Services.Foundations.Tokens;
+using NEL.MESH.Services.Processings.Mesh;
+using NEL.MESH.Services.Processings.Tokens;
 
 namespace NEL.MESH.Services.Orchestrations.Mesh
 {
     internal partial class MeshOrchestrationService : IMeshOrchestrationService
     {
-        private readonly ITokenService tokenService;
-        private readonly IMeshService meshService;
+        private readonly ITokenProcessingService tokenProcessingService;
+        private readonly IMeshProcessingService meshProcessingService;
 
-        public MeshOrchestrationService(ITokenService tokenService, IMeshService meshService)
+        public MeshOrchestrationService(
+            ITokenProcessingService tokenProcessingService,
+            IMeshProcessingService meshProcessingService)
         {
-            this.tokenService = tokenService;
-            this.meshService = meshService;
+            this.tokenProcessingService = tokenProcessingService;
+            this.meshProcessingService = meshProcessingService;
         }
 
         public ValueTask<bool> HandshakeAsync() =>
             TryCatch(async () =>
             {
-                string token = await this.tokenService.GenerateTokenAsync();
+                string token = await this.tokenProcessingService.GenerateTokenAsync();
                 ValidateToken(token);
 
-                return await this.meshService.HandshakeAsync(authorizationToken: token);
+                return await this.meshProcessingService.HandshakeAsync(authorizationToken: token);
             });
 
         public ValueTask<Message> SendMessageAsync(Message message) =>
             TryCatch(async () =>
             {
                 ValidateMessageIsNotNull(message);
-                string token = await this.tokenService.GenerateTokenAsync();
+                string token = await this.tokenProcessingService.GenerateTokenAsync();
                 ValidateToken(token);
-                Message outputMessage = await this.meshService.SendMessageAsync(message, authorizationToken: token);
+
+                Message outputMessage =
+                    await this.meshProcessingService.SendMessageAsync(message, authorizationToken: token);
 
                 return outputMessage;
             });
@@ -45,9 +49,11 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             TryCatch(async () =>
             {
                 ValidateMessageIsNotNull(message);
-                string token = await this.tokenService.GenerateTokenAsync();
+                string token = await this.tokenProcessingService.GenerateTokenAsync();
                 ValidateToken(token);
-                Message outputMessage = await this.meshService.SendFileAsync(message, authorizationToken: token);
+
+                Message outputMessage =
+                    await this.meshProcessingService.SendFileAsync(message, authorizationToken: token);
 
                 return outputMessage;
             });
@@ -56,9 +62,11 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             TryCatch(async () =>
             {
                 ValidateTrackMessageArgs(messageId);
-                string token = await this.tokenService.GenerateTokenAsync();
+                string token = await this.tokenProcessingService.GenerateTokenAsync();
                 ValidateToken(token);
-                Message outputMessage = await this.meshService.TrackMessageAsync(messageId, authorizationToken: token);
+
+                Message outputMessage =
+                    await this.meshProcessingService.TrackMessageAsync(messageId, authorizationToken: token);
 
                 return outputMessage;
             });
@@ -67,11 +75,11 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             TryCatch(async () =>
             {
                 ValidateTrackMessageArgs(messageId);
-                string token = await this.tokenService.GenerateTokenAsync();
+                string token = await this.tokenProcessingService.GenerateTokenAsync();
                 ValidateToken(token);
-                
+
                 Message outputMessage =
-                    await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token);
+                    await this.meshProcessingService.RetrieveMessageAsync(messageId, authorizationToken: token);
 
                 return outputMessage;
             });
@@ -79,9 +87,9 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         public ValueTask<List<string>> RetrieveMessagesAsync() =>
             TryCatch(async () =>
             {
-                string token = await this.tokenService.GenerateTokenAsync();
+                string token = await this.tokenProcessingService.GenerateTokenAsync();
                 ValidateToken(token);
-                List<string> outputMessage = await this.meshService.RetrieveMessagesAsync(authorizationToken: token);
+                List<string> outputMessage = await this.meshProcessingService.RetrieveMessagesAsync(authorizationToken: token);
 
                 return outputMessage;
             });
@@ -90,10 +98,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             TryCatch(async () =>
             {
                 ValidateTrackMessageArgs(messageId);
-                string token = await this.tokenService.GenerateTokenAsync();
+                string token = await this.tokenProcessingService.GenerateTokenAsync();
                 ValidateToken(token);
 
-                return await this.meshService.AcknowledgeMessageAsync(messageId, authorizationToken: token);
+                return await this.meshProcessingService.AcknowledgeMessageAsync(messageId, authorizationToken: token);
             });
     }
 }

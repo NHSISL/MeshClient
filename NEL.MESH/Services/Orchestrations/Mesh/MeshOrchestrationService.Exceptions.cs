@@ -6,9 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Models.Foundations.Mesh.Exceptions;
-using NEL.MESH.Models.Foundations.Tokens.Exceptions;
 using NEL.MESH.Models.Orchestrations.Mesh.Exceptions;
+using NEL.MESH.Models.Processing.Mesh.Exceptions;
+using NEL.MESH.Models.Processings.Mesh.Exceptions;
+using NEL.MESH.Models.Processings.Tokens.Exceptions;
 using Xeptions;
 
 namespace NEL.MESH.Services.Orchestrations.Mesh
@@ -25,11 +26,11 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 return await returningBooleanFunction();
             }
-            catch (NullMeshMessageException nullMeshMessageException)
+            catch (NullMeshMessageProcessingException nullMeshProcessingMessageException)
             {
-                throw CreateValidationException(nullMeshMessageException);
+                throw CreateValidationException(nullMeshProcessingMessageException);
             }
-            catch (InvalidTokenException invalidTokenException)
+            catch (Models.Orchestrations.Mesh.Exceptions.InvalidTokenException invalidTokenException)
             {
                 throw CreateValidationException(invalidTokenException);
             }
@@ -37,44 +38,48 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 throw CreateValidationException(invalidMeshOrchestrationArgsException);
             }
-            catch (TokenValidationException tokenValidationException)
+            catch (InvalidMeshProcessingArgsException invalidMeshProcessingArgsException)
             {
-                throw CreateAndLogDependencyValidationException(tokenValidationException);
+                throw CreateValidationException(invalidMeshProcessingArgsException);
             }
-            catch (TokenDependencyValidationException tokenDependencyValidationException)
+            catch (TokenProcessingValidationException tokenProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(tokenDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(tokenProcessingValidationException);
             }
-            catch (MeshValidationException meshValidationException)
+            catch (TokenProcessingDependencyValidationException tokenProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshValidationException);
+                throw CreateAndLogDependencyValidationException(tokenProcessingDependencyValidationException);
             }
-            catch (MeshDependencyValidationException meshDependencyValidationException)
+            catch (MeshProcessingValidationException meshProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(meshProcessingValidationException);
             }
-            catch (TokenDependencyException tokenDependencyException)
+            catch (MeshProcessingDependencyValidationException meshProcessingDependencyValidationException)
             {
-                throw CreateDependencyException(tokenDependencyException);
+                throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
             }
-            catch (TokenServiceException tokenServiceException)
+            catch (TokenProcessingDependencyException tokenProcessingDependencyException)
             {
-                throw CreateDependencyException(tokenServiceException);
+                throw CreateDependencyException(tokenProcessingDependencyException);
             }
-            catch (MeshDependencyException meshDependencyException)
+            catch (TokenProcessingServiceException tokenProcessingServiceException)
             {
-                throw CreateDependencyException(meshDependencyException);
+                throw CreateDependencyException(tokenProcessingServiceException);
             }
-            catch (MeshServiceException meshServiceException)
+            catch (MeshProcessingDependencyException meshProcessingDependencyException)
             {
-                throw CreateDependencyException(meshServiceException);
+                throw CreateDependencyException(meshProcessingDependencyException);
+            }
+            catch (MeshProcessingServiceException meshProcessingServiceException)
+            {
+                throw CreateDependencyException(meshProcessingServiceException);
             }
             catch (Exception exception)
             {
-                var failedMeshOrchestrationServiceException =
-                    new FailedMeshOrchestrationServiceException(exception);
+                var failedMeshProcessingServiceException =
+                    new FailedMeshProcessingServiceException(exception);
 
-                throw CreateServiceException(failedMeshOrchestrationServiceException);
+                throw CreateServiceException(failedMeshProcessingServiceException);
             }
         }
 
@@ -84,11 +89,11 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 return await returningMessageFunction();
             }
-            catch (NullMeshMessageException nullMeshMessageException)
+            catch (NullMeshMessageProcessingException nullMeshMessageProcessingException)
             {
-                throw CreateValidationException(nullMeshMessageException);
+                throw CreateValidationException(nullMeshMessageProcessingException);
             }
-            catch (InvalidTokenException invalidTokenException)
+            catch (Models.Orchestrations.Mesh.Exceptions.InvalidTokenException invalidTokenException)
             {
                 throw CreateValidationException(invalidTokenException);
             }
@@ -96,44 +101,48 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 throw CreateValidationException(invalidMeshOrchestrationArgsException);
             }
-            catch (TokenValidationException tokenValidationException)
+            catch (InvalidArgumentsMeshProcessingException invalidArgumentsMeshProcessingException)
             {
-                throw CreateAndLogDependencyValidationException(tokenValidationException);
+                throw CreateValidationException(invalidArgumentsMeshProcessingException);
             }
-            catch (TokenDependencyValidationException tokenDependencyValidationException)
+            catch (TokenProcessingValidationException tokenProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(tokenDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(tokenProcessingValidationException);
             }
-            catch (MeshValidationException meshValidationException)
+            catch (TokenProcessingDependencyValidationException tokenProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshValidationException);
+                throw CreateAndLogDependencyValidationException(tokenProcessingDependencyValidationException);
             }
-            catch (MeshDependencyValidationException meshDependencyValidationException)
+            catch (MeshProcessingValidationException meshProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(meshProcessingValidationException);
             }
-            catch (TokenDependencyException tokenDependencyException)
+            catch (MeshProcessingDependencyValidationException meshProcessingDependencyValidationException)
             {
-                throw CreateDependencyException(tokenDependencyException);
+                throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
             }
-            catch (TokenServiceException tokenServiceException)
+            catch (TokenProcessingDependencyException tokenProcessingDependencyException)
             {
-                throw CreateDependencyException(tokenServiceException);
+                throw CreateDependencyException(tokenProcessingDependencyException);
             }
-            catch (MeshDependencyException meshDependencyException)
+            catch (TokenProcessingServiceException tokenProcessingServiceException)
             {
-                throw CreateDependencyException(meshDependencyException);
+                throw CreateDependencyException(tokenProcessingServiceException);
             }
-            catch (MeshServiceException meshServiceException)
+            catch (MeshProcessingDependencyException meshProcessingDependencyException)
             {
-                throw CreateDependencyException(meshServiceException);
+                throw CreateDependencyException(meshProcessingDependencyException);
+            }
+            catch (MeshProcessingServiceException meshProcessingServiceException)
+            {
+                throw CreateDependencyException(meshProcessingServiceException);
             }
             catch (Exception exception)
             {
-                var failedMeshOrchestrationServiceException =
-                    new FailedMeshOrchestrationServiceException(exception);
+                var failedMeshProcessingServiceException =
+                    new FailedMeshProcessingServiceException(exception);
 
-                throw CreateServiceException(failedMeshOrchestrationServiceException);
+                throw CreateServiceException(failedMeshProcessingServiceException);
             }
         }
 
@@ -143,7 +152,11 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 return await returningStringsFunction();
             }
-            catch (InvalidTokenException invalidTokenException)
+            catch (InvalidArgumentsMeshProcessingException invalidArgumentsMeshProcessingException)
+            {
+                throw CreateValidationException(invalidArgumentsMeshProcessingException);
+            }
+            catch (Models.Orchestrations.Mesh.Exceptions.InvalidTokenException invalidTokenException)
             {
                 throw CreateValidationException(invalidTokenException);
             }
@@ -151,44 +164,44 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 throw CreateValidationException(invalidMeshOrchestrationArgsException);
             }
-            catch (TokenValidationException tokenValidationException)
+            catch (TokenProcessingValidationException tokenProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(tokenValidationException);
+                throw CreateAndLogDependencyValidationException(tokenProcessingValidationException);
             }
-            catch (TokenDependencyValidationException tokenDependencyValidationException)
+            catch (TokenProcessingDependencyValidationException tokenProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(tokenDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(tokenProcessingDependencyValidationException);
             }
-            catch (MeshValidationException meshValidationException)
+            catch (MeshProcessingValidationException meshProcessingValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshValidationException);
+                throw CreateAndLogDependencyValidationException(meshProcessingValidationException);
             }
-            catch (MeshDependencyValidationException meshDependencyValidationException)
+            catch (MeshProcessingDependencyValidationException meshProcessingDependencyValidationException)
             {
-                throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+                throw CreateAndLogDependencyValidationException(meshProcessingDependencyValidationException);
             }
-            catch (TokenDependencyException tokenDependencyException)
+            catch (TokenProcessingDependencyException tokenProcessingDependencyException)
             {
-                throw CreateDependencyException(tokenDependencyException);
+                throw CreateDependencyException(tokenProcessingDependencyException);
             }
-            catch (TokenServiceException tokenServiceException)
+            catch (TokenProcessingServiceException tokenProcessingServiceException)
             {
-                throw CreateDependencyException(tokenServiceException);
+                throw CreateDependencyException(tokenProcessingServiceException);
             }
-            catch (MeshDependencyException meshDependencyException)
+            catch (MeshProcessingDependencyException meshProcessingDependencyException)
             {
-                throw CreateDependencyException(meshDependencyException);
+                throw CreateDependencyException(meshProcessingDependencyException);
             }
-            catch (MeshServiceException meshServiceException)
+            catch (MeshProcessingServiceException meshProcessingServiceException)
             {
-                throw CreateDependencyException(meshServiceException);
+                throw CreateDependencyException(meshProcessingServiceException);
             }
             catch (Exception exception)
             {
-                var failedMeshOrchestrationServiceException =
-                    new FailedMeshOrchestrationServiceException(exception);
+                var failedMeshProcessingServiceException =
+                    new FailedMeshProcessingServiceException(exception);
 
-                throw CreateServiceException(failedMeshOrchestrationServiceException);
+                throw CreateServiceException(failedMeshProcessingServiceException);
             }
         }
 
