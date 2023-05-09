@@ -31,6 +31,13 @@ namespace NEL.MESH.Services.Processings.Mesh
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
+        private static void ValidateOnTrackMessage(string messageId, string authorizationToken)
+        {
+            Validate<InvalidArgumentsMeshProcessingException>(
+                (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+        }
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = String.IsNullOrWhiteSpace(text),
