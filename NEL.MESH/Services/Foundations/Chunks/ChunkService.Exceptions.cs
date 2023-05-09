@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -24,6 +25,13 @@ namespace NEL.MESH.Services.Foundations.Chunks
             {
                 throw CreateValidationException(nullMessageException);
             }
+            catch (Exception exception)
+            {
+                var failedChunkServiceException =
+                    new FailedChunkServiceException(exception);
+
+                throw CreateServiceException(failedChunkServiceException);
+            }
         }
 
         private ChunkValidationException CreateValidationException(Xeption exception)
@@ -31,6 +39,13 @@ namespace NEL.MESH.Services.Foundations.Chunks
             var chunkValidationException = new ChunkValidationException(exception);
 
             return chunkValidationException;
+        }
+
+        private ChunkServiceException CreateServiceException(Xeption exception)
+        {
+            var chunkServiceException = new ChunkServiceException(exception);
+
+            return chunkServiceException;
         }
     }
 }
