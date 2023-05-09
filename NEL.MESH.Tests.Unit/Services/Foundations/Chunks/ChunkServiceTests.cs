@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Moq;
 using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -26,22 +28,18 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
         private static string GetRandomString() =>
             new MnemonicString(wordCount: GetRandomNumber()).GetValue();
 
-        public static string GetRandomString(int chunkSizeInBytes, int chunkCount)
+        public static string GetRandomString(int bytesToGenerate)
         {
-            int additionalBytes = GetRandomNumber(min: 0, max: chunkSizeInBytes - 1);
-            int bytesToGenerate = (chunkSizeInBytes * chunkCount) + additionalBytes;
             Random random = new Random();
-            byte[] randomBytes = new byte[bytesToGenerate];
-            random.NextBytes(randomBytes);
-            string randomString = Convert.ToBase64String(randomBytes);
-            int excessBytes = randomString.Length % 4;
+            int maxCharacters = bytesToGenerate / Encoding.UTF8.GetMaxByteCount(1);
+            string randomString = new string(Enumerable.Range(0, maxCharacters).Select(_ => (char)random.Next(0x80, 0x7FF)).ToArray());
+            byte[] buffer = Encoding.UTF8.GetBytes(randomString);
 
-            if (excessBytes != 0)
-            {
-                randomString += new string('=', 4 - excessBytes);
-            }
+            // Truncate the buffer to ensure the resulting string is the desired length
+            byte[] truncatedBuffer = new byte[bytesToGenerate];
+            Array.Copy(buffer, truncatedBuffer, Math.Min(buffer.Length, bytesToGenerate));
 
-            return randomString;
+            return Encoding.UTF8.GetString(truncatedBuffer);
         }
 
         private static int GetRandomNumber(int min = 2, int max = 10) =>

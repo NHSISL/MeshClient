@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FluentAssertions;
+using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
@@ -17,11 +18,16 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
         public void ShouldSplitMessageIntoChunks()
         {
             // given
-            int randomChunkSize = GetRandomNumber();
-            int expectedByteCount = randomChunkSize;
+            int randomChunkSizeInBytes = GetRandomNumber();
             int randomChunkCount = GetRandomNumber();
+            int additionalBytes = GetRandomNumber(min: 0, max: randomChunkSizeInBytes - 1);
+            int randomBytesToGenerate = (randomChunkSizeInBytes * randomChunkCount) - additionalBytes;
+            string randomContent = GetRandomString(randomBytesToGenerate);
+
+
+            int inputChunkSize = randomChunkSizeInBytes;
+            int expectedByteCount = randomChunkSizeInBytes;
             int expectedChunkCount = randomChunkCount;
-            string randomContent = GetRandomString(randomChunkSize, randomChunkCount);
             Message randomMessage = CreateRandomSendMessage(stringContent: randomContent);
             Message inputMessage = randomMessage;
 
@@ -29,7 +35,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
 
             this.meshConfigurationBrokerMock.Setup(broker =>
                 broker.MaxChunkSizeInBytes)
-                    .Returns(value: 20);
+                    .Returns(value: inputChunkSize);
 
             // when
             List<Message> actualMessages = this.chunkService.SplitMessageIntoChunks(message: inputMessage);
@@ -47,6 +53,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
                 .Aggregate("", (current, message) => current + message.StringContent);
 
             combinedStringContent.Should().BeEquivalentTo(inputMessage.StringContent);
+
+            this.meshConfigurationBrokerMock.Verify(broker =>
+                broker.MaxChunkSizeInBytes,
+                    Times.Once);
+
             this.meshConfigurationBrokerMock.VerifyNoOtherCalls();
         }
     }
