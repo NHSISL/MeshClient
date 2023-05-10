@@ -18,5 +18,6 @@ namespace NEL.MESH.Models.Configurations
         public string MexClientVersion { get; set; }
         public string MexOSName { get; set; }
         public string MexOSVersion { get; set; }
+        public int MaxChunkSizeInMegabytes { get; set; }
     }
 }
