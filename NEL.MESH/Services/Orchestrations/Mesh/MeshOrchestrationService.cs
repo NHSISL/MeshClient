@@ -67,9 +67,24 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             TryCatch(async () =>
             {
                 ValidateMessageIsNotNull(message);
-                string token = await this.tokenService.GenerateTokenAsync();
-                ValidateToken(token);
-                Message outputMessage = await this.meshService.SendFileAsync(message, authorizationToken: token);
+                List<Message> chunkedMessages = this.chunkService.SplitFileMessageIntoChunks(message);
+                Message outputMessage = null;
+
+                foreach (Message chunkedMessage in chunkedMessages)
+                {
+                    string token = await this.tokenService.GenerateTokenAsync();
+                    ValidateToken(token);
+                    chunkedMessage.MessageId = outputMessage?.MessageId;
+
+                    Message sentMessage = await this.meshService
+                        .SendFileAsync(chunkedMessage, authorizationToken: token);
+
+                    if (chunkedMessage == chunkedMessages.First())
+                    {
+                        outputMessage = sentMessage;
+                        outputMessage.FileContent = message.FileContent;
+                    }
+                }
 
                 return outputMessage;
             });

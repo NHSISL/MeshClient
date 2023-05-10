@@ -19,7 +19,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         {
             // given
             string randomToken = GetRandomString();
-            Message randomMessage = CreateRandomSendMessage();
+            Message randomMessage = CreateRandomSendFileMessage();
             Message inputMessage = randomMessage;
             int randomChunkCount = GetRandomNumber();
             List<Message> randomChunkedMessages = CreateRandomChunkedSendFileMessages(randomChunkCount);
@@ -28,11 +28,11 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             string randomMessageId = GetRandomString();
             chunkedOutputMessages[0].MessageId = randomMessageId;
             Message outputMessage = chunkedOutputMessages[0].DeepClone();
-            outputMessage.StringContent = inputMessage.StringContent;
+            outputMessage.FileContent = inputMessage.FileContent;
             Message expectedMessage = outputMessage.DeepClone();
 
             this.chunkServiceMock.Setup(service =>
-                service.SplitMessageIntoChunks(inputMessage))
+                service.SplitFileMessageIntoChunks(inputMessage))
                     .Returns(chunkedInputMessages);
 
             this.tokenServiceMock.Setup(service =>
@@ -78,7 +78,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 if (i == 0)
                 {
                     this.meshServiceMock.Verify(service =>
-                        service.SendMessageAsync(chunkedInputMessages[i], randomToken),
+                        service.SendFileAsync(chunkedInputMessages[i], randomToken),
                             Times.Once);
                 }
                 else
@@ -87,7 +87,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     chunk.MessageId = randomMessageId;
 
                     this.meshServiceMock.Verify(service =>
-                        service.SendMessageAsync(chunk, randomToken),
+                        service.SendFileAsync(chunk, randomToken),
                             Times.Once);
                 }
             }
