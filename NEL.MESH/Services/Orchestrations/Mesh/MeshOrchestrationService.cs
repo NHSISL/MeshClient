@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Services.Foundations.Chunks;
@@ -40,9 +41,24 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             TryCatch(async () =>
             {
                 ValidateMessageIsNotNull(message);
-                string token = await this.tokenService.GenerateTokenAsync();
-                ValidateToken(token);
-                Message outputMessage = await this.meshService.SendMessageAsync(message, authorizationToken: token);
+                List<Message> chunkedMessages = this.chunkService.SplitMessageIntoChunks(message);
+                Message outputMessage = null;
+
+                foreach (Message chunkedMessage in chunkedMessages)
+                {
+                    string token = await this.tokenService.GenerateTokenAsync();
+                    ValidateToken(token);
+                    chunkedMessage.MessageId = outputMessage?.MessageId;
+
+                    Message sentMessage = await this.meshService
+                        .SendMessageAsync(chunkedMessage, authorizationToken: token);
+
+                    if (chunkedMessage == chunkedMessages.First())
+                    {
+                        outputMessage = sentMessage;
+                        outputMessage.StringContent = message.StringContent;
+                    }
+                }
 
                 return outputMessage;
             });

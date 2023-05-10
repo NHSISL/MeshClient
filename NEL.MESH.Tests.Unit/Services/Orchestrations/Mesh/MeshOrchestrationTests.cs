@@ -93,6 +93,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             {
                 var message = CreateRandomSendMessage();
                 message.Headers["Mex-Chunk-Range"] = new List<string> { $"{{{i + 1}:{messageChunkCount}}}" };
+                messages.Add(message);
             }
 
             return messages;
