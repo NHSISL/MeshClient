@@ -42,6 +42,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 ValidateMessageIsNotNull(message);
                 List<Message> chunkedMessages = this.chunkService.SplitMessageIntoChunks(message);
+                ValidateChunksOnSendMessage(chunkedMessages);
                 Message outputMessage = null;
 
                 foreach (Message chunkedMessage in chunkedMessages)
@@ -68,6 +69,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 ValidateMessageIsNotNull(message);
                 List<Message> chunkedMessages = this.chunkService.SplitFileMessageIntoChunks(message);
+                ValidateChunksOnSendFile(chunkedMessages);
                 Message outputMessage = null;
 
                 foreach (Message chunkedMessage in chunkedMessages)

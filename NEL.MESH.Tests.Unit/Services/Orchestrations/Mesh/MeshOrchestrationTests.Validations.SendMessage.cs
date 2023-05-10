@@ -5,7 +5,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Force.DeepCloner;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Orchestrations.Mesh.Exceptions;
@@ -56,12 +55,6 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             int randomChunkCount = GetRandomNumber();
             List<Message> randomChunkedMessages = CreateRandomChunkedSendMessages(randomChunkCount);
             List<Message> chunkedInputMessages = randomChunkedMessages;
-            List<Message> chunkedOutputMessages = chunkedInputMessages.DeepClone();
-            string randomMessageId = GetRandomString();
-            chunkedOutputMessages[0].MessageId = randomMessageId;
-            Message outputMessage = chunkedOutputMessages[0].DeepClone();
-            outputMessage.StringContent = inputMessage.StringContent;
-            Message expectedMessage = outputMessage.DeepClone();
 
             this.chunkServiceMock.Setup(service =>
                 service.SplitMessageIntoChunks(inputMessage))
@@ -98,6 +91,49 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             this.tokenServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),
+                    Times.Once);
+
+            this.chunkServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.tokenServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(InvalidMessageList))]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfChunksIsNullOrEmptyAndLogItAsync(
+            List<Message> invalidData)
+        {
+            // given
+            Message randomMessage = CreateRandomSendMessage();
+            Message inputMessage = randomMessage;
+
+            this.chunkServiceMock.Setup(service =>
+                service.SplitMessageIntoChunks(inputMessage))
+                    .Returns(invalidData);
+
+            var invalidMeshOrchestrationArgsException =
+                new InvalidMeshOrchestrationArgsException();
+
+            invalidMeshOrchestrationArgsException.AddData(
+                key: "ChunkedMessages",
+                values: "At least one chunk part required");
+
+            var expectedMeshOrchestrationValidationException =
+                new MeshOrchestrationValidationException(innerException: invalidMeshOrchestrationArgsException);
+
+            // when
+            ValueTask<Message> messageTask = this.meshOrchestrationService
+                .SendMessageAsync(message: randomMessage);
+
+            MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
+                await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
+
+            // then
+            actualMeshOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedMeshOrchestrationValidationException);
+
+            this.chunkServiceMock.Verify(service =>
+                service.SplitMessageIntoChunks(inputMessage),
                     Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();

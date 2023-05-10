@@ -55,6 +55,15 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 .ToList();
         }
 
+        public static TheoryData InvalidMessageList()
+        {
+            return new TheoryData<List<Message>>
+            {
+                null,
+                new List<Message>(),
+            };
+        }
+
         public static TheoryData MeshDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
