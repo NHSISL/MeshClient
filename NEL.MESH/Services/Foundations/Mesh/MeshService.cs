@@ -102,6 +102,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 }
                 else
                 {
+                    ValidateMessageId(message.MessageId);
                     responseFileMessage = await this.meshBroker.SendFileAsync(
                         mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
                         workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),

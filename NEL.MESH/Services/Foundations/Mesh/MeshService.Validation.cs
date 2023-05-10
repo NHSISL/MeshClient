@@ -72,6 +72,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
                 (Rule: IsInvalid(message.Headers, "Mex-Content-Checksum"), Parameter: "Mex-Content-Checksum"),
                 (Rule: IsInvalid(message.Headers, "Mex-Content-Encrypted"), Parameter: "Mex-Content-Encrypted"),
+                (Rule: IsInvalid(message.Headers, "Mex-Chunk-Range"), Parameter: "Mex-Chunk-Range"),
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
@@ -95,6 +96,11 @@ namespace NEL.MESH.Services.Foundations.Mesh
                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
+        private static void ValidateMessageId(string messageId)
+        {
+            Validate<InvalidMeshException>(
+                (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)));
+        }
 
         public static void ValidateAcknowledgeMessageArguments(string messageId, string authorizationToken)
         {
