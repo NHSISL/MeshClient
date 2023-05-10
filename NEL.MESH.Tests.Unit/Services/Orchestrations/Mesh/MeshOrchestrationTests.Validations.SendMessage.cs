@@ -92,6 +92,10 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualMeshOrchestrationValidationException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationValidationException);
 
+            this.chunkServiceMock.Verify(service =>
+                service.SplitMessageIntoChunks(inputMessage),
+                    Times.Once);
+
             this.tokenServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),
                     Times.Once);
