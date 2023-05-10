@@ -29,19 +29,19 @@ namespace NEL.MESH.Brokers.Mesh
              string stringContent);
 
         ValueTask<HttpResponseMessage> SendMessageAsync(
-             string mailboxTo,
-             string workflowId,
-             string localId,
-             string subject,
-             string fileName,
-             string contentChecksum,
-             string contentEncrypted,
-             string encoding,
-             string chunkRange,
-             string contentType,
-             string authorizationToken,
-             string stringContent,
-             int chunkNumber);
+            string mailboxTo,
+            string workflowId,
+            string localId,
+            string subject,
+            string fileName,
+            string contentChecksum,
+            string contentEncrypted,
+            string encoding,
+            string chunkRange,
+            string contentType,
+            string authorizationToken,
+            string stringContent,
+            int chunkNumber);
 
         ValueTask<HttpResponseMessage> SendFileAsync(
             string mailboxTo,
