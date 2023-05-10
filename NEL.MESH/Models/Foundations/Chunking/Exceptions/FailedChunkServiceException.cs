@@ -10,6 +10,8 @@ namespace NEL.MESH.Models.Foundations.Chunking.Exceptions
     public class FailedChunkServiceException : Xeption
     {
         public FailedChunkServiceException(Exception innerException)
-            : base(message: "Chunk service error occurred, contact support.", innerException) { }
+            : base(message: "Chunk service error occurred, contact support.", 
+                innerException) 
+        { }
     }
 }
