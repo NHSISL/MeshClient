@@ -71,6 +71,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 }
                 else
                 {
+                    ValidateMessageId(message.MessageId);
                     responseMessage = await this.meshBroker.SendMessageAsync(
                         mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
                         workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
