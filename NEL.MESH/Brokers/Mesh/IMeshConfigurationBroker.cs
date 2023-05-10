@@ -7,6 +7,5 @@ namespace NEL.MESH.Brokers.Mesh
     internal interface IMeshConfigurationBroker
     {
         int MaxChunkSizeInBytes { get; }
-
     }
 }
