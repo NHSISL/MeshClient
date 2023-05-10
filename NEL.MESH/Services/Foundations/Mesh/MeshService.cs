@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -37,19 +38,55 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 ValidateMeshMessageOnSendMessage(message, authorizationToken);
 
-                HttpResponseMessage responseMessage = await this.meshBroker.SendMessageAsync(
-                    mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
-                    workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
-                    localId: GetKeyStringValue("Mex-LocalID", message.Headers),
-                    subject: GetKeyStringValue("Mex-Subject", message.Headers),
-                    fileName: GetKeyStringValue("Mex-FileName", message.Headers),
-                    contentChecksum: GetKeyStringValue("Mex-Content-Checksum", message.Headers),
-                    contentEncrypted: GetKeyStringValue("Mex-Content-Encrypted", message.Headers),
-                    encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
-                    chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
-                    contentType: GetKeyStringValue("Content-Type", message.Headers),
-                    authorizationToken,
-                    stringContent: message.StringContent);
+                string chunkRange = GetKeyStringValue("Mex-Chunk-Range", message.Headers)
+                    .Replace("{", string.Empty)
+                        .Replace("}", string.Empty);
+
+                string chunkPart = (chunkRange.Split(':'))[0];
+
+                int chunkNumber; 
+
+                if ( ! int.TryParse(chunkPart, out chunkNumber))
+                {
+                    chunkNumber = 1;
+                }
+
+                HttpResponseMessage responseMessage;
+
+                if (chunkNumber <= 1)
+                {
+                     responseMessage = await this.meshBroker.SendMessageAsync(
+                        mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
+                        workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
+                        localId: GetKeyStringValue("Mex-LocalID", message.Headers),
+                        subject: GetKeyStringValue("Mex-Subject", message.Headers),
+                        fileName: GetKeyStringValue("Mex-FileName", message.Headers),
+                        contentChecksum: GetKeyStringValue("Mex-Content-Checksum", message.Headers),
+                        contentEncrypted: GetKeyStringValue("Mex-Content-Encrypted", message.Headers),
+                        encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
+                        chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
+                        contentType: GetKeyStringValue("Content-Type", message.Headers),
+                        authorizationToken,
+                        stringContent: message.StringContent);
+                }
+                else
+                {
+                    responseMessage = await this.meshBroker.SendMessageAsync(
+                        mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
+                        workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
+                        localId: GetKeyStringValue("Mex-LocalID", message.Headers),
+                        subject: GetKeyStringValue("Mex-Subject", message.Headers),
+                        fileName: GetKeyStringValue("Mex-FileName", message.Headers),
+                        contentChecksum: GetKeyStringValue("Mex-Content-Checksum", message.Headers),
+                        contentEncrypted: GetKeyStringValue("Mex-Content-Encrypted", message.Headers),
+                        encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
+                        chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
+                        contentType: GetKeyStringValue("Content-Type", message.Headers),
+                        authorizationToken,
+                        stringContent: message.StringContent,
+                        messageId: message.MessageId,
+                        chunkNumber: chunkNumber.ToString());
+                }
 
                 ValidateResponse(responseMessage);
                 string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;

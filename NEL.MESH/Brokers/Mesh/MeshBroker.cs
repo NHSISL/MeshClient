@@ -89,7 +89,7 @@ namespace NEL.MESH.Brokers.Mesh
             string authorizationToken,
             string stringConent,
             string messageId,
-            int chunkNumber)
+            string chunkNumber)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox/{messageId}/{chunkNumber}";
 
@@ -170,7 +170,7 @@ namespace NEL.MESH.Brokers.Mesh
             string authorizationToken,
             byte[] fileContents,
             string messageId,
-            int chunkNumber)
+            string chunkNumber)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox/{messageId}/{chunkNumber}";
 
@@ -227,7 +227,7 @@ namespace NEL.MESH.Brokers.Mesh
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, int chunkNumber, string authorizationToken)
+        public async ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, string chunkNumber, string authorizationToken)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}/{chunkNumber}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
