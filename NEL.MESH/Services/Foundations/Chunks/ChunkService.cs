@@ -38,22 +38,24 @@ namespace NEL.MESH.Services.Foundations.Chunks
                 return chunkedMessages;
             });
 
-        public List<Message> SplitFileMessageIntoChunks(Message message)
-        {
-            int maxPartSize = this.meshConfigurationBroker.MaxChunkSizeInBytes;
-
-            if (message.FileContent.Length <= maxPartSize)
+        public List<Message> SplitFileMessageIntoChunks(Message message) =>
+            TryCatch(() =>
             {
-                SetMexChunkRange(message, item: 1, itemCount: 1);
+                ValidateMessageIsNotNull(message);
+                int maxPartSize = this.meshConfigurationBroker.MaxChunkSizeInBytes;
 
-                return new List<Message> { message };
-            }
+                if (message.FileContent.Length <= maxPartSize)
+                {
+                    SetMexChunkRange(message, item: 1, itemCount: 1);
 
-            List<byte[]> parts = GetChunkedByteArrayContent(message, maxPartSize);
-            List<Message> chunkedMessages = ComposeNewFileMessagesFromChunks(message, parts);
+                    return new List<Message> { message };
+                }
 
-            return chunkedMessages;
-        }
+                List<byte[]> parts = GetChunkedByteArrayContent(message, maxPartSize);
+                List<Message> chunkedMessages = ComposeNewFileMessagesFromChunks(message, parts);
+
+                return chunkedMessages;
+            });
 
         public Message CombineChunkedMessages(List<Message> chunks) =>
             throw new System.NotImplementedException();
