@@ -8,6 +8,7 @@ using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Tokens.Exceptions;
+using NEL.MESH.Services.Foundations.Chunks;
 using NEL.MESH.Services.Foundations.Mesh;
 using NEL.MESH.Services.Foundations.Tokens;
 using NEL.MESH.Services.Orchestrations.Mesh;
@@ -21,16 +22,19 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
     {
         private readonly Mock<ITokenService> tokenServiceMock;
         private readonly Mock<IMeshService> meshServiceMock;
+        private readonly Mock<IChunkService> chunkServiceMock;
         private readonly IMeshOrchestrationService meshOrchestrationService;
 
         public MeshOrchestrationTests()
         {
             this.tokenServiceMock = new Mock<ITokenService>();
             this.meshServiceMock = new Mock<IMeshService>();
+            this.chunkServiceMock = new Mock<IChunkService>();
 
             this.meshOrchestrationService = new MeshOrchestrationService(
                 tokenService: this.tokenServiceMock.Object,
-                meshService: this.meshServiceMock.Object);
+                meshService: this.meshServiceMock.Object,
+                chunkService: this.chunkServiceMock.Object);
         }
 
         private static string GetRandomString(int wordCount = 0)
@@ -81,6 +85,19 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             };
         }
 
+        private static List<Message> CreateRandomChunkedSendMessages(int messageChunkCount)
+        {
+            List<Message> messages = new List<Message>();
+
+            for (int i = 0; i < messageChunkCount; i++)
+            {
+                var message = CreateRandomSendMessage();
+                message.Headers["Mex-Chunk-Range"] = new List<string> { $"{{{i + 1}:{messageChunkCount}}}" };
+            }
+
+            return messages;
+        }
+
         private static Message CreateRandomSendMessage()
         {
             var message = CreateMessageFiller().Create();
@@ -95,6 +112,28 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
+            message.MessageId = null;
+            message.FileContent = null;
+
+            return message;
+        }
+
+        private static Message CreateRandomSendFileMessage()
+        {
+            var message = CreateMessageFiller().Create();
+            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
+            message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Content-Encrypted", new List<string> { "encrypted" });
+            message.Headers.Add("Mex-From", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-To", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
+            message.MessageId = null;
+            message.StringContent = null;
 
             return message;
         }

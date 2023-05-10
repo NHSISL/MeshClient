@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
+using NEL.MESH.Services.Foundations.Chunks;
 using NEL.MESH.Services.Foundations.Mesh;
 using NEL.MESH.Services.Foundations.Tokens;
 
@@ -14,11 +15,16 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
     {
         private readonly ITokenService tokenService;
         private readonly IMeshService meshService;
+        private readonly IChunkService chunkService;
 
-        public MeshOrchestrationService(ITokenService tokenService, IMeshService meshService)
+        public MeshOrchestrationService(
+            ITokenService tokenService,
+            IMeshService meshService,
+            IChunkService chunkService)
         {
             this.tokenService = tokenService;
             this.meshService = meshService;
+            this.chunkService = chunkService;
         }
 
         public ValueTask<bool> HandshakeAsync() =>
@@ -69,7 +75,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 ValidateTrackMessageArgs(messageId);
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
-                
+
                 Message outputMessage =
                     await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token);
 

@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -22,14 +23,25 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             Message inputMessage = randomMessage;
             Message outputMessage = inputMessage.DeepClone();
             Message expectedMessage = outputMessage;
+            int randomChunkCount = GetRandomNumber();
+            List<Message> randomChunkedMessages = CreateRandomChunkedSendMessages(randomChunkCount);
+            List<Message> chunkedMessages = randomChunkedMessages;
+            List<Message> chunkedSentMessages = chunkedMessages.DeepClone();
+
+            this.chunkServiceMock.Setup(service =>
+                service.SplitMessageIntoChunks(inputMessage))
+                    .Returns(chunkedMessages);
 
             this.tokenServiceMock.Setup(service =>
                 service.GenerateTokenAsync())
                     .ReturnsAsync(randomToken);
 
-            this.meshServiceMock.Setup(service =>
-                service.SendMessageAsync(inputMessage, randomToken))
-                    .ReturnsAsync(outputMessage);
+            foreach (Message chunkedsentMessage in chunkedSentMessages)
+            {
+                this.meshServiceMock.Setup(service =>
+                    service.SendMessageAsync(inputMessage, randomToken))
+                        .ReturnsAsync(outputMessage);
+            }
 
             // when
             Message actualMessage = await this.meshOrchestrationService
@@ -38,13 +50,21 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
 
-            this.tokenServiceMock.Verify(service =>
-                service.GenerateTokenAsync(),
+            this.chunkServiceMock.Verify(service =>
+                service.SplitMessageIntoChunks(inputMessage),
                     Times.Once);
 
-            this.meshServiceMock.Verify(service =>
-                service.SendMessageAsync(inputMessage, randomToken),
-                    Times.Once);
+
+            this.tokenServiceMock.Verify(service =>
+                service.GenerateTokenAsync(),
+                    Times.Exactly(chunkedMessages.Count));
+
+            foreach (Message chunkedMessage in chunkedMessages)
+            {
+                this.meshServiceMock.Verify(service =>
+                    service.SendMessageAsync(inputMessage, randomToken),
+                        Times.Once);
+            }
 
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
