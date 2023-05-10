@@ -99,6 +99,20 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             return messages;
         }
 
+        private static List<Message> CreateRandomChunkedSendFileMessages(int messageChunkCount)
+        {
+            List<Message> messages = new List<Message>();
+
+            for (int i = 0; i < messageChunkCount; i++)
+            {
+                var message = CreateRandomSendFileMessage();
+                message.Headers["Mex-Chunk-Range"] = new List<string> { $"{{{i + 1}:{messageChunkCount}}}" };
+                messages.Add(message);
+            }
+
+            return messages;
+        }
+
         private static Message CreateRandomSendMessage()
         {
             var message = CreateMessageFiller().Create();

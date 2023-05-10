@@ -44,6 +44,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.SplitMessageIntoChunks(It.IsAny<Message>()),
                     Times.Once);
 
+            this.chunkServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
         }
@@ -77,6 +78,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.SplitMessageIntoChunks(It.IsAny<Message>()),
                     Times.Once);
 
+            this.chunkServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
         }
@@ -113,6 +115,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.SplitMessageIntoChunks(It.IsAny<Message>()),
                     Times.Once);
 
+            this.chunkServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
         }
