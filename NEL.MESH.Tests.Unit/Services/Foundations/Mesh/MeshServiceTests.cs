@@ -149,10 +149,34 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 : string.Empty;
         }
 
+        private static List<HttpResponseMessage> CreateHttpResponseContentMessages(
+            Message message,
+            Dictionary<string, List<string>> contentHeaders,
+            Dictionary<string, List<string>> headers = null,
+            int chunks = 1,
+            HttpStatusCode statusCode = HttpStatusCode.OK)
+        {
+            List<HttpResponseMessage> messages = new List<HttpResponseMessage>();
+
+            for (int i = 0; i < chunks; i++)
+            {
+                HttpResponseMessage httpResponseMessage = CreateHttpResponseContentMessage(
+                    message,
+                    contentHeaders,
+                    headers,
+                    statusCode);
+                // TODO: add or overwrite the content header for mex-chunk-range to be {i:chunks}
+                messages.Add(httpResponseMessage);
+            }
+
+            return messages;
+        }
+
         private static HttpResponseMessage CreateHttpResponseContentMessage(
             Message message,
             Dictionary<string, List<string>> contentHeaders,
-            Dictionary<string, List<string>> headers = null)
+            Dictionary<string, List<string>> headers = null,
+            HttpStatusCode statusCode = HttpStatusCode.OK)
         {
 
             string contentType = message.Headers.ContainsKey("Content-Type")
@@ -166,7 +190,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             HttpResponseMessage responseMessage = new HttpResponseMessage()
             {
-                StatusCode = HttpStatusCode.OK,
+                StatusCode = statusCode,
                 Content =
                     new StringContent("{\"messageID\": \"" + message.MessageId + "\"}", Encoding.UTF8, contentType)
             };
