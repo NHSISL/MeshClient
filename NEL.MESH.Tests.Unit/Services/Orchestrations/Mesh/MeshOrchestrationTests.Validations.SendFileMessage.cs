@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -78,6 +79,49 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             this.tokenServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),
+                    Times.Once);
+
+            this.chunkServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.tokenServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [MemberData(nameof(InvalidMessageList))]
+        public async Task ShouldThrowValidationExceptionOnSendFileMessageIfChunksIsNullOrEmptyAndLogItAsync(
+            List<Message> invalidData)
+        {
+            // given
+            Message randomMessage = CreateRandomSendMessage();
+            Message inputMessage = randomMessage;
+
+            this.chunkServiceMock.Setup(service =>
+                service.SplitFileMessageIntoChunks(inputMessage))
+                    .Returns(invalidData);
+
+            var invalidMeshOrchestrationArgsException =
+                new InvalidMeshOrchestrationArgsException();
+
+            invalidMeshOrchestrationArgsException.AddData(
+                key: "ChunkedMessages",
+                values: "At least one chunk part required");
+
+            var expectedMeshOrchestrationValidationException =
+                new MeshOrchestrationValidationException(innerException: invalidMeshOrchestrationArgsException);
+
+            // when
+            ValueTask<Message> messageTask = this.meshOrchestrationService
+                .SendFileAsync(message: randomMessage);
+
+            MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
+                await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
+
+            // then
+            actualMeshOrchestrationValidationException.Should()
+                .BeEquivalentTo(expectedMeshOrchestrationValidationException);
+
+            this.chunkServiceMock.Verify(service =>
+                service.SplitFileMessageIntoChunks(inputMessage),
                     Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();
