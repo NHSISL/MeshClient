@@ -15,6 +15,20 @@ namespace NEL.MESH.Brokers.Mesh
         ValueTask<HttpResponseMessage> HandshakeAsync(string authorizationToken);
 
         ValueTask<HttpResponseMessage> SendMessageAsync(
+             string mailboxTo,
+             string workflowId,
+             string localId,
+             string subject,
+             string fileName,
+             string contentChecksum,
+             string contentEncrypted,
+             string encoding,
+             string chunkRange,
+             string contentType,
+             string authorizationToken,
+             string stringContent);
+
+        ValueTask<HttpResponseMessage> SendMessageAsync(
             string mailboxTo,
             string workflowId,
             string localId,
@@ -26,7 +40,8 @@ namespace NEL.MESH.Brokers.Mesh
             string chunkRange,
             string contentType,
             string authorizationToken,
-            string stringContent);
+            string stringContent,
+            int chunkNumber);
 
         ValueTask<HttpResponseMessage> SendFileAsync(
             string mailboxTo,
@@ -42,9 +57,25 @@ namespace NEL.MESH.Brokers.Mesh
             string authorizationToken,
             byte[] fileContents);
 
+        ValueTask<HttpResponseMessage> SendFileAsync(
+            string mailboxTo,
+            string workflowId,
+            string localId,
+            string subject,
+            string fileName,
+            string contentChecksum,
+            string contentEncrypted,
+            string encoding,
+            string chunkRange,
+            string contentType,
+            string authorizationToken,
+            byte[] fileContents,
+            int chunkNumber);
+
         ValueTask<HttpResponseMessage> TrackMessageAsync(string messageId, string authorizationToken);
         ValueTask<HttpResponseMessage> GetMessagesAsync(string authorizationToken);
         ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, string authorizationToken);
+        ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, int chunkNumber, string authorizationToken);
         ValueTask<HttpResponseMessage> AcknowledgeMessageAsync(string messageId, string authorizationToken);
     }
 }
