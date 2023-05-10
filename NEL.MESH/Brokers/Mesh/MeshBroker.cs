@@ -10,6 +10,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Configurations;
+using NEL.MESH.Models.Foundations.Mesh;
 
 namespace NEL.MESH.Brokers.Mesh
 {
@@ -74,6 +75,48 @@ namespace NEL.MESH.Brokers.Mesh
             return response;
         }
 
+        public async ValueTask<HttpResponseMessage> SendMessageAsync(
+            string mailboxTo,
+            string workflowId,
+            string localId,
+            string subject,
+            string fileName,
+            string contentChecksum,
+            string contentEncrypted,
+            string encoding,
+            string chunkRange,
+            string contentType,
+            string authorizationToken,
+            string stringConent,
+            string messageId,
+            int chunkNumber)
+        {
+            var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox/{messageId}/{chunkNumber}";
+
+            var request = new HttpRequestMessage(HttpMethod.Post, path)
+            {
+                Content = new StringContent(stringConent, Encoding.UTF8, contentType)
+
+            };
+
+            request.Headers.Add("Mex-From", this.MeshConfiguration.MailboxId);
+            request.Headers.Add("Mex-To", mailboxTo);
+            request.Headers.Add("Mex-WorkflowID", workflowId);
+            request.Headers.Add("Mex-LocalID", localId);
+            request.Headers.Add("Mex-Subject", subject);
+            request.Headers.Add("Mex-FileName", fileName);
+            request.Headers.Add("Mex-Content-Checksum", contentChecksum);
+            request.Headers.Add("Mex-Content-Encrypted", contentEncrypted);
+            request.Headers.Add("Mex-Encoding", encoding);
+            request.Headers.Add("Mex-Chunk-Range", chunkRange);
+            request.Headers.Add("Authorization", authorizationToken);
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
+            var response = await this.httpClient.SendAsync(request);
+
+            return response;
+        }
+
         public async ValueTask<HttpResponseMessage> SendFileAsync(
             string mailboxTo,
             string workflowId,
@@ -89,6 +132,47 @@ namespace NEL.MESH.Brokers.Mesh
             byte[] fileContents)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox";
+
+            var request = new HttpRequestMessage(HttpMethod.Post, path)
+            {
+                Content = new ByteArrayContent(fileContents)
+            };
+
+            request.Headers.Add("Mex-From", this.MeshConfiguration.MailboxId);
+            request.Headers.Add("Mex-To", mailboxTo);
+            request.Headers.Add("Mex-WorkflowID", workflowId);
+            request.Headers.Add("Mex-LocalID", localId);
+            request.Headers.Add("Mex-Subject", subject);
+            request.Headers.Add("Mex-FileName", fileName);
+            request.Headers.Add("Mex-Content-Checksum", contentChecksum);
+            request.Headers.Add("Mex-Content-Encrypted", contentEncrypted);
+            request.Headers.Add("Mex-Encoding", encoding);
+            request.Headers.Add("Mex-Chunk-Range", chunkRange);
+            request.Headers.Add("Authorization", authorizationToken);
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
+            var response = await this.httpClient.SendAsync(request);
+
+            return response;
+        }
+
+        public async ValueTask<HttpResponseMessage> SendFileAsync(
+            string mailboxTo,
+            string workflowId,
+            string localId,
+            string subject,
+            string fileName,
+            string contentChecksum,
+            string contentEncrypted,
+            string encoding,
+            string chunkRange,
+            string contentType,
+            string authorizationToken,
+            byte[] fileContents,
+            string messageId,
+            int chunkNumber)
+        {
+            var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox/{messageId}/{chunkNumber}";
 
             var request = new HttpRequestMessage(HttpMethod.Post, path)
             {
@@ -136,6 +220,16 @@ namespace NEL.MESH.Brokers.Mesh
         public async ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, string authorizationToken)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}";
+            var request = new HttpRequestMessage(HttpMethod.Get, path);
+            request.Headers.Add("Authorization", authorizationToken);
+            var response = await this.httpClient.SendAsync(request);
+
+            return response;
+        }
+
+        public async ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, int chunkNumber, string authorizationToken)
+        {
+            var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}/{chunkNumber}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("Authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
@@ -220,6 +314,16 @@ namespace NEL.MESH.Brokers.Mesh
             }
 
             return handler;
+        }
+
+        public ValueTask<HttpResponseMessage> SendMessageAsync(string mailboxTo, string workflowId, string localId, string subject, string fileName, string contentChecksum, string contentEncrypted, string encoding, string chunkRange, string contentType, string authorizationToken, string stringContent, int chunkNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ValueTask<HttpResponseMessage> SendFileAsync(string mailboxTo, string workflowId, string localId, string subject, string fileName, string contentChecksum, string contentEncrypted, string encoding, string chunkRange, string contentType, string authorizationToken, byte[] fileContents, int chunkNumber)
+        {
+            throw new NotImplementedException();
         }
 
         ~MeshBroker()
