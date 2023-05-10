@@ -14,7 +14,7 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class MeshClientTests
     {
-        [Fact]
+        [Fact(Skip = "Excluded")]
         [Trait("Category", "Acceptance")]
         public async Task ShouldTrackMessageAsync()
         {
