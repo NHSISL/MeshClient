@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FluentAssertions;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -45,7 +44,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
 
             foreach (var message in actualMessages)
             {
-                int actualByteCount = Encoding.UTF8.GetByteCount(message.StringContent);
+                int actualByteCount = message.FileContent.Length;
                 actualByteCount.Should().BeLessOrEqualTo(expectedByteCount);
             }
 

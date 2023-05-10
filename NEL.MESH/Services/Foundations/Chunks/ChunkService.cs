@@ -33,14 +33,27 @@ namespace NEL.MESH.Services.Foundations.Chunks
                 }
 
                 List<string> parts = GetChunkedContent(message, maxPartSize);
-                List<Message> chunkedMessages = new List<Message>();
-                ComposeNewMessagesFromChunks(message, parts, chunkedMessages);
+                List<Message> chunkedMessages = ComposeNewMessagesFromChunks(message, parts);
 
                 return chunkedMessages;
             });
 
-        public List<Message> SplitFileMessageIntoChunks(Message message) =>
-            throw new System.NotImplementedException();
+        public List<Message> SplitFileMessageIntoChunks(Message message)
+        {
+            int maxPartSize = this.meshConfigurationBroker.MaxChunkSizeInBytes;
+
+            if (message.FileContent.Length <= maxPartSize)
+            {
+                SetMexChunkRange(message, item: 1, itemCount: 1);
+
+                return new List<Message> { message };
+            }
+
+            List<byte[]> parts = GetChunkedByteArrayContent(message, maxPartSize);
+            List<Message> chunkedMessages = ComposeNewFileMessagesFromChunks(message, parts);
+
+            return chunkedMessages;
+        }
 
         public Message CombineChunkedMessages(List<Message> chunks) =>
             throw new System.NotImplementedException();
@@ -48,8 +61,10 @@ namespace NEL.MESH.Services.Foundations.Chunks
         public Message CombineChunkedFileMessages(List<Message> chunks) =>
             throw new System.NotImplementedException();
 
-        private static void ComposeNewMessagesFromChunks(Message message, List<string> parts, List<Message> chunkedMessages)
+        private static List<Message> ComposeNewMessagesFromChunks(Message message, List<string> parts)
         {
+            List<Message> chunkedMessages = new List<Message>();
+
             for (int i = 0; i < parts.Count; i++)
             {
                 Message chunk = new Message
@@ -61,6 +76,27 @@ namespace NEL.MESH.Services.Foundations.Chunks
                 SetMexChunkRange(chunk, item: i + 1, itemCount: parts.Count);
                 chunkedMessages.Add(chunk);
             }
+
+            return chunkedMessages;
+        }
+
+        private static List<Message> ComposeNewFileMessagesFromChunks(Message message, List<byte[]> parts)
+        {
+            List<Message> chunkedMessages = new List<Message>();
+
+            for (int i = 0; i < parts.Count; i++)
+            {
+                Message chunk = new Message
+                {
+                    Headers = message.Headers,
+                    FileContent = parts[i]
+                };
+
+                SetMexChunkRange(chunk, item: i + 1, itemCount: parts.Count);
+                chunkedMessages.Add(chunk);
+            }
+
+            return chunkedMessages;
         }
 
         private static List<string> GetChunkedContent(Message message, int chunkSizeInBytes)
@@ -74,6 +110,22 @@ namespace NEL.MESH.Services.Foundations.Chunks
                 byte[] chunk = new byte[chunkSize];
                 Array.Copy(byteContent, i, chunk, 0, chunkSize);
                 chunkedContent.Add(Encoding.UTF8.GetString(chunk));
+            }
+
+            return chunkedContent;
+        }
+
+        private static List<byte[]> GetChunkedByteArrayContent(Message message, int chunkSizeInBytes)
+        {
+            byte[] byteContent = message.FileContent;
+            List<byte[]> chunkedContent = new List<byte[]>();
+
+            for (int i = 0; i < byteContent.Length; i += chunkSizeInBytes)
+            {
+                int chunkSize = Math.Min(chunkSizeInBytes, byteContent.Length - i);
+                byte[] chunk = new byte[chunkSize];
+                Array.Copy(byteContent, i, chunk, 0, chunkSize);
+                chunkedContent.Add(chunk);
             }
 
             return chunkedContent;
