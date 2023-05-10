@@ -169,6 +169,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 values: "Header value is required");
 
             invalidMeshException.AddData(
+                key: "Mex-Chunk-Range",
+                values: "Header value is required");
+
+            invalidMeshException.AddData(
                 key: "Token",
                 values: "Text is required");
 
@@ -201,6 +205,63 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<byte[]>()),
+                        Times.Never);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIdAndChunkSizeIsNullAsync(
+            string invalidInput)
+        {
+            // given
+            string invalidAuthorizationToken = GetRandomString();
+            string chunkSize = "{2:2}";
+            Message randomFileMessage = CreateRandomSendFileMessage(chunkSize);
+
+            randomFileMessage.MessageId = invalidInput;
+
+            var invalidMeshException =
+               new InvalidMeshException();
+
+            invalidMeshException.AddData(
+                key: nameof(Message.MessageId),
+                values: "Text is required");
+
+            var expectedMeshValidationException =
+                new MeshValidationException(innerException: invalidMeshException);
+
+            // when
+            ValueTask<Message> addMessageTask =
+                this.meshService.SendFileAsync(randomFileMessage, invalidAuthorizationToken);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    addMessageTask.AsTask());
+
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendFileAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
                         Times.Never);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
