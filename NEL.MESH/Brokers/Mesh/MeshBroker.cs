@@ -326,6 +326,21 @@ namespace NEL.MESH.Brokers.Mesh
             throw new NotImplementedException();
         }
 
+        public ValueTask<HttpResponseMessage> SendMessageAsync(string mailboxTo, string workflowId, string localId, string subject, string fileName, string contentChecksum, string contentEncrypted, string encoding, string chunkRange, string contentType, string authorizationToken, string stringContent, string messageId, string chunkNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ValueTask<HttpResponseMessage> SendFileAsync(string mailboxTo, string workflowId, string localId, string subject, string fileName, string contentChecksum, string contentEncrypted, string encoding, string chunkRange, string contentType, string authorizationToken, byte[] fileContents, string messageId, string chunkNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, string chunkNumber, string authorizationToken)
+        {
+            throw new NotImplementedException();
+        }
+
         ~MeshBroker()
         {
             this.httpClient.Dispose();
