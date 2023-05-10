@@ -21,14 +21,14 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             Xeption dependancyValidationException)
         {
             // given
-            Message someMessage = CreateRandomSendMessage();
+            Message someMessage = CreateRandomSendFileMessage();
             var expectedMeshOrchestrationDependencyValidationException =
             new MeshOrchestrationDependencyValidationException(
                 dependancyValidationException.InnerException as Xeption);
 
-            this.tokenServiceMock.Setup(service =>
-                service.GenerateTokenAsync())
-                    .ThrowsAsync(dependancyValidationException);
+            this.chunkServiceMock.Setup(service =>
+                service.SplitFileMessageIntoChunks(It.IsAny<Message>()))
+                    .Throws(dependancyValidationException);
 
             // when
             ValueTask<Message> sendMessageTask = this.meshOrchestrationService.SendFileAsync(someMessage);
@@ -40,8 +40,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualMeshOrchestrationDependencyValidationException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationDependencyValidationException);
 
-            this.tokenServiceMock.Verify(service =>
-                service.GenerateTokenAsync(),
+            this.chunkServiceMock.Verify(service =>
+                service.SplitFileMessageIntoChunks(It.IsAny<Message>()),
                     Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();
@@ -55,14 +55,14 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             Xeption dependancyException)
         {
             // given
-            Message someMessage = CreateRandomSendMessage();
+            Message someMessage = CreateRandomSendFileMessage();
             var expectedMeshOrchestrationDependencyException =
             new MeshOrchestrationDependencyException(
                 dependancyException.InnerException as Xeption);
 
-            this.tokenServiceMock.Setup(service =>
-                service.GenerateTokenAsync())
-                    .ThrowsAsync(dependancyException);
+            this.chunkServiceMock.Setup(service =>
+                service.SplitFileMessageIntoChunks(It.IsAny<Message>()))
+                    .Throws(dependancyException);
 
             // when
             ValueTask<Message> sendMessageTask = this.meshOrchestrationService.SendFileAsync(someMessage);
@@ -74,8 +74,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualMeshOrchestrationDependencyException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationDependencyException);
 
-            this.tokenServiceMock.Verify(service =>
-                service.GenerateTokenAsync(),
+            this.chunkServiceMock.Verify(service =>
+                service.SplitFileMessageIntoChunks(It.IsAny<Message>()),
                     Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();
@@ -87,7 +87,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         public async Task ShouldThrowServiceExceptionOnSendFileIfServiceErrorOccursAsync()
         {
             // given
-            Message someMessage = CreateRandomSendMessage();
+            Message someMessage = CreateRandomSendFileMessage();
             string someErrorMessage = GetRandomString();
             var serviceException = new Exception(someErrorMessage);
 
@@ -97,9 +97,9 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             var expectedMeshOrchestrationServiceException =
             new MeshOrchestrationServiceException(failedMeshOrchestrationServiceException);
 
-            this.tokenServiceMock.Setup(service =>
-                service.GenerateTokenAsync())
-                    .ThrowsAsync(serviceException);
+            this.chunkServiceMock.Setup(service =>
+                service.SplitFileMessageIntoChunks(It.IsAny<Message>()))
+                    .Throws(serviceException);
 
             // when
             ValueTask<Message> sendMessageTask = this.meshOrchestrationService.SendFileAsync(someMessage);
@@ -111,8 +111,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualMeshOrchestrationServiceException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationServiceException);
 
-            this.tokenServiceMock.Verify(service =>
-                service.GenerateTokenAsync(),
+            this.chunkServiceMock.Verify(service =>
+                service.SplitFileMessageIntoChunks(It.IsAny<Message>()),
                     Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();
