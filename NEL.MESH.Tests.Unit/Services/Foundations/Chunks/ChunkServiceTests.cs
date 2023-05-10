@@ -30,6 +30,13 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
 
         public static string GetRandomString(int bytesToGenerate)
         {
+            byte[] randomBytes = GetRandomBytes(bytesToGenerate);
+
+            return Encoding.UTF8.GetString(randomBytes);
+        }
+
+        public static byte[] GetRandomBytes(int bytesToGenerate)
+        {
             Random random = new Random();
             int maxCharacters = bytesToGenerate / Encoding.UTF8.GetMaxByteCount(1);
             string randomString = new string(Enumerable.Range(0, maxCharacters).Select(_ => (char)random.Next(0x80, 0x7FF)).ToArray());
@@ -37,7 +44,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             byte[] truncatedBuffer = new byte[bytesToGenerate];
             Array.Copy(buffer, truncatedBuffer, Math.Min(buffer.Length, bytesToGenerate));
 
-            return Encoding.UTF8.GetString(truncatedBuffer);
+            return truncatedBuffer;
         }
 
         private static int GetRandomNumber(int min = 2, int max = 10) =>
@@ -59,6 +66,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
             message.StringContent = stringContent;
             message.FileContent = null;
+            message.MessageId = null;
 
             return message;
         }
@@ -79,6 +87,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
             message.FileContent = byteArrayContent;
             message.StringContent = null;
+            message.MessageId = null;
 
             return message;
         }
