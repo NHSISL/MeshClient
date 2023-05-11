@@ -18,13 +18,13 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
         public void ShouldSplitMessageIntoChunks()
         {
             // given
-            int randomChunkSizeInBytes = GetRandomNumber();
+            int randomChunkSizeInBytes = GetRandomNumber() * 4;
             int randomChunkCount = GetRandomNumber();
             int additionalBytes = GetRandomNumber(min: 0, max: randomChunkSizeInBytes - 1);
             int randomBytesToGenerate = (randomChunkSizeInBytes * randomChunkCount) - additionalBytes;
             string randomContent = GetRandomString(bytesToGenerate: randomBytesToGenerate);
             List<string> chunkParts = GetChunks(content: randomContent, chunkSizeInBytes: randomChunkSizeInBytes);
-            int expectedChunkCount = randomChunkCount;
+            int expectedChunkCount = chunkParts.Count;
             int inputChunkSize = randomChunkSizeInBytes;
             int expectedByteCount = randomChunkSizeInBytes;
             Message randomMessage = CreateRandomSendMessage(stringContent: randomContent);
@@ -32,7 +32,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
 
             List<Message> outputMessages = new List<Message>();
 
-            for (int i = 0; i < randomChunkCount; i++)
+            for (int i = 0; i < chunkParts.Count; i++)
             {
                 Message chunk = new Message
                 {
@@ -40,7 +40,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
                     StringContent = chunkParts[i]
                 };
 
-                SetMexChunkRange(chunk, item: i + 1, itemCount: randomChunkCount);
+                SetMexChunkRange(chunk, item: i + 1, itemCount: chunkParts.Count);
                 outputMessages.Add(chunk);
             }
 
