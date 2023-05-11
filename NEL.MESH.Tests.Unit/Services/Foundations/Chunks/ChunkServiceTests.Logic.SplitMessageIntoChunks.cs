@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
@@ -18,20 +19,33 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
         public void ShouldSplitMessageIntoChunks()
         {
             // given
-            int randomChunkSizeInBytes = GetRandomNumber();
+            int randomChunkSizeInBytes = GetRandomNumber(min: 4);
             int randomChunkCount = GetRandomNumber();
             int additionalBytes = GetRandomNumber(min: 0, max: randomChunkSizeInBytes - 1);
             int randomBytesToGenerate = (randomChunkSizeInBytes * randomChunkCount) - additionalBytes;
-            string randomContent = GetRandomString(randomBytesToGenerate);
-
-
+            string randomContent = GetRandomString(bytesToGenerate: randomBytesToGenerate);
+            List<string> chunkParts = GetChunks(content: randomContent, chunkSizeInBytes: randomChunkSizeInBytes);
+            int expectedChunkCount = chunkParts.Count;
             int inputChunkSize = randomChunkSizeInBytes;
             int expectedByteCount = randomChunkSizeInBytes;
-            int expectedChunkCount = randomChunkCount;
             Message randomMessage = CreateRandomSendMessage(stringContent: randomContent);
             Message inputMessage = randomMessage;
 
-            List<Message> expectedMessages = new List<Message>();
+            List<Message> outputMessages = new List<Message>();
+
+            for (int i = 0; i < chunkParts.Count; i++)
+            {
+                Message chunk = new Message
+                {
+                    Headers = inputMessage.Headers,
+                    StringContent = chunkParts[i]
+                };
+
+                SetMexChunkRange(chunk, item: i + 1, itemCount: chunkParts.Count);
+                outputMessages.Add(chunk);
+            }
+
+            List<Message> expectedMessages = outputMessages.DeepClone();
 
             this.meshConfigurationBrokerMock.Setup(broker =>
                 broker.MaxChunkSizeInBytes)
