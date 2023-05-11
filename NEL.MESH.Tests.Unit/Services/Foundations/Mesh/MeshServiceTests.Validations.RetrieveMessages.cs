@@ -27,7 +27,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message randomMessage = CreateRandomMessage();
             Message inputMessage = randomMessage;
 
-            HttpResponseMessage responseMessage = CreateHttpResponseContentMessage(
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(
                 inputMessage,
                 new Dictionary<string, List<string>>(),
                 new Dictionary<string, List<string>>());

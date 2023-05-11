@@ -4,7 +4,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -139,30 +141,52 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 ValidateRetrieveMessageArguments(messageId, authorizationToken);
 
-                HttpResponseMessage responseMessage =
+                HttpResponseMessage initialResponse =
                     await this.meshBroker.GetMessageAsync(messageId, authorizationToken);
 
-                ValidateResponse(responseMessage);
-                string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+                ValidateResponse(initialResponse);
 
-                Message outputMessage = new Message
+                string responseMessageBody = initialResponse.Content.ReadAsStringAsync().Result;
+
+                Message firstMessage = new Message
                 {
                     MessageId = messageId,
                     StringContent = responseMessageBody,
                 };
 
-                foreach (var header in responseMessage.Headers)
+                foreach (var header in initialResponse.Headers)
                 {
-                    outputMessage.Headers.Add(header.Key, header.Value.ToList());
+                    firstMessage.Headers.Add(header.Key, header.Value.ToList());
                 }
 
-                foreach (var header in responseMessage.Content.Headers)
+                foreach (var header in initialResponse.Content.Headers)
                 {
-                    outputMessage.Headers.Add(header.Key, header.Value.ToList());
+                    firstMessage.Headers.Add(header.Key, header.Value.ToList());
                 }
 
-                return outputMessage;
+                if (initialResponse.StatusCode == HttpStatusCode.OK)
+                {
+                    return firstMessage;
+                }
+
+                var chunks = initialResponse.Content.Headers.FirstOrDefault(h => h.Key == "Mex-Chunk-Range");
+                string chunkRange = chunks.Value.FirstOrDefault().Replace("{", string.Empty).Replace("}", string.Empty);
+                string[] parts = chunkRange.Split(":");
+                int totalChunks = int.Parse(parts[1]);
+
+                for (int chunkId = 1; chunkId < totalChunks; chunkId++)
+                {
+                    HttpResponseMessage responseMessage =
+                        await this.meshBroker.GetMessageAsync(messageId, chunkId + 1, authorizationToken);
+
+                    ValidateResponse(responseMessage);
+                    string messageContent = initialResponse.Content.ReadAsStringAsync().Result;
+                    firstMessage.StringContent += messageContent;
+                }
+
+                return firstMessage;
             });
+
 
         public ValueTask<bool> AcknowledgeMessageAsync(string messageId, string authorizationToken) =>
             TryCatch(async () =>

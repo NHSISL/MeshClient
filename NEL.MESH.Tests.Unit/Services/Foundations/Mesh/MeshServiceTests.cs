@@ -149,7 +149,39 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 : string.Empty;
         }
 
-        private static List<HttpResponseMessage> CreateHttpResponseContentMessages(
+
+        public static List<string> GetParts(string content, int parts)
+        {
+            if (string.IsNullOrEmpty(content) || parts <= 0)
+            {
+                return new List<string>(); // Return an empty list if the input string is null or empty or parts is less than or equal to 0.
+            }
+
+            if (parts > content.Length) // If parts is greater than the length of the content, adjust it to the length of the content.
+            {
+                parts = content.Length;
+            }
+
+            int length = content.Length;
+            int chunkSize = length / parts;
+            List<string> partsList = new List<string>();
+
+            for (int i = 0; i < length; i += chunkSize)
+            {
+                if (i + chunkSize > length) // Adjust the last chunk size to accommodate the remainder.
+                {
+                    chunkSize = length - i;
+                }
+
+                string chunk = content.Substring(i, chunkSize);
+                partsList.Add(chunk);
+            }
+
+            return partsList;
+        }
+
+
+        private static List<HttpResponseMessage> CreateHttpResponseContentMessagesForRetrieveMessage(
             Message message,
             Dictionary<string, List<string>> contentHeaders,
             Dictionary<string, List<string>> headers = null,
@@ -157,26 +189,92 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             List<HttpResponseMessage> messages = new List<HttpResponseMessage>();
+            var parts = GetParts(message.StringContent, chunks);
 
             for (int i = 0; i < chunks; i++)
             {
-                HttpResponseMessage httpResponseMessage = CreateHttpResponseContentMessage(
-                    message,
+                // Check if 'i' is within the range of 'parts' list
+                if (i >= parts.Count)
+                {
+                    break;
+                }
+
+                // Create a new message for each chunk with unique content
+                Message chunkMessage = new Message
+                {
+                    MessageId = message.MessageId,
+                    StringContent = parts[i],
+                };
+
+                HttpResponseMessage httpResponseMessage = CreateHttpResponseContentMessageForRetrieveMessage(
+                    chunkMessage,
                     contentHeaders,
                     headers,
                     statusCode);
-                // TODO: add or overwrite the content header for mex-chunk-range to be {i:chunks}
+
+                string chunkRangeValue = $"{i + 1}:{chunks}";
+
+                if (httpResponseMessage.Content.Headers.Contains("Mex-Chunk-Range"))
+                {
+                    httpResponseMessage.Content.Headers.Remove("Mex-Chunk-Range");
+                }
+
+                httpResponseMessage.Content.Headers.Add("Mex-Chunk-Range", chunkRangeValue);
+
                 messages.Add(httpResponseMessage);
             }
 
             return messages;
         }
 
-        private static HttpResponseMessage CreateHttpResponseContentMessage(
+        private static HttpResponseMessage CreateHttpResponseContentMessageForRetrieveMessage(
             Message message,
             Dictionary<string, List<string>> contentHeaders,
             Dictionary<string, List<string>> headers = null,
             HttpStatusCode statusCode = HttpStatusCode.OK)
+        {
+            string contentType = message.Headers.ContainsKey("Content-Type")
+                ? message.Headers["Content-Type"].FirstOrDefault()
+                : "text/plain";
+
+            if (string.IsNullOrEmpty(contentType))
+            {
+                contentType = "text/plain";
+            }
+
+            HttpResponseMessage responseMessage = new HttpResponseMessage()
+            {
+                StatusCode = statusCode,
+                Content = new StringContent(message.StringContent, Encoding.UTF8, contentType)
+            };
+
+            foreach (var item in contentHeaders)
+            {
+                if (item.Key != "Content-Type")
+                {
+                    responseMessage.Content.Headers.Add(item.Key, item.Value);
+                }
+            }
+
+            if (headers != null)
+            {
+                foreach (var item in headers)
+                {
+                    if (item.Key != "Content-Type")
+                    {
+                        responseMessage.Content.Headers.Add(item.Key, item.Value);
+                    }
+                }
+            }
+
+            return responseMessage;
+        }
+
+        private static HttpResponseMessage CreateHttpResponseContentMessageForSendMessage(
+                    Message message,
+                    Dictionary<string, List<string>> contentHeaders,
+                    Dictionary<string, List<string>> headers = null,
+                    HttpStatusCode statusCode = HttpStatusCode.OK)
         {
 
             string contentType = message.Headers.ContainsKey("Content-Type")
@@ -231,17 +329,40 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return responseMessage;
         }
 
-        private static Message GetMessageWithStringContentFromHttpResponseMessage(HttpResponseMessage responseMessage)
+        private static Message GetMessageWithStringContentFromHttpResponseMessageForSend(HttpResponseMessage responseMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
             Dictionary<string, List<string>> contentHeaders = GetContentHeaders(responseMessage.Content.Headers);
             Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
 
-
-
             Message message = new Message
             {
                 MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
+                StringContent = responseMessageBody,
+            };
+
+            foreach (var item in contentHeaders)
+            {
+                message.Headers.Add(item.Key, item.Value);
+            }
+
+            foreach (var item in headers)
+            {
+                message.Headers.Add(item.Key, item.Value);
+            }
+
+            return message;
+        }
+
+        private static Message GetMessageWithStringContentFromHttpResponseMessageForReceive(HttpResponseMessage responseMessage, string messageId)
+        {
+            string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+            Dictionary<string, List<string>> contentHeaders = GetContentHeaders(responseMessage.Content.Headers);
+            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
+
+            Message message = new Message
+            {
+                MessageId = messageId,
                 StringContent = responseMessageBody,
             };
 

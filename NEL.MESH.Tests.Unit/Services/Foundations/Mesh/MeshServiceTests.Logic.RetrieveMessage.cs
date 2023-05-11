@@ -49,7 +49,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            HttpResponseMessage responseMessage = CreateHttpResponseContentMessage(
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(
                 inputMessage,
                 contentHeaders,
                 headers,
@@ -59,7 +59,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 broker.GetMessageAsync(inputMessage.MessageId, authorizationToken))
                     .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessage(responseMessage);
+            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessageForReceive(responseMessage, inputMessage.MessageId);
 
             // when
             var actualMessage = await this.meshService
@@ -108,7 +108,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            List<HttpResponseMessage> responseMessages = CreateHttpResponseContentMessages(
+            List<HttpResponseMessage> responseMessages = CreateHttpResponseContentMessagesForRetrieveMessage(
                 inputMessage,
                 contentHeaders,
                 headers,
@@ -125,19 +125,20 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                         broker.GetMessageAsync(inputMessage.MessageId, authorizationToken))
                             .ReturnsAsync(responseMessages[i]);
 
-                    expectedMessage = GetMessageWithStringContentFromHttpResponseMessage(responseMessages[i]);
+                    expectedMessage = GetMessageWithStringContentFromHttpResponseMessageForReceive(responseMessages[i], inputMessage.MessageId);
                 }
                 else
                 {
                     this.meshBrokerMock.Setup(broker =>
-                        broker.GetMessageAsync(inputMessage.MessageId, i+1, authorizationToken))
+                        broker.GetMessageAsync(inputMessage.MessageId, i, authorizationToken))
                             .ReturnsAsync(responseMessages[i]);
                 }
             }
 
-            string combinedStringContent = responseMessages
-                .Aggregate("", (current, message) => current + 
-                    GetMessageWithStringContentFromHttpResponseMessage(message).StringContent);
+            expectedMessage.StringContent = responseMessages
+                .Aggregate("", (current, message) => current + 
+                    GetMessageWithStringContentFromHttpResponseMessageForReceive(message, inputMessage.MessageId).StringContent);
+
 
             // when
             var actualMessage = await this.meshService
