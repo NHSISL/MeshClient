@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -188,6 +189,63 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
+                    It.IsAny<string>()),
+                        Times.Never);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIdAndChunkSizeIsNullAsync(
+            string invalidInput)
+        {
+            // given
+            string invalidAuthorizationToken = GetRandomString();
+            string chunkSize = "{2:2}";
+            Message randomMessage = CreateRandomSendMessage(chunkSize);
+
+            randomMessage.MessageId = invalidInput;
+
+             var invalidMeshException =
+                new InvalidMeshException();
+
+            invalidMeshException.AddData(
+                key: nameof(Message.MessageId),
+                values: "Text is required");
+
+            var expectedMeshValidationException =
+                new MeshValidationException(innerException: invalidMeshException);
+
+            // when
+            ValueTask<Message> addMessageTask =
+                this.meshService.SendMessageAsync(randomMessage, invalidAuthorizationToken);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    addMessageTask.AsTask());
+
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendMessageAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(), 
                     It.IsAny<string>()),
                         Times.Never);
 

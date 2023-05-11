@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
+using NEL.MESH.Models.Processings.Mesh;
 using Xeptions;
 
 namespace NEL.MESH.Services.Foundations.Mesh
@@ -57,6 +58,12 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
                 (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+        }
+
+        private static void ValidateMexChunkRangeOnMultiPartMessage(Message message)
+        {
+            Validate<InvalidMeshException>(
+                (Rule: IsInvalid(message.Headers, "Mex-Chunk-Range"), Parameter: "Mex-Chunk-Range"));
         }
 
         private static void ValidateMeshMessageOnSendFile(Message message, string authorizationToken)

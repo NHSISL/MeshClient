@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Orchestrations.Mesh.Exceptions;
 using Xeptions;
@@ -25,6 +26,18 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             }
         }
 
+        private static void ValidateChunksOnSendMessage(List<Message> chunkedMessages)
+        {
+            Validate<InvalidMeshOrchestrationArgsException>(
+                (Rule: IsInvalid(chunkedMessages), Parameter: "ChunkedMessages"));
+        }
+
+        private static void ValidateChunksOnSendFile(List<Message> chunkedMessages)
+        {
+            Validate<InvalidMeshOrchestrationArgsException>(
+                (Rule: IsInvalid(chunkedMessages), Parameter: "ChunkedMessages"));
+        }
+
         private static void ValidateTrackMessageArgs(string messageId)
         {
             Validate<InvalidMeshOrchestrationArgsException>(
@@ -35,6 +48,12 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalid(List<Message> chunkedMessages) => new
+        {
+            Condition = chunkedMessages is null || chunkedMessages.Count == 0,
+            Message = "At least one chunk part required"
         };
 
         private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
