@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
@@ -18,7 +19,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
         public void ShouldSplitMessageIntoChunks()
         {
             // given
-            int randomChunkSizeInBytes = GetRandomNumber() * 4;
+            int randomChunkSizeInBytes = GetRandomNumber(min: 4);
             int randomChunkCount = GetRandomNumber();
             int additionalBytes = GetRandomNumber(min: 0, max: randomChunkSizeInBytes - 1);
             int randomBytesToGenerate = (randomChunkSizeInBytes * randomChunkCount) - additionalBytes;
@@ -44,7 +45,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
                 outputMessages.Add(chunk);
             }
 
-            List<Message> expectedMessages = outputMessages;
+            List<Message> expectedMessages = outputMessages.DeepClone();
 
             this.meshConfigurationBrokerMock.Setup(broker =>
                 broker.MaxChunkSizeInBytes)

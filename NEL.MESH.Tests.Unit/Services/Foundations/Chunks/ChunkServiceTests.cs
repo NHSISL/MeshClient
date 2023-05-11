@@ -69,6 +69,21 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             return chunkedContent;
         }
 
+        private static List<byte[]> GetChunkedByteArrayContent(byte[] byteContent, int chunkSizeInBytes)
+        {
+            List<byte[]> chunkedContent = new List<byte[]>();
+
+            for (int i = 0; i < byteContent.Length; i += chunkSizeInBytes)
+            {
+                int chunkSize = Math.Min(chunkSizeInBytes, byteContent.Length - i);
+                byte[] chunk = new byte[chunkSize];
+                Array.Copy(byteContent, i, chunk, 0, chunkSize);
+                chunkedContent.Add(chunk);
+            }
+
+            return chunkedContent;
+        }
+
         private static void SetMexChunkRange(Message message, int item, int itemCount)
         {
             if (message.Headers.ContainsKey("Mex-Chunk-Range"))
