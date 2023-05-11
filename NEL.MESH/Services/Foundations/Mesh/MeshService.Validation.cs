@@ -72,8 +72,13 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
                 (Rule: IsInvalid(message.Headers, "Mex-Content-Checksum"), Parameter: "Mex-Content-Checksum"),
                 (Rule: IsInvalid(message.Headers, "Mex-Content-Encrypted"), Parameter: "Mex-Content-Encrypted"),
-                (Rule: IsInvalid(message.Headers, "Mex-Chunk-Range"), Parameter: "Mex-Chunk-Range"),
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+        }
+
+        private static void ValidateMexChunkRangeOnMultiPartFile(Message message)
+        {
+            Validate<InvalidMeshException>(
+                (Rule: IsInvalid(message.Headers, "Mex-Chunk-Range"), Parameter: "Mex-Chunk-Range"));
         }
 
         public static void ValidateTrackMessageArguments(string messageId, string authorizationToken)
