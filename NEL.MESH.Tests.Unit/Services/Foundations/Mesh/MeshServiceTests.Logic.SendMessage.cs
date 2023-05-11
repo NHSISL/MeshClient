@@ -31,7 +31,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-From", new List<string>() },
                 { "Mex-To", new List<string>() },
                 { "Mex-WorkflowID", new List<string>() },
-                { "Mex-Chunk-Range", new List<string>{} },
+                { "Mex-Chunk-Range", new List<string>() },
                 { "Mex-LocalID", new List<string>() },
                 { "Mex-Subject", new List<string>() },
                 { "Mex-Content-Checksum", new List<string>() },

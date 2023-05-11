@@ -415,7 +415,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Chunk-Range", new List<string> { "{1:1}" });
 
             return message;
         }
