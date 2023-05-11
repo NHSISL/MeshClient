@@ -158,10 +158,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 values: "Header value is required");
 
             invalidMeshException.AddData(
-                key: "Mex-Chunk-Range",
-                values: "Header value is required");
-
-            invalidMeshException.AddData(
                 key: "Token",
                 values: "Text is required");
 
