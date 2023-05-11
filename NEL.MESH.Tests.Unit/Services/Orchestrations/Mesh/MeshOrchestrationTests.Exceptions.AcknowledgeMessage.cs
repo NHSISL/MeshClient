@@ -43,6 +43,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.GenerateTokenAsync(),
                     Times.Once);
 
+            this.chunkServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
         }
@@ -76,6 +77,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.GenerateTokenAsync(),
                     Times.Once);
 
+            this.chunkServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
         }
@@ -112,6 +114,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.GenerateTokenAsync(),
                     Times.Once);
 
+            this.chunkServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
         }
