@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
@@ -22,6 +23,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             int additionalBytes = GetRandomNumber(min: 0, max: randomChunkSizeInBytes - 1);
             int randomBytesToGenerate = (randomChunkSizeInBytes * randomChunkCount) - additionalBytes;
             byte[] randomByteContent = GetRandomBytes(randomBytesToGenerate);
+
+            List<byte[]> chunkParts =
+                GetChunkedByteArrayContent(randomByteContent, chunkSizeInBytes: randomChunkSizeInBytes);
+
             int inputChunkSize = randomChunkSizeInBytes;
             int expectedByteCount = randomChunkSizeInBytes;
             int expectedChunkCount = randomChunkCount;
@@ -30,7 +35,21 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
                 CreateRandomSendFileMessage(byteArrayContent: randomByteContent);
 
             Message inputMessage = randomMessage;
-            List<Message> expectedMessages = new List<Message>();
+            List<Message> outputMessages = new List<Message>();
+
+            for (int i = 0; i < chunkParts.Count; i++)
+            {
+                Message chunk = new Message
+                {
+                    Headers = inputMessage.Headers,
+                    FileContent = chunkParts[i]
+                };
+
+                SetMexChunkRange(chunk, item: i + 1, itemCount: chunkParts.Count);
+                outputMessages.Add(chunk);
+            }
+
+            List<Message> expectedMessages = outputMessages.DeepClone();
 
             this.meshConfigurationBrokerMock.Setup(broker =>
                 broker.MaxChunkSizeInBytes)

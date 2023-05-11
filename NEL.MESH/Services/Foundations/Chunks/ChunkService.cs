@@ -103,15 +103,32 @@ namespace NEL.MESH.Services.Foundations.Chunks
 
         private static List<string> GetChunkedContent(Message message, int chunkSizeInBytes)
         {
-            byte[] byteContent = Encoding.UTF8.GetBytes(message.StringContent);
+            string content = message.StringContent;
+            if (Encoding.UTF8.GetByteCount(content) <= chunkSizeInBytes)
+            {
+                return new List<string> { content };
+            }
+
+            byte[] bytes = Encoding.UTF8.GetBytes(content);
             List<string> chunkedContent = new List<string>();
 
-            for (int i = 0; i < byteContent.Length; i += chunkSizeInBytes)
+            for (int i = 0; i < bytes.Length;)
             {
-                int chunkSize = Math.Min(chunkSizeInBytes, byteContent.Length - i);
-                byte[] chunk = new byte[chunkSize];
-                Array.Copy(byteContent, i, chunk, 0, chunkSize);
-                chunkedContent.Add(Encoding.UTF8.GetString(chunk));
+                int chunkSize = Math.Min(chunkSizeInBytes, bytes.Length - i);
+                byte[] chunkBytes = new byte[chunkSize];
+                Array.Copy(bytes, i, chunkBytes, 0, chunkSize);
+                string chunk = Encoding.UTF8.GetString(chunkBytes);
+
+                while (Encoding.UTF8.GetByteCount(chunk) > chunkSizeInBytes)
+                {
+                    chunkSize--;
+                    chunkBytes = new byte[chunkSize];
+                    Array.Copy(bytes, i, chunkBytes, 0, chunkSize);
+                    chunk = Encoding.UTF8.GetString(chunkBytes);
+                }
+
+                i += chunkSize;
+                chunkedContent.Add(chunk);
             }
 
             return chunkedContent;
