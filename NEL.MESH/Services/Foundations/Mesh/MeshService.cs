@@ -42,6 +42,11 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     .Replace("{", string.Empty)
                         .Replace("}", string.Empty);
 
+                if (string.IsNullOrEmpty(chunkRange))
+                {
+                    chunkRange = "1";
+                }
+
                 string chunkPart = (chunkRange.Split(':'))[0];
 
                 int chunkNumber; 
@@ -72,6 +77,8 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 else
                 {
                     ValidateMessageId(message.MessageId);
+                    ValidateMexChunkRangeOnMultiPartMessage(message);
+
                     responseMessage = await this.meshBroker.SendMessageAsync(
                         mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
                         workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
