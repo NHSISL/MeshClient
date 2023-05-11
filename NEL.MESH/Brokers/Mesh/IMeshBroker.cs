@@ -41,7 +41,8 @@ namespace NEL.MESH.Brokers.Mesh
             string contentType,
             string authorizationToken,
             string stringContent,
-            int chunkNumber);
+            string messageId,
+            string chunkNumber);
 
         ValueTask<HttpResponseMessage> SendFileAsync(
             string mailboxTo,
@@ -70,12 +71,13 @@ namespace NEL.MESH.Brokers.Mesh
             string contentType,
             string authorizationToken,
             byte[] fileContents,
-            int chunkNumber);
+            string messageId,
+            string chunkNumber);
 
         ValueTask<HttpResponseMessage> TrackMessageAsync(string messageId, string authorizationToken);
         ValueTask<HttpResponseMessage> GetMessagesAsync(string authorizationToken);
         ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, string authorizationToken);
-        ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, int chunkNumber, string authorizationToken);
+        ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, string chunkNumber, string authorizationToken);
         ValueTask<HttpResponseMessage> AcknowledgeMessageAsync(string messageId, string authorizationToken);
     }
 }

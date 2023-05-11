@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Moq;
 using NEL.MESH.Brokers.Mesh;
@@ -30,14 +29,79 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
 
         public static string GetRandomString(int bytesToGenerate)
         {
-            Random random = new Random();
-            int maxCharacters = bytesToGenerate / Encoding.UTF8.GetMaxByteCount(1);
-            string randomString = new string(Enumerable.Range(0, maxCharacters).Select(_ => (char)random.Next(0x80, 0x7FF)).ToArray());
-            byte[] buffer = Encoding.UTF8.GetBytes(randomString);
-            byte[] truncatedBuffer = new byte[bytesToGenerate];
-            Array.Copy(buffer, truncatedBuffer, Math.Min(buffer.Length, bytesToGenerate));
+            byte[] generatedBytes = GetRandomBytes(bytesToGenerate);
+            string randomString = Encoding.UTF8.GetString(generatedBytes);
 
-            return Encoding.UTF8.GetString(truncatedBuffer);
+            return randomString;
+        }
+
+        public static List<string> GetChunks(string content, int chunkSizeInBytes)
+        {
+            if (Encoding.UTF8.GetByteCount(content) <= chunkSizeInBytes)
+            {
+                return new List<string> { content };
+            }
+
+            byte[] bytes = Encoding.UTF8.GetBytes(content);
+            List<string> chunkedContent = new List<string>();
+
+            for (int i = 0; i < bytes.Length;)
+            {
+                int chunkSize = Math.Min(chunkSizeInBytes, bytes.Length - i);
+                byte[] chunkBytes = new byte[chunkSize];
+                Array.Copy(bytes, i, chunkBytes, 0, chunkSize);
+                string chunk = Encoding.UTF8.GetString(chunkBytes);
+
+                while (Encoding.UTF8.GetByteCount(chunk) > chunkSizeInBytes)
+                {
+                    chunkSize--;
+                    chunkBytes = new byte[chunkSize];
+                    Array.Copy(bytes, i, chunkBytes, 0, chunkSize);
+                    chunk = Encoding.UTF8.GetString(chunkBytes);
+                }
+
+                i += chunkSize;
+                chunkedContent.Add(chunk);
+            }
+
+            return chunkedContent;
+        }
+
+        private static List<byte[]> GetChunkedByteArrayContent(byte[] byteContent, int chunkSizeInBytes)
+        {
+            List<byte[]> chunkedContent = new List<byte[]>();
+
+            for (int i = 0; i < byteContent.Length; i += chunkSizeInBytes)
+            {
+                int chunkSize = Math.Min(chunkSizeInBytes, byteContent.Length - i);
+                byte[] chunk = new byte[chunkSize];
+                Array.Copy(byteContent, i, chunk, 0, chunkSize);
+                chunkedContent.Add(chunk);
+            }
+
+            return chunkedContent;
+        }
+
+        private static void SetMexChunkRange(Message message, int item, int itemCount)
+        {
+            if (message.Headers.ContainsKey("Mex-Chunk-Range"))
+            {
+                message.Headers["Mex-Chunk-Range"] = new List<string> { $"{item}:{itemCount}" };
+            }
+            else
+            {
+                message.Headers.Add("Mex-Chunk-Range", new List<string> { $"{item}:{itemCount}" });
+            }
+        }
+
+        public static byte[] GetRandomBytes(int bytesToGenerate)
+        {
+            byte[] buffer = new byte[bytesToGenerate];
+
+            Random random = new Random();
+            random.NextBytes(buffer);
+
+            return buffer;
         }
 
         private static int GetRandomNumber(int min = 2, int max = 10) =>
@@ -59,6 +123,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
             message.StringContent = stringContent;
             message.FileContent = null;
+            message.MessageId = null;
 
             return message;
         }
@@ -79,6 +144,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
             message.FileContent = byteArrayContent;
             message.StringContent = null;
+            message.MessageId = null;
 
             return message;
         }
