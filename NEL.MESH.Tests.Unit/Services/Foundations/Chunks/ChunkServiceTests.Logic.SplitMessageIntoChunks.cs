@@ -22,16 +22,32 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             int randomChunkCount = GetRandomNumber();
             int additionalBytes = GetRandomNumber(min: 0, max: randomChunkSizeInBytes - 1);
             int randomBytesToGenerate = (randomChunkSizeInBytes * randomChunkCount) - additionalBytes;
+
             string randomContent = GetRandomString(randomBytesToGenerate);
+            List<string> calculatedChunks = GetChunks(randomContent, randomChunkCount);
 
 
+            int expectedChunkCount = calculatedChunks.Count;
             int inputChunkSize = randomChunkSizeInBytes;
             int expectedByteCount = randomChunkSizeInBytes;
-            int expectedChunkCount = randomChunkCount;
             Message randomMessage = CreateRandomSendMessage(stringContent: randomContent);
             Message inputMessage = randomMessage;
 
-            List<Message> expectedMessages = new List<Message>();
+            List<Message> outputMessages = new List<Message>();
+
+            for (int i = 0; i < calculatedChunks.Count; i++)
+            {
+                Message chunk = new Message
+                {
+                    Headers = inputMessage.Headers,
+                    StringContent = calculatedChunks[i]
+                };
+
+                SetMexChunkRange(chunk, item: i + 1, itemCount: calculatedChunks.Count);
+                outputMessages.Add(chunk);
+            }
+
+            List<Message> expectedMessages = outputMessages;
 
             this.meshConfigurationBrokerMock.Setup(broker =>
                 broker.MaxChunkSizeInBytes)

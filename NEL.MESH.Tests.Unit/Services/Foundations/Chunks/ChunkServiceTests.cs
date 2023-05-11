@@ -30,21 +30,51 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
 
         public static string GetRandomString(int bytesToGenerate)
         {
-            byte[] randomBytes = GetRandomBytes(bytesToGenerate);
+            return new MnemonicString(
+                wordCount: 1,
+                wordMinLength: bytesToGenerate,
+                wordMaxLength: bytesToGenerate).GetValue();
+        }
 
-            return Encoding.UTF8.GetString(randomBytes);
+        public static List<string> GetChunks(string content, int chunkSizeInBytes)
+        {
+            string stringContent = content;
+            List<string> chunkedContent = new List<string>();
+            int chunkSize = chunkSizeInBytes;
+
+            for (int i = 0; i < stringContent.Length; i += chunkSize)
+            {
+                chunkSize = Math.Min(chunkSizeInBytes, stringContent.Length - i);
+                string chunk = stringContent.Substring(i, chunkSize);
+                chunkedContent.Add(chunk);
+            }
+
+            return chunkedContent;
+        }
+
+        private static void SetMexChunkRange(Message message, int item, int itemCount)
+        {
+            if (message.Headers.ContainsKey("Mex-Chunk-Range"))
+            {
+                message.Headers["Mex-Chunk-Range"] = new List<string> { $"{item}:{itemCount}" };
+            }
+            else
+            {
+                message.Headers.Add("Mex-Chunk-Range", new List<string> { $"{item}:{itemCount}" });
+            }
         }
 
         public static byte[] GetRandomBytes(int bytesToGenerate)
         {
             Random random = new Random();
             int maxCharacters = bytesToGenerate / Encoding.UTF8.GetMaxByteCount(1);
-            string randomString = new string(Enumerable.Range(0, maxCharacters).Select(_ => (char)random.Next(0x80, 0x7FF)).ToArray());
-            byte[] buffer = Encoding.UTF8.GetBytes(randomString);
-            byte[] truncatedBuffer = new byte[bytesToGenerate];
-            Array.Copy(buffer, truncatedBuffer, Math.Min(buffer.Length, bytesToGenerate));
 
-            return truncatedBuffer;
+            string randomString = new string(Enumerable.Range(0, maxCharacters)
+                .Select(_ => (char)random.Next(0x80, 0x7FF)).ToArray());
+
+            byte[] buffer = Encoding.UTF8.GetBytes(randomString);
+
+            return buffer;
         }
 
         private static int GetRandomNumber(int min = 2, int max = 10) =>
