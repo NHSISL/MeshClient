@@ -130,7 +130,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 else
                 {
                     this.meshBrokerMock.Setup(broker =>
-                        broker.GetMessageAsync(inputMessage.MessageId, i + 1, authorizationToken))
+                        broker.GetMessageAsync(inputMessage.MessageId, (i + 1).ToString(), authorizationToken))
                             .ReturnsAsync(responseMessages[i]);
                 }
             }
@@ -159,7 +159,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 else
                 {
                     this.meshBrokerMock.Verify(broker =>
-                        broker.GetMessageAsync(inputMessage.MessageId, i + 1, authorizationToken),
+                        broker.GetMessageAsync(inputMessage.MessageId, (i + 1).ToString(), authorizationToken),
                             Times.Once);
                 }
             }
