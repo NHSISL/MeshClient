@@ -32,8 +32,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             byte[] generatedBytes = GetRandomBytes(bytesToGenerate);
             string randomString = Encoding.UTF8.GetString(generatedBytes);
 
-            // Converting this to UTF8 will result in a string that is 4 times the size of the original byte array.
-
             return randomString;
         }
 
