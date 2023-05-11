@@ -2,8 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Force.DeepCloner;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Orchestrations.Mesh.Exceptions;
@@ -49,6 +51,20 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // given
             string invalidToken = invalidText;
             Message randomMessage = CreateRandomSendMessage();
+            Message inputMessage = randomMessage;
+            int randomChunkCount = GetRandomNumber();
+            List<Message> randomChunkedMessages = CreateRandomChunkedSendMessages(randomChunkCount);
+            List<Message> chunkedInputMessages = randomChunkedMessages;
+            List<Message> chunkedOutputMessages = chunkedInputMessages.DeepClone();
+            string randomMessageId = GetRandomString();
+            chunkedOutputMessages[0].MessageId = randomMessageId;
+            Message outputMessage = chunkedOutputMessages[0].DeepClone();
+            outputMessage.StringContent = inputMessage.StringContent;
+            Message expectedMessage = outputMessage.DeepClone();
+
+            this.chunkServiceMock.Setup(service =>
+                service.SplitMessageIntoChunks(inputMessage))
+                    .Returns(chunkedInputMessages);
 
             var invalidTokenException =
                 new InvalidTokenException();

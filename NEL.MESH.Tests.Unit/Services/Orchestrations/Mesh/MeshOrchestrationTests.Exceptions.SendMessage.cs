@@ -26,9 +26,9 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             new MeshOrchestrationDependencyValidationException(
                 dependancyValidationException.InnerException as Xeption);
 
-            this.tokenServiceMock.Setup(service =>
-                service.GenerateTokenAsync())
-                    .ThrowsAsync(dependancyValidationException);
+            this.chunkServiceMock.Setup(service =>
+                service.SplitMessageIntoChunks(It.IsAny<Message>()))
+                    .Throws(dependancyValidationException);
 
             // when
             ValueTask<Message> sendMessageTask = this.meshOrchestrationService.SendMessageAsync(someMessage);
@@ -40,8 +40,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualMeshOrchestrationDependencyValidationException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationDependencyValidationException);
 
-            this.tokenServiceMock.Verify(service =>
-                service.GenerateTokenAsync(),
+            this.chunkServiceMock.Verify(service =>
+                service.SplitMessageIntoChunks(It.IsAny<Message>()),
                     Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
@@ -59,9 +59,9 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             new MeshOrchestrationDependencyException(
                 dependancyException.InnerException as Xeption);
 
-            this.tokenServiceMock.Setup(service =>
-                service.GenerateTokenAsync())
-                    .ThrowsAsync(dependancyException);
+            this.chunkServiceMock.Setup(service =>
+                service.SplitMessageIntoChunks(It.IsAny<Message>()))
+                    .Throws(dependancyException);
 
             // when
             ValueTask<Message> sendMessageTask = this.meshOrchestrationService.SendMessageAsync(someMessage);
@@ -73,8 +73,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualMeshOrchestrationDependencyException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationDependencyException);
 
-            this.tokenServiceMock.Verify(service =>
-                service.GenerateTokenAsync(),
+            this.chunkServiceMock.Verify(service =>
+                service.SplitMessageIntoChunks(It.IsAny<Message>()),
                     Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();
@@ -95,9 +95,9 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             var expectedMeshOrchestrationServiceException =
             new MeshOrchestrationServiceException(failedMeshOrchestrationServiceException);
 
-            this.tokenServiceMock.Setup(service =>
-                service.GenerateTokenAsync())
-                    .ThrowsAsync(serviceException);
+            this.chunkServiceMock.Setup(service =>
+                service.SplitMessageIntoChunks(It.IsAny<Message>()))
+                    .Throws(serviceException);
 
             // when
             ValueTask<Message> sendMessageTask = this.meshOrchestrationService.SendMessageAsync(someMessage);
@@ -109,8 +109,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             actualMeshOrchestrationServiceException.Should()
                 .BeEquivalentTo(expectedMeshOrchestrationServiceException);
 
-            this.tokenServiceMock.Verify(service =>
-                service.GenerateTokenAsync(),
+            this.chunkServiceMock.Verify(service =>
+                service.SplitMessageIntoChunks(It.IsAny<Message>()),
                     Times.Once);
 
             this.meshServiceMock.VerifyNoOtherCalls();

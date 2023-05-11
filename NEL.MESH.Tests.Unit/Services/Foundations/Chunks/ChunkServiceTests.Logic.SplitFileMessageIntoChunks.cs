@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FluentAssertions;
 using Force.DeepCloner;
 using Moq;
@@ -16,21 +15,26 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
     public partial class ChunkServiceTests
     {
         [Fact]
-        public void ShouldSplitMessageIntoChunks()
+        public void ShouldSplitFileMessageIntoChunks()
         {
             // given
-            int randomChunkSizeInBytes = GetRandomNumber(min: 4);
+            int randomChunkSizeInBytes = GetRandomNumber();
             int randomChunkCount = GetRandomNumber();
             int additionalBytes = GetRandomNumber(min: 0, max: randomChunkSizeInBytes - 1);
             int randomBytesToGenerate = (randomChunkSizeInBytes * randomChunkCount) - additionalBytes;
-            string randomContent = GetRandomString(bytesToGenerate: randomBytesToGenerate);
-            List<string> chunkParts = GetChunks(content: randomContent, chunkSizeInBytes: randomChunkSizeInBytes);
-            int expectedChunkCount = chunkParts.Count;
+            byte[] randomByteContent = GetRandomBytes(randomBytesToGenerate);
+
+            List<byte[]> chunkParts =
+                GetChunkedByteArrayContent(randomByteContent, chunkSizeInBytes: randomChunkSizeInBytes);
+
             int inputChunkSize = randomChunkSizeInBytes;
             int expectedByteCount = randomChunkSizeInBytes;
-            Message randomMessage = CreateRandomSendMessage(stringContent: randomContent);
-            Message inputMessage = randomMessage;
+            int expectedChunkCount = randomChunkCount;
 
+            Message randomMessage =
+                CreateRandomSendFileMessage(byteArrayContent: randomByteContent);
+
+            Message inputMessage = randomMessage;
             List<Message> outputMessages = new List<Message>();
 
             for (int i = 0; i < chunkParts.Count; i++)
@@ -38,7 +42,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
                 Message chunk = new Message
                 {
                     Headers = inputMessage.Headers,
-                    StringContent = chunkParts[i]
+                    FileContent = chunkParts[i]
                 };
 
                 SetMexChunkRange(chunk, item: i + 1, itemCount: chunkParts.Count);
@@ -52,21 +56,19 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
                     .Returns(value: inputChunkSize);
 
             // when
-            List<Message> actualMessages = this.chunkService.SplitMessageIntoChunks(message: inputMessage);
+            List<Message> actualMessages = this.chunkService.SplitFileMessageIntoChunks(message: inputMessage);
 
             // then
             actualMessages.Count.Should().Be(expectedChunkCount);
 
             foreach (var message in actualMessages)
             {
-                int actualByteCount = Encoding.UTF8.GetByteCount(message.StringContent);
+                int actualByteCount = message.FileContent.Length;
                 actualByteCount.Should().BeLessOrEqualTo(expectedByteCount);
             }
 
-            string combinedStringContent = actualMessages
-                .Aggregate("", (current, message) => current + message.StringContent);
-
-            combinedStringContent.Should().BeEquivalentTo(inputMessage.StringContent);
+            byte[] combinedByteArrayContent = actualMessages.SelectMany(message => message.FileContent).ToArray();
+            combinedByteArrayContent.Should().BeEquivalentTo(inputMessage.FileContent);
 
             this.meshConfigurationBrokerMock.Verify(broker =>
                 broker.MaxChunkSizeInBytes,
