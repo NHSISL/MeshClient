@@ -423,6 +423,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static Message CreateRandomSendMessage(string chunkSize)
         {
             var message = CreateMessageFiller().Create();
+            message.StringContent = null;
             message.Headers.Add("Content-Type", new List<string> { "text/plain" });
             message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
@@ -441,6 +442,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static Message CreateRandomSendFileMessage(string chunkSize)
         {
             var message = CreateMessageFiller().Create();
+            message.StringContent = null;
             message.Headers.Add("Content-Type", new List<string> { "text/plain" });
             message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
