@@ -189,17 +189,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             List<HttpResponseMessage> messages = new List<HttpResponseMessage>();
-            var parts = GetParts(message.StringContent, chunks);
+            List<string> parts = GetParts(message.StringContent, chunks);
 
-            for (int i = 0; i < chunks; i++)
+            for (int i = 0; i < parts.Count; i++)
             {
-                // Check if 'i' is within the range of 'parts' list
-                if (i >= parts.Count)
-                {
-                    break;
-                }
-
-                // Create a new message for each chunk with unique content
                 Message chunkMessage = new Message
                 {
                     MessageId = message.MessageId,
@@ -212,7 +205,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     headers,
                     statusCode);
 
-                string chunkRangeValue = $"{i + 1}:{chunks}";
+                string chunkRangeValue = $"{i+1}:{chunks}";
 
                 if (httpResponseMessage.Content.Headers.Contains("Mex-Chunk-Range"))
                 {

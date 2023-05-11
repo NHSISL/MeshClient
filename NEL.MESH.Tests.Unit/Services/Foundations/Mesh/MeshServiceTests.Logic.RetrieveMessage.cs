@@ -130,7 +130,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 else
                 {
                     this.meshBrokerMock.Setup(broker =>
-                        broker.GetMessageAsync(inputMessage.MessageId, i, authorizationToken))
+                        broker.GetMessageAsync(inputMessage.MessageId, i + 1, authorizationToken))
                             .ReturnsAsync(responseMessages[i]);
                 }
             }

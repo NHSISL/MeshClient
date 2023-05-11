@@ -180,7 +180,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         await this.meshBroker.GetMessageAsync(messageId, chunkId + 1, authorizationToken);
 
                     ValidateResponse(responseMessage);
-                    string messageContent = initialResponse.Content.ReadAsStringAsync().Result;
+                    string messageContent = responseMessage.Content.ReadAsStringAsync().Result;
                     firstMessage.StringContent += messageContent;
                 }
 
