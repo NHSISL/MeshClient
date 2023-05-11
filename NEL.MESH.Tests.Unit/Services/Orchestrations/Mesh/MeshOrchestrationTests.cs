@@ -55,6 +55,15 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 .ToList();
         }
 
+        public static TheoryData InvalidMessageList()
+        {
+            return new TheoryData<List<Message>>
+            {
+                null,
+                new List<Message>(),
+            };
+        }
+
         public static TheoryData MeshDependencyValidationExceptions()
         {
             string randomMessage = GetRandomString();
@@ -92,6 +101,20 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             for (int i = 0; i < messageChunkCount; i++)
             {
                 var message = CreateRandomSendMessage();
+                message.Headers["Mex-Chunk-Range"] = new List<string> { $"{{{i + 1}:{messageChunkCount}}}" };
+                messages.Add(message);
+            }
+
+            return messages;
+        }
+
+        private static List<Message> CreateRandomChunkedSendFileMessages(int messageChunkCount)
+        {
+            List<Message> messages = new List<Message>();
+
+            for (int i = 0; i < messageChunkCount; i++)
+            {
+                var message = CreateRandomSendFileMessage();
                 message.Headers["Mex-Chunk-Range"] = new List<string> { $"{{{i + 1}:{messageChunkCount}}}" };
                 messages.Add(message);
             }
@@ -142,8 +165,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         private static Filler<Message> CreateMessageFiller()
         {
             var filler = new Filler<Message>();
-            filler.Setup().OnProperty(message => message.Headers)
-                .Use(new Dictionary<string, List<string>>());
+            filler.Setup()
+                .OnProperty(message => message.Headers).Use(new Dictionary<string, List<string>>());
 
             return filler;
         }
