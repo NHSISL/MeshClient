@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
 
@@ -102,14 +103,16 @@ namespace NEL.MESH.Services.Foundations.Chunks
 
         private static List<string> GetChunkedContent(Message message, int chunkSizeInBytes)
         {
-            string stringContent = message.StringContent;
+            string content = message.StringContent;
+            byte[] bytes = Encoding.UTF8.GetBytes(content);
             List<string> chunkedContent = new List<string>();
-            int chunkSize = chunkSizeInBytes;
 
-            for (int i = 0; i < stringContent.Length; i += chunkSize)
+            for (int i = 0; i < bytes.Length; i += chunkSizeInBytes)
             {
-                chunkSize = Math.Min(chunkSizeInBytes, stringContent.Length - i);
-                string chunk = stringContent.Substring(i, chunkSize);
+                int chunkSize = Math.Min(chunkSizeInBytes, bytes.Length - i);
+                byte[] chunkBytes = new byte[chunkSize];
+                Array.Copy(bytes, i, chunkBytes, 0, chunkSize);
+                string chunk = Encoding.UTF8.GetString(chunkBytes);
                 chunkedContent.Add(chunk);
             }
 

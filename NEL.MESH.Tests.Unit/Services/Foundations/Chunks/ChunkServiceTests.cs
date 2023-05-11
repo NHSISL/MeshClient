@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Moq;
 using NEL.MESH.Brokers.Mesh;
@@ -30,22 +29,22 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
 
         public static string GetRandomString(int bytesToGenerate)
         {
-            return new MnemonicString(
-                wordCount: 1,
-                wordMinLength: bytesToGenerate,
-                wordMaxLength: bytesToGenerate).GetValue();
+            byte[] generatedBytes = GetRandomBytes(bytesToGenerate);
+            string randomString = Encoding.UTF8.GetString(generatedBytes);
+            return randomString;
         }
 
         public static List<string> GetChunks(string content, int chunkSizeInBytes)
         {
-            string stringContent = content;
+            byte[] bytes = Encoding.UTF8.GetBytes(content);
             List<string> chunkedContent = new List<string>();
-            int chunkSize = chunkSizeInBytes;
 
-            for (int i = 0; i < stringContent.Length; i += chunkSize)
+            for (int i = 0; i < bytes.Length; i += chunkSizeInBytes)
             {
-                chunkSize = Math.Min(chunkSizeInBytes, stringContent.Length - i);
-                string chunk = stringContent.Substring(i, chunkSize);
+                int chunkSize = Math.Min(chunkSizeInBytes, bytes.Length - i);
+                byte[] chunkBytes = new byte[chunkSize];
+                Array.Copy(bytes, i, chunkBytes, 0, chunkSize);
+                string chunk = Encoding.UTF8.GetString(chunkBytes);
                 chunkedContent.Add(chunk);
             }
 
@@ -66,13 +65,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
 
         public static byte[] GetRandomBytes(int bytesToGenerate)
         {
+            byte[] buffer = new byte[bytesToGenerate];
+
             Random random = new Random();
-            int maxCharacters = bytesToGenerate / Encoding.UTF8.GetMaxByteCount(1);
-
-            string randomString = new string(Enumerable.Range(0, maxCharacters)
-                .Select(_ => (char)random.Next(0x80, 0x7FF)).ToArray());
-
-            byte[] buffer = Encoding.UTF8.GetBytes(randomString);
+            random.NextBytes(buffer);
 
             return buffer;
         }

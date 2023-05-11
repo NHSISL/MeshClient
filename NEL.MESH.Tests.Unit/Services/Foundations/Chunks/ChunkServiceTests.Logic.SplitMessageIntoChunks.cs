@@ -22,12 +22,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             int randomChunkCount = GetRandomNumber();
             int additionalBytes = GetRandomNumber(min: 0, max: randomChunkSizeInBytes - 1);
             int randomBytesToGenerate = (randomChunkSizeInBytes * randomChunkCount) - additionalBytes;
-
-            string randomContent = GetRandomString(randomBytesToGenerate);
-            List<string> calculatedChunks = GetChunks(randomContent, randomChunkCount);
-
-
-            int expectedChunkCount = calculatedChunks.Count;
+            string randomContent = GetRandomString(bytesToGenerate: randomBytesToGenerate);
+            List<string> chunkParts = GetChunks(content: randomContent, chunkSizeInBytes: randomChunkSizeInBytes);
+            int expectedChunkCount = randomChunkCount;
             int inputChunkSize = randomChunkSizeInBytes;
             int expectedByteCount = randomChunkSizeInBytes;
             Message randomMessage = CreateRandomSendMessage(stringContent: randomContent);
@@ -35,15 +32,15 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
 
             List<Message> outputMessages = new List<Message>();
 
-            for (int i = 0; i < calculatedChunks.Count; i++)
+            for (int i = 0; i < randomChunkCount; i++)
             {
                 Message chunk = new Message
                 {
                     Headers = inputMessage.Headers,
-                    StringContent = calculatedChunks[i]
+                    StringContent = chunkParts[i]
                 };
 
-                SetMexChunkRange(chunk, item: i + 1, itemCount: calculatedChunks.Count);
+                SetMexChunkRange(chunk, item: i + 1, itemCount: randomChunkCount);
                 outputMessages.Add(chunk);
             }
 
