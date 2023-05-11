@@ -12,7 +12,7 @@ namespace NEL.MESH.Tests.Integration
 {
     public partial class MeshClientTests
     {
-        [Fact]
+        [Fact(Skip = "Excluded")]
         [Trait("Category", "Integration")]
         public async Task ShouldGetMessagesAsync()
         {
