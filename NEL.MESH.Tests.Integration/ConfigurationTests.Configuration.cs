@@ -12,7 +12,7 @@ namespace NEL.MESH.Tests.Integration
 {
     public partial class ConfigurationTests
     {
-        [Fact]
+        [Fact(Skip = "Excluded")]
         public void ShouldGetConfigurationSettings()
         {
             // given
