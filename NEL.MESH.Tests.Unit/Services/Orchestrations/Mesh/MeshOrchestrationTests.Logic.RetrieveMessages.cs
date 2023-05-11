@@ -44,6 +44,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.RetrieveMessagesAsync(randomToken),
                     Times.Once);
 
+            this.chunkServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
         }

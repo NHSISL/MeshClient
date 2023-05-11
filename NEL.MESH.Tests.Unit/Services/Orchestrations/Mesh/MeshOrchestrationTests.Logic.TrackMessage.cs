@@ -47,6 +47,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.TrackMessageAsync(inputMessageId, randomToken),
                     Times.Once);
 
+            this.chunkServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
         }
