@@ -11,7 +11,6 @@ using FluentAssertions;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 {
@@ -144,12 +143,17 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
-        public async Task ShouldRetrieveMultiPartMessagesAsync()
+        [Theory]
+        [InlineData("text/plain")]
+        [InlineData("text/html")]
+        [InlineData("application/json")]
+        [InlineData("text/xml")]
+        [InlineData("application/xml")]
+        public async Task ShouldRetrieveMultiPartMessagesWithStringContentAsync(string contentType)
         {
             // given
             string authorizationToken = GetRandomString();
-            Message randomMessage = CreateRandomMessage();
+            Message randomMessage = CreateRandomSendMessage(contentType);
             int chunks = GetRandomNumber();
             Message inputMessage = randomMessage;
 
@@ -182,7 +186,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            List<HttpResponseMessage> responseMessages = CreateHttpResponseContentMessagesForRetrieveMessage(
+            List<HttpResponseMessage> responseMessages = CreateHttpResponseContentMessagesWithStringContentForRetrieveMessage(
                 inputMessage,
                 contentHeaders,
                 headers,
@@ -212,6 +216,105 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             expectedMessage.StringContent = responseMessages
                 .Aggregate("", (current, message) => current + 
                     GetMessageWithStringContentFromHttpResponseMessageForReceive(message, inputMessage.MessageId).StringContent);
+
+            // when
+            var actualMessage = await this.meshService
+                .RetrieveMessageAsync(inputMessage.MessageId, authorizationToken);
+
+            // then
+            actualMessage.Should().BeEquivalentTo(expectedMessage);
+            actualMessage.StringContent.Should().BeEquivalentTo(expectedMessage.StringContent);
+
+            for (int i = 0; i < chunks; i++)
+            {
+                if (i == 0)
+                {
+                    this.meshBrokerMock.Verify(broker =>
+                        broker.GetMessageAsync(inputMessage.MessageId, authorizationToken),
+                            Times.Once);
+                }
+                else
+                {
+                    this.meshBrokerMock.Verify(broker =>
+                        broker.GetMessageAsync(inputMessage.MessageId, It.Is(SameStringAs((i + 1).ToString())), authorizationToken),
+                            Times.Once);
+                }
+            }
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData("application/octet-stream")]
+        [InlineData("image/jpeg")]
+        public async Task ShouldRetrieveMultiPartMessagesWithFileContentAsync(string contentType)
+        {
+            // given
+            string authorizationToken = GetRandomString();
+            Message randomMessage = CreateRandomSendFileMessage(contentType:contentType);
+            int chunks = GetRandomNumber();
+            Message inputMessage = randomMessage;
+
+            if (chunks > randomMessage.FileContent.Length)
+            {
+                chunks = randomMessage.FileContent.Length;
+            }
+
+            Dictionary<string, List<string>> contentHeaders = new Dictionary<string, List<string>>
+            {
+                { "Content-Type", new List<string>{contentType} },
+                { "Content-Length", new List<string>() },
+                { "Last-Modified", new List<string>() },
+            };
+
+            Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>
+            {
+                { "Content-Encoding", new List<string>() },
+                { "Mex-FileName", new List<string>() },
+                { "Mex-From", new List<string>() },
+                { "Mex-To", new List<string>() },
+                { "Mex-WorkflowID", new List<string>() },
+                { "Mex-LocalID", new List<string>() },
+                { "Mex-Subject", new List<string>() },
+                { "Mex-Content-Checksum", new List<string>() },
+                { "Mex-Content-Encrypted", new List<string>() },
+                { "Mex-ClientVersion", new List<string>() },
+                { "Mex-OSVersion", new List<string>() },
+                { "Mex-OSArchitecture", new List<string>() },
+                { "Mex-JavaVersion", new List<string>() }
+            };
+
+            List<HttpResponseMessage> responseMessages = CreateHttpResponseContentMessagesWithFileContentForRetrieveMessage(
+                inputMessage,
+                contentHeaders,
+                headers,
+                chunks,
+                HttpStatusCode.PartialContent);
+
+            Message expectedMessage = new Message();
+
+            for (int i = 0; i < chunks; i++)
+            {
+                if (i == 0)
+                {
+                    this.meshBrokerMock.Setup(broker =>
+                        broker.GetMessageAsync(inputMessage.MessageId, authorizationToken))
+                            .ReturnsAsync(responseMessages[i]);
+
+                    expectedMessage = GetMessageWithFileContentFromHttpResponseMessageForReceive(responseMessages[i], inputMessage.MessageId);
+                }
+                else
+                {
+                    this.meshBrokerMock.Setup(broker =>
+                        broker.GetMessageAsync(inputMessage.MessageId, It.Is(SameStringAs((i + 1).ToString())), authorizationToken))
+                            .ReturnsAsync(responseMessages[i]);
+                }
+            }
+
+            expectedMessage.FileContent = responseMessages
+                .SelectMany(message => 
+                    GetMessageWithFileContentFromHttpResponseMessageForReceive(message, inputMessage.MessageId)
+                        .FileContent).ToArray();
 
             // when
             var actualMessage = await this.meshService
