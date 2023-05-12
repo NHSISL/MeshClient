@@ -222,7 +222,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 for (int chunkId = 1; chunkId < totalChunks; chunkId++)
                 {
                     HttpResponseMessage responseMessage =
-                        await this.meshBroker.GetMessageAsync(messageId, chunkId + 1, authorizationToken);
+                        await this.meshBroker.GetMessageAsync(messageId, (chunkId + 1).ToString(), authorizationToken);
 
                     ValidateResponse(responseMessage);
                     string messageContent = responseMessage.Content.ReadAsStringAsync().Result;

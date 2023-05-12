@@ -5,10 +5,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using KellermanSoftware.CompareNetObjects;
 using Microsoft.Extensions.Hosting;
 using Moq;
 using NEL.MESH.Brokers.Mesh;
@@ -25,11 +27,13 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
     {
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly IMeshService meshService;
+        private readonly ICompareLogic compareLogic;
 
         public MeshServiceTests()
         {
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.meshService = new MeshService(meshBroker: this.meshBrokerMock.Object);
+            this.compareLogic = new CompareLogic();
         }
 
         public static TheoryData DependencyValidationResponseMessages()
@@ -150,37 +154,29 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 : string.Empty;
         }
 
-
-        public static List<string> GetParts(string content, int parts)
+        public static List<string> GetParts(string content, int chunkParts)
         {
-            if (string.IsNullOrEmpty(content) || parts <= 0)
+            if (string.IsNullOrEmpty(content) || chunkParts <= 0)
             {
-                return new List<string>(); // Return an empty list if the input string is null or empty or parts is less than or equal to 0.
-            }
-
-            if (parts > content.Length) // If parts is greater than the length of the content, adjust it to the length of the content.
-            {
-                parts = content.Length;
+                return new List<string>();
             }
 
             int length = content.Length;
-            int chunkSize = length / parts;
+            int chunkSize = length / chunkParts;
+            int remainder = length % chunkParts;
             List<string> partsList = new List<string>();
 
-            for (int i = 0; i < length; i += chunkSize)
+            int currentStartIndex = 0;
+            for (int i = 0; i < chunkParts; i++)
             {
-                if (i + chunkSize > length) // Adjust the last chunk size to accommodate the remainder.
-                {
-                    chunkSize = length - i;
-                }
-
-                string chunk = content.Substring(i, chunkSize);
+                int currentChunkSize = i < remainder ? chunkSize + 1 : chunkSize;
+                string chunk = content.Substring(currentStartIndex, currentChunkSize);
                 partsList.Add(chunk);
+                currentStartIndex += currentChunkSize;
             }
 
             return partsList;
         }
-
 
         private static List<HttpResponseMessage> CreateHttpResponseContentMessagesForRetrieveMessage(
             Message message,
@@ -592,6 +588,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
 
             return message;
+        }
+
+        private Expression<Func<string, bool>> SameStringAs(
+            string expectedString)
+        {
+            return actualString =>
+            this.compareLogic.Compare(expectedString, actualString)
+            .AreEqual;
         }
 
         private static Message CreateRandomMessage() =>

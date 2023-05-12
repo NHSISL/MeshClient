@@ -84,6 +84,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             int chunks = GetRandomNumber();
             Message inputMessage = randomMessage;
 
+            if (chunks > randomMessage.StringContent.Length)
+            {
+                chunks = randomMessage.StringContent.Length;
+            }
+
             Dictionary<string, List<string>> contentHeaders = new Dictionary<string, List<string>>
             {
                 { "Content-Type", new List<string>() },
@@ -130,7 +135,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 else
                 {
                     this.meshBrokerMock.Setup(broker =>
-                        broker.GetMessageAsync(inputMessage.MessageId, (i + 1).ToString(), authorizationToken))
+                        broker.GetMessageAsync(inputMessage.MessageId, It.Is(SameStringAs((i + 1).ToString())), authorizationToken))
                             .ReturnsAsync(responseMessages[i]);
                 }
             }
@@ -138,7 +143,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             expectedMessage.StringContent = responseMessages
                 .Aggregate("", (current, message) => current + 
                     GetMessageWithStringContentFromHttpResponseMessageForReceive(message, inputMessage.MessageId).StringContent);
-
 
             // when
             var actualMessage = await this.meshService
@@ -159,7 +163,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 else
                 {
                     this.meshBrokerMock.Verify(broker =>
-                        broker.GetMessageAsync(inputMessage.MessageId, (i + 1).ToString(), authorizationToken),
+                        broker.GetMessageAsync(inputMessage.MessageId, It.Is(SameStringAs((i + 1).ToString())), authorizationToken),
                             Times.Once);
                 }
             }
