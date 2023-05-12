@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text;
 using KellermanSoftware.CompareNetObjects;
 using Microsoft.Extensions.Hosting;
@@ -536,29 +537,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return dictionary;
         }
 
-        private static Message CreateRandomSendMessage()
+        private static Message CreateRandomSendMessage(string chunkSize = "{1:1}", string contentType = "text/plain")
         {
             var message = CreateMessageFiller().Create();
-            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
-            message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Content-Encrypted", new List<string> { "encrypted" });
-            message.Headers.Add("Mex-From", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-To", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Chunk-Range", new List<string> { "{1:1}" });
-            message.FileContent = null;
-
-            return message;
-        }
-
-        private static Message CreateRandomSendMessage(string chunkSize)
-        {
-            var message = CreateMessageFiller().Create();
-            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
+            message.Headers.Add("Content-Type", new List<string> { contentType });
             message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
