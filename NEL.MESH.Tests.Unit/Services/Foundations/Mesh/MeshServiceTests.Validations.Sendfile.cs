@@ -210,7 +210,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIdAndChunkSizeIsNullAsync(
+        public async Task ShouldThrowValidationExceptionOnSendFileIfMessageIdAndChunkSizeIsNullAsync(
             string invalidInput)
         {
             // given
