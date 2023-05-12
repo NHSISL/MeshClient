@@ -40,6 +40,36 @@ namespace NEL.MESH.Services.Foundations.Mesh
             }
         }
 
+        private static void ValidateReceivedResponse(HttpResponseMessage response)
+        {
+            if (response.IsSuccessStatusCode == false)
+            {
+                string message = $"{(int)response.StatusCode} - {response.ReasonPhrase}";
+                var httpRequestException = new HttpRequestException(message);
+
+                switch ((int)response.StatusCode)
+                {
+                    case var code when code >= 400 && code <= 499:
+                        {
+                            throw new FailedMeshClientException(httpRequestException);
+                        }
+                    case var code when code >= 500 && code <= 599:
+                        {
+                            throw new FailedMeshServerException(httpRequestException);
+                        }
+                    default:
+                        {
+                            throw new Exception(message);
+                        }
+                }
+            }
+
+            Validate<InvalidMeshException>(
+                (Rule: IsInvalid(response.Content.Headers
+                    .FirstOrDefault(h => h.Key == "Content-Type")
+                        .Value.FirstOrDefault()), Parameter: "Content-Type"));
+        }
+
         private static void ValidateOnHandshake(string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(

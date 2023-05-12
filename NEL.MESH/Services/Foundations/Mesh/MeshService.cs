@@ -232,14 +232,12 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 HttpResponseMessage initialResponse =
                     await this.meshBroker.GetMessageAsync(messageId, authorizationToken);
 
-                ValidateResponse(initialResponse);
+                ValidateReceivedResponse(initialResponse);
 
-                //switch case: If any of the 5 content types match then string content else file content
                 string contentType = initialResponse.Content.Headers
                     .FirstOrDefault(h => h.Key == "Content-Type")
                         .Value.FirstOrDefault();
 
-                // Validate content type exists
                 bool isStringContent = contentType switch
                 {
                     var value when value.Contains("text/plain") => true,

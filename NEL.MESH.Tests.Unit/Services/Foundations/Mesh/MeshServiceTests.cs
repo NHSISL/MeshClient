@@ -341,20 +341,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             foreach (var item in contentHeaders)
             {
-                //if (item.Key != "Content-Type")
-                //{
-                    responseMessage.Content.Headers.Add(item.Key, item.Value);
-                //}
+                responseMessage.Content.Headers.Add(item.Key, item.Value);
             }
 
             if (headers != null)
             {
                 foreach (var item in headers)
                 {
-                    //if (item.Key != "Content-Type")
-                    //{
-                        responseMessage.Content.Headers.Add(item.Key, item.Value);
-                    //}
+                    responseMessage.Content.Headers.Add(item.Key, item.Value);
                 }
             }
 
