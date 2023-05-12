@@ -117,7 +117,28 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 ValidateMeshMessageOnSendFile(message, authorizationToken);
 
-                HttpResponseMessage responseFileMessage = await this.meshBroker.SendFileAsync(
+                string chunkRange = GetKeyStringValue("Mex-Chunk-Range", message.Headers)
+                    .Replace("{", string.Empty)
+                        .Replace("}", string.Empty);
+
+                if (string.IsNullOrEmpty(chunkRange))
+                {
+                    chunkRange = "1";
+                }
+
+                string chunkPart = (chunkRange.Split(':'))[0];
+                int chunkNumber;
+
+                if (!int.TryParse(chunkPart, out chunkNumber))
+                {
+                    chunkNumber = 1;
+                }
+
+                HttpResponseMessage responseFileMessage;
+
+                if (chunkNumber <= 1)
+                {
+                    responseFileMessage = await this.meshBroker.SendFileAsync(
                         mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
                         workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
                         localId: GetKeyStringValue("Mex-LocalID", message.Headers),
@@ -130,6 +151,28 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         contentType: GetKeyStringValue("Content-Type", message.Headers),
                         authorizationToken,
                         fileContents: message.FileContent);
+                }
+                else
+                {
+                    ValidateMessageId(message.MessageId);
+                    ValidateMexChunkRangeOnMultiPartFile(message);
+
+                    responseFileMessage = await this.meshBroker.SendFileAsync(
+                        mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
+                        workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
+                        localId: GetKeyStringValue("Mex-LocalID", message.Headers),
+                        subject: GetKeyStringValue("Mex-Subject", message.Headers),
+                        fileName: GetKeyStringValue("Mex-FileName", message.Headers),
+                        contentChecksum: GetKeyStringValue("Mex-Content-Checksum", message.Headers),
+                        contentEncrypted: GetKeyStringValue("Mex-Content-Encrypted", message.Headers),
+                        encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
+                        chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
+                        contentType: GetKeyStringValue("Content-Type", message.Headers),
+                        authorizationToken,
+                        fileContents: message.FileContent,
+                        messageId: message.MessageId,
+                        chunkNumber: chunkNumber.ToString());
+                }
 
                 string responseMessageBody = responseFileMessage.Content.ReadAsStringAsync().Result;
 

@@ -82,6 +82,12 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
+        private static void ValidateMexChunkRangeOnMultiPartFile(Message message)
+        {
+            Validate<InvalidMeshException>(
+                (Rule: IsInvalid(message.Headers, "Mex-Chunk-Range"), Parameter: "Mex-Chunk-Range"));
+        }
+
         public static void ValidateTrackMessageArguments(string messageId, string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
