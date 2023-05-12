@@ -251,7 +251,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 };
 
                 string stringBody = null;
-                //byte[] fileBody = null;
+                byte[] fileBody = null;
 
                 if (isStringContent)
                 {
@@ -259,14 +259,14 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 }
                 else
                 {
-                    //fileBody = initialResponse.Content.ReadAsByteArrayAsync().Result;
+                    fileBody = initialResponse.Content.ReadAsByteArrayAsync().Result;
                 };
 
                 Message firstMessage = new Message
                 {
                     MessageId = messageId,
                     StringContent = stringBody,
-                    //FileContent = fileBody,
+                    FileContent = fileBody,
                 };
 
                 foreach (var header in initialResponse.Headers)
@@ -303,8 +303,8 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     }
                     else
                     {
-                        //byte[] fileContent = responseMessage.Content.ReadAsByteArrayAsync().Result;
-                        //firstMessage.FileContent = firstMessage.FileContent.Concat(fileContent).ToArray();
+                        byte[] fileContent = responseMessage.Content.ReadAsByteArrayAsync().Result;
+                        firstMessage.FileContent = firstMessage.FileContent.Concat(fileContent).ToArray();
                     };
 
                 }
