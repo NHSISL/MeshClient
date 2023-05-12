@@ -41,7 +41,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            HttpResponseMessage responseMessage = CreateHttpResponseContentMessage(inputFileMessage, contentHeaders);
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(inputFileMessage, contentHeaders);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendFileAsync(
