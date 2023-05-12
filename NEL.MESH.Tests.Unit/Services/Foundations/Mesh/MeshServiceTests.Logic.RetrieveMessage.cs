@@ -82,17 +82,19 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
 
-        [Fact]
-        public async Task ShouldRetrieveSinglePartMessageWithFileContentAsync()
+        [Theory]
+        [InlineData("application/octet-stream")]
+        [InlineData("image/jpeg")]
+        public async Task ShouldRetrieveSinglePartMessageWithFileContentAsync(string contentType)
         {
             // given
             string authorizationToken = GetRandomString();
-            Message randomMessage = CreateRandomMessage();
+            Message randomMessage = CreateRandomSendFileMessage(contentType: contentType);
             Message inputMessage = randomMessage;
 
             Dictionary<string, List<string>> contentHeaders = new Dictionary<string, List<string>>
             {
-                { "Content-Type", new List<string>() },
+                { "Content-Type", new List<string>{contentType} },
                 { "Content-Length", new List<string>() },
                 { "Last-Modified", new List<string>() },
             };
@@ -125,7 +127,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 broker.GetMessageAsync(inputMessage.MessageId, authorizationToken))
                     .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessageForReceive(responseMessage, inputMessage.MessageId);
+            Message expectedMessage = GetMessageWithFileContentFromHttpResponseMessageForReceive(responseMessage, inputMessage.MessageId);
 
             // when
             var actualMessage = await this.meshService
