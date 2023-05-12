@@ -223,11 +223,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     StringContent = parts[i],
                 };
 
-                HttpResponseMessage httpResponseMessage = CreateHttpResponseContentMessageWithStringContentForRetrieveMessage(
-                    chunkMessage,
-                    contentHeaders,
-                    headers,
-                    statusCode);
+                HttpResponseMessage httpResponseMessage = 
+                    CreateHttpResponseContentMessageWithStringContentForRetrieveMessage(
+                        chunkMessage,
+                        contentHeaders,
+                        headers,
+                        statusCode);
 
                 string chunkRangeValue = $"{i+1}:{chunks}";
 
@@ -306,11 +307,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     FileContent = parts[i],
                 };
 
-                HttpResponseMessage httpResponseMessage = CreateHttpResponseContentMessageWithFileContentForRetrieveMessage(
-                    chunkMessage,
-                    contentHeaders,
-                    headers,
-                    statusCode);
+                HttpResponseMessage httpResponseMessage = 
+                    CreateHttpResponseContentMessageWithFileContentForRetrieveMessage(
+                        chunkMessage,
+                        contentHeaders,
+                        headers,
+                        statusCode);
 
                 string chunkRangeValue = $"{i + 1}:{chunks}";
 
@@ -320,7 +322,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 }
 
                 httpResponseMessage.Content.Headers.Add("Mex-Chunk-Range", chunkRangeValue);
-
                 messages.Add(httpResponseMessage);
             }
 
@@ -400,7 +401,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return responseMessage;
         }
 
-        private static HttpResponseMessage CreateTrackingHttpResponseMessage(TrackMessageResponse trackMessageResponse)
+        private static HttpResponseMessage CreateTrackingHttpResponseMessage(
+            TrackMessageResponse trackMessageResponse)
         {
             string contentType = "application/json";
             string jsonContent = JsonConvert.SerializeObject(trackMessageResponse);
@@ -439,7 +441,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return message;
         }
 
-        private static Message GetMessageWithStringContentFromHttpResponseMessageForReceive(HttpResponseMessage responseMessage, string messageId)
+        private static Message GetMessageWithStringContentFromHttpResponseMessageForReceive(
+            HttpResponseMessage responseMessage, 
+            string messageId)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
             Dictionary<string, List<string>> contentHeaders = GetContentHeaders(responseMessage.Content.Headers);
@@ -464,7 +468,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return message;
         }
 
-        private static Message GetMessageWithFileContentFromHttpResponseMessageForReceive(HttpResponseMessage responseMessage, string messageId)
+        private static Message GetMessageWithFileContentFromHttpResponseMessageForReceive(
+            HttpResponseMessage responseMessage, 
+            string messageId)
         {
             byte[] responseMessageBody = responseMessage.Content.ReadAsByteArrayAsync().Result;
             Dictionary<string, List<string>> contentHeaders = GetContentHeaders(responseMessage.Content.Headers);
@@ -656,7 +662,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return dictionary;
         }
 
-        private static Message CreateRandomSendMessage(string chunkSize = "{1:1}", string contentType = "text/plain")
+        private static Message CreateRandomSendMessage(
+            string chunkSize = "{1:1}", 
+            string contentType = "text/plain")
         {
             var message = CreateMessageFiller().Create();
             message.Headers.Add("Content-Type", new List<string> { contentType });
@@ -675,7 +683,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return message;
         }
 
-        private static Message CreateRandomSendFileMessage(string chunkSize = "{1:1}", string contentType = "application/octet-stream")
+        private static Message CreateRandomSendFileMessage(
+            string chunkSize = "{1:1}", 
+            string contentType = "application/octet-stream")
         {
             var message = CreateMessageFiller().Create();
             message.Headers.Add("Content-Type", new List<string> { contentType });

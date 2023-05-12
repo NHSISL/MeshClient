@@ -282,7 +282,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     return firstMessage;
                 }
 
-                var chunks = initialResponse.Content.Headers.FirstOrDefault(h => h.Key == "Mex-Chunk-Range").Value.FirstOrDefault();
+                var chunks = initialResponse.Content.Headers
+                    .FirstOrDefault(h => h.Key == "Mex-Chunk-Range")
+                        .Value.FirstOrDefault();
+                        
                 string chunkRange = chunks.Replace("{", string.Empty).Replace("}", string.Empty);
                 string[] parts = chunkRange.Split(":");
                 int totalChunks = int.Parse(parts[1]);

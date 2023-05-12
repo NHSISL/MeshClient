@@ -186,12 +186,13 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            List<HttpResponseMessage> responseMessages = CreateHttpResponseContentMessagesWithStringContentForRetrieveMessage(
-                inputMessage,
-                contentHeaders,
-                headers,
-                chunks,
-                HttpStatusCode.PartialContent);
+            List<HttpResponseMessage> responseMessages = 
+                CreateHttpResponseContentMessagesWithStringContentForRetrieveMessage(
+                    inputMessage,
+                    contentHeaders,
+                    headers,
+                    chunks,
+                    HttpStatusCode.PartialContent);
 
             Message expectedMessage = new Message();
 
@@ -203,13 +204,17 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                         broker.GetMessageAsync(inputMessage.MessageId, authorizationToken))
                             .ReturnsAsync(responseMessages[i]);
 
-                    expectedMessage = GetMessageWithStringContentFromHttpResponseMessageForReceive(responseMessages[i], inputMessage.MessageId);
+                    expectedMessage = GetMessageWithStringContentFromHttpResponseMessageForReceive(
+                        responseMessages[i], inputMessage.MessageId);
                 }
                 else
                 {
                     this.meshBrokerMock.Setup(broker =>
-                        broker.GetMessageAsync(inputMessage.MessageId, It.Is(SameStringAs((i + 1).ToString())), authorizationToken))
-                            .ReturnsAsync(responseMessages[i]);
+                        broker.GetMessageAsync(
+                            inputMessage.MessageId, 
+                            It.Is(SameStringAs((i + 1).ToString())), 
+                            authorizationToken))
+                                .ReturnsAsync(responseMessages[i]);
                 }
             }
 
@@ -284,12 +289,13 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            List<HttpResponseMessage> responseMessages = CreateHttpResponseContentMessagesWithFileContentForRetrieveMessage(
-                inputMessage,
-                contentHeaders,
-                headers,
-                chunks,
-                HttpStatusCode.PartialContent);
+            List<HttpResponseMessage> responseMessages = 
+                CreateHttpResponseContentMessagesWithFileContentForRetrieveMessage(
+                    inputMessage,
+                    contentHeaders,
+                    headers,
+                    chunks,
+                    HttpStatusCode.PartialContent);
 
             Message expectedMessage = new Message();
 
@@ -301,13 +307,17 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                         broker.GetMessageAsync(inputMessage.MessageId, authorizationToken))
                             .ReturnsAsync(responseMessages[i]);
 
-                    expectedMessage = GetMessageWithFileContentFromHttpResponseMessageForReceive(responseMessages[i], inputMessage.MessageId);
+                    expectedMessage = GetMessageWithFileContentFromHttpResponseMessageForReceive(
+                        responseMessages[i], inputMessage.MessageId);
                 }
                 else
                 {
                     this.meshBrokerMock.Setup(broker =>
-                        broker.GetMessageAsync(inputMessage.MessageId, It.Is(SameStringAs((i + 1).ToString())), authorizationToken))
-                            .ReturnsAsync(responseMessages[i]);
+                        broker.GetMessageAsync(
+                            inputMessage.MessageId, 
+                            It.Is(SameStringAs((i + 1).ToString())), 
+                            authorizationToken))
+                                .ReturnsAsync(responseMessages[i]);
                 }
             }
 
