@@ -214,9 +214,14 @@ namespace NEL.MESH.Services.Foundations.Mesh
             TryCatch(async () =>
             {
                 ValidateRetrieveMessagesArguments(authorizationToken);
-                HttpResponseMessage responseMessage = await this.meshBroker.GetMessagesAsync(authorizationToken);
+
+                HttpResponseMessage responseMessage = await this.meshBroker
+                    .GetMessagesAsync(authorizationToken);
+
                 ValidateResponse(responseMessage);
-                string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+
+                string responseMessageBody = responseMessage.Content
+                    .ReadAsStringAsync().Result;
 
                 GetMessagesResponse getMessagesResponse =
                     JsonConvert.DeserializeObject<GetMessagesResponse>(responseMessageBody);
@@ -322,6 +327,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
                 HttpResponseMessage response =
                     await this.meshBroker.AcknowledgeMessageAsync(messageId, authorizationToken);
+
                 ValidateResponse(response);
 
                 return response.IsSuccessStatusCode;
