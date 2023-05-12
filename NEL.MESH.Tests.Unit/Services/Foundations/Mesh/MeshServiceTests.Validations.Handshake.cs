@@ -44,7 +44,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            HttpResponseMessage responseMessage = CreateHttpResponseContentMessage(inputMessage, contentHeaders);
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(inputMessage, contentHeaders);
 
             var InvalidMeshArgsException =
                 new InvalidArgumentsMeshException();
