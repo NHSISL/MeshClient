@@ -15,7 +15,7 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class MeshClientTests
     {
-        [Fact(Skip = "Excluded")]
+        [Fact]
         [Trait("Category", "Acceptance")]
         public async Task ShouldSendMessageAsync()
         {
@@ -30,9 +30,10 @@ namespace NEL.MESH.Tests.Acceptance
             string mexContentChecksum = GetRandomString();
             string mexContentEncrypted = GetRandomString();
             string mexEncoding = GetRandomString();
-            string mexChunkRange = GetRandomString();
+            string mexChunkRange = "{2:2}"; ;
             string contentType = "text/plain";
             string content = GetRandomString();
+            //string chunkSize = "{2:2}";
 
             Message randomMessage = CreateRandomSendMessage(
                 mexFrom,
@@ -46,12 +47,14 @@ namespace NEL.MESH.Tests.Acceptance
                 mexEncoding,
                 mexChunkRange,
                 contentType,
-                content);
+                content
+                );
 
             SendMessageResponse responseMessage = new SendMessageResponse
             {
                 MessageId = randomMessage.MessageId,
-                Message = randomMessage.MessageId
+                Message = randomMessage.MessageId,
+
             };
 
             string serialisedResponseMessage = JsonConvert.SerializeObject(responseMessage);
@@ -84,6 +87,8 @@ namespace NEL.MESH.Tests.Acceptance
                         .WithHeader("Mex-Chunk-Range", mexChunkRange)
                         .WithHeader("Authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
                         .WithBody(randomMessage.StringContent)
+                        .WithBody(randomMessage.MessageId)
+                        .WithBody(mexChunkRange)
                     )
                 .RespondWith(
                     Response.Create()

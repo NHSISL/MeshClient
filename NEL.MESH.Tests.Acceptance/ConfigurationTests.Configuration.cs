@@ -11,7 +11,7 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class ConfigurationTests
     {
-        [Fact(Skip = "Excluded")]
+        [Fact]
         public void ShouldGetConfigurationSettings()
         {
             // given

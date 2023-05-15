@@ -39,6 +39,7 @@ namespace NEL.MESH.Tests.Acceptance
             var key = configuration["MeshConfiguration:Key"];
             var clientCert = configuration["MeshConfiguration:ClientCertificate"];
             var rootCert = configuration["MeshConfiguration:RootCertificate"];
+            var maxChunkSizeInMegabytes = int.Parse(configuration["MeshConfiguration:MaxChunkSizeInMegabytes"]);
 
             List<string> intermediateCertificates =
                 configuration.GetSection("MeshConfiguration:IntermediateCertificates")
@@ -60,7 +61,8 @@ namespace NEL.MESH.Tests.Acceptance
                 RootCertificate = GetCertificate(rootCert),
                 IntermediateCertificates = GetCertificates(intermediateCertificates.ToArray()),
                 ClientCertificate = GetCertificate(clientCert),
-                Url = this.wireMockServer.Url
+                Url = this.wireMockServer.Url,
+                MaxChunkSizeInMegabytes = maxChunkSizeInMegabytes
             };
 
             this.meshClient = new MeshClient(meshConfigurations: this.meshConfigurations);
