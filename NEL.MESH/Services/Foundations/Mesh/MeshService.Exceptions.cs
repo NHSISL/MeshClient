@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -28,13 +29,19 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 throw CreateValidationException(invalidArgumentMeshException);
             }
-            catch (FailedMeshClientException failedMeshClientException)
+            catch (HttpRequestException httpRequestException)
+                when ((int)httpRequestException.StatusCode >= 400 && (int)httpRequestException.StatusCode <= 499)
             {
+                var failedMeshClientException = new FailedMeshClientException(httpRequestException);
+
                 throw CreateDependencyValidationException(failedMeshClientException);
             }
-            catch (FailedMeshServerException failedMeshClientException)
+            catch (HttpRequestException httpRequestException)
+                when ((int)httpRequestException.StatusCode >= 500 && (int)httpRequestException.StatusCode <= 599)
             {
-                throw CreateDependencyException(failedMeshClientException);
+                var failedMeshServerException = new FailedMeshServerException(httpRequestException);
+
+                throw CreateDependencyException(failedMeshServerException);
             }
             catch (Exception exception)
             {
@@ -67,13 +74,19 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 throw CreateValidationException(invalidMeshException);
             }
-            catch (FailedMeshClientException failedMeshClientException)
+            catch (HttpRequestException httpRequestException)
+                when ((int)httpRequestException.StatusCode >= 400 && (int)httpRequestException.StatusCode <= 499)
             {
+                var failedMeshClientException = new FailedMeshClientException(httpRequestException);
+
                 throw CreateDependencyValidationException(failedMeshClientException);
             }
-            catch (FailedMeshServerException failedMeshClientException)
+            catch (HttpRequestException httpRequestException)
+                when ((int)httpRequestException.StatusCode >= 500 && (int)httpRequestException.StatusCode <= 599)
             {
-                throw CreateDependencyException(failedMeshClientException);
+                var failedMeshServerException = new FailedMeshServerException(httpRequestException);
+
+                throw CreateDependencyException(failedMeshServerException);
             }
             catch (Exception exception)
             {
@@ -90,13 +103,19 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 return await returningStringListFunction();
             }
-            catch (FailedMeshClientException failedMeshClientException)
+            catch (HttpRequestException httpRequestException)
+                when ((int)httpRequestException.StatusCode >= 400 && (int)httpRequestException.StatusCode <= 499)
             {
+                var failedMeshClientException = new FailedMeshClientException(httpRequestException);
+
                 throw CreateDependencyValidationException(failedMeshClientException);
             }
-            catch (FailedMeshServerException failedMeshClientException)
+            catch (HttpRequestException httpRequestException)
+                when ((int)httpRequestException.StatusCode >= 500 && (int)httpRequestException.StatusCode <= 599)
             {
-                throw CreateDependencyException(failedMeshClientException);
+                var failedMeshServerException = new FailedMeshServerException(httpRequestException);
+
+                throw CreateDependencyException(failedMeshServerException);
             }
             catch (InvalidArgumentsMeshException invalidArgumentMeshException)
             {
