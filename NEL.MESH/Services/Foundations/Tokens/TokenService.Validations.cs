@@ -9,7 +9,7 @@ using Xeptions;
 
 namespace NEL.MESH.Services.Foundations.Tokens
 {
-    internal partial class TokenService : ITokenService
+    internal partial class TokenService
     {
         public static void ValidateGenerateTokenArgs(string mailboxId, string password, string key)
         {

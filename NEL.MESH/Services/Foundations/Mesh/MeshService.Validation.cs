@@ -8,7 +8,6 @@ using System.Linq;
 using System.Net.Http;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
-using NEL.MESH.Models.Processings.Mesh;
 using Xeptions;
 
 namespace NEL.MESH.Services.Foundations.Mesh
