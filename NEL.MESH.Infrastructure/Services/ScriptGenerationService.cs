@@ -54,7 +54,7 @@ namespace NEL.MESH.Infrastructure.Services
 
                                 TargetDotNetVersion = new TargetDotNetVersion
                                 {
-                                    DotNetVersion = "7.0.210",
+                                    DotNetVersion = "7.0.201",
                                     IncludePrerelease = false
                                 }
                             },
