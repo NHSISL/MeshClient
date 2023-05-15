@@ -20,23 +20,14 @@ namespace NEL.MESH.Services.Foundations.Mesh
             if (response.IsSuccessStatusCode == false)
             {
                 string message = $"{(int)response.StatusCode} - {response.ReasonPhrase}";
-                var httpRequestException = new HttpRequestException(message);
 
-                switch ((int)response.StatusCode)
-                {
-                    case var code when code >= 400 && code <= 499:
-                        {
-                            throw new FailedMeshClientException(httpRequestException);
-                        }
-                    case var code when code >= 500 && code <= 599:
-                        {
-                            throw new FailedMeshServerException(httpRequestException);
-                        }
-                    default:
-                        {
-                            throw new Exception(message);
-                        }
-                }
+                var httpRequestException = 
+                    new HttpRequestException(
+                        message: message, 
+                        inner: null,
+                        statusCode:response.StatusCode);
+
+                throw httpRequestException;
             }
         }
 

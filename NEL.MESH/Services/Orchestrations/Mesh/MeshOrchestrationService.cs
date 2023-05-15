@@ -4,7 +4,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
+using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Services.Foundations.Chunks;
 using NEL.MESH.Services.Foundations.Mesh;
@@ -17,15 +19,18 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         private readonly ITokenService tokenService;
         private readonly IMeshService meshService;
         private readonly IChunkService chunkService;
+        private readonly IMeshConfigurationBroker meshConfigurationBroker;
 
         public MeshOrchestrationService(
             ITokenService tokenService,
             IMeshService meshService,
-            IChunkService chunkService)
+            IChunkService chunkService,
+            IMeshConfigurationBroker meshConfigurationBroker)
         {
             this.tokenService = tokenService;
             this.meshService = meshService;
             this.chunkService = chunkService;
+            this.meshConfigurationBroker = meshConfigurationBroker;
         }
 
         public ValueTask<bool> HandshakeAsync() =>
@@ -40,6 +45,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         public ValueTask<Message> SendMessageAsync(Message message) =>
             TryCatch(async () =>
             {
+                SetHeader(message, "Mex-From", this.meshConfigurationBroker.MexFrom);
                 ValidateMessageIsNotNull(message);
                 List<Message> chunkedMessages = this.chunkService.SplitMessageIntoChunks(message);
                 ValidateChunksOnSendMessage(chunkedMessages);
@@ -134,5 +140,17 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
 
                 return await this.meshService.AcknowledgeMessageAsync(messageId, authorizationToken: token);
             });
+
+        private static void SetHeader(Message message, string key, string value)
+        {
+            if (message.Headers.ContainsKey(key)) 
+            {
+                message.Headers[key] = new List<string> { value };
+            }
+            else
+            {
+                message.Headers.Add(key, new List<string> { value });
+            }
+        }
     }
 }

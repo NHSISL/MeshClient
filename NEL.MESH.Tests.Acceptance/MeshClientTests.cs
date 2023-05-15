@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using NEL.MESH.Clients;
@@ -87,8 +88,18 @@ namespace NEL.MESH.Tests.Acceptance
             return new X509Certificate2(certBytes);
         }
 
-        private static string GetRandomString() =>
-            new MnemonicString(wordCount: 1, wordMinLength: 1, wordMaxLength: GetRandomNumber()).GetValue();
+        private static string GetRandomString(
+            int wordCount = 1,
+            int wordMinLength = 1,
+            int wordMaxLength = 10) =>
+                new MnemonicString(
+                    wordCount: wordCount, 
+                    wordMinLength: wordMinLength,
+                    wordMaxLength: wordMaxLength == 0 
+                        ? GetRandomNumber() 
+                        : (wordMaxLength <= wordMinLength 
+                            ? wordMinLength + 1 
+                            : wordMaxLength)).GetValue();
 
         private static List<string> GetRandomStrings()
         {
@@ -178,6 +189,13 @@ namespace NEL.MESH.Tests.Acceptance
                 .OnProperty(message => message.Headers).Use(new Dictionary<string, List<string>>());
 
             return filler;
+        }
+
+        private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
+        {
+            return dictionary.ContainsKey(key)
+                ? dictionary[key]?.First()
+                : string.Empty;
         }
     }
 }
