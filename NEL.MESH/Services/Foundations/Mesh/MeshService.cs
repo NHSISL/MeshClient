@@ -5,7 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -115,7 +117,28 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 ValidateMeshMessageOnSendFile(message, authorizationToken);
 
-                HttpResponseMessage responseFileMessage = await this.meshBroker.SendFileAsync(
+                string chunkRange = GetKeyStringValue("Mex-Chunk-Range", message.Headers)
+                    .Replace("{", string.Empty)
+                        .Replace("}", string.Empty);
+
+                if (string.IsNullOrEmpty(chunkRange))
+                {
+                    chunkRange = "1";
+                }
+
+                string chunkPart = (chunkRange.Split(':'))[0];
+                int chunkNumber;
+
+                if (!int.TryParse(chunkPart, out chunkNumber))
+                {
+                    chunkNumber = 1;
+                }
+
+                HttpResponseMessage responseFileMessage;
+
+                if (chunkNumber <= 1)
+                {
+                    responseFileMessage = await this.meshBroker.SendFileAsync(
                         mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
                         workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
                         localId: GetKeyStringValue("Mex-LocalID", message.Headers),
@@ -128,6 +151,28 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         contentType: GetKeyStringValue("Content-Type", message.Headers),
                         authorizationToken,
                         fileContents: message.FileContent);
+                }
+                else
+                {
+                    ValidateMessageId(message.MessageId);
+                    ValidateMexChunkRangeOnMultiPartFile(message);
+
+                    responseFileMessage = await this.meshBroker.SendFileAsync(
+                        mailboxTo: GetKeyStringValue("Mex-To", message.Headers),
+                        workflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
+                        localId: GetKeyStringValue("Mex-LocalID", message.Headers),
+                        subject: GetKeyStringValue("Mex-Subject", message.Headers),
+                        fileName: GetKeyStringValue("Mex-FileName", message.Headers),
+                        contentChecksum: GetKeyStringValue("Mex-Content-Checksum", message.Headers),
+                        contentEncrypted: GetKeyStringValue("Mex-Content-Encrypted", message.Headers),
+                        encoding: GetKeyStringValue("Mex-Encoding", message.Headers),
+                        chunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
+                        contentType: GetKeyStringValue("Content-Type", message.Headers),
+                        authorizationToken,
+                        fileContents: message.FileContent,
+                        messageId: message.MessageId,
+                        chunkNumber: chunkNumber.ToString());
+                }
 
                 string responseMessageBody = responseFileMessage.Content.ReadAsStringAsync().Result;
 
@@ -169,9 +214,14 @@ namespace NEL.MESH.Services.Foundations.Mesh
             TryCatch(async () =>
             {
                 ValidateRetrieveMessagesArguments(authorizationToken);
-                HttpResponseMessage responseMessage = await this.meshBroker.GetMessagesAsync(authorizationToken);
+
+                HttpResponseMessage responseMessage = await this.meshBroker
+                    .GetMessagesAsync(authorizationToken);
+
                 ValidateResponse(responseMessage);
-                string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+
+                string responseMessageBody = responseMessage.Content
+                    .ReadAsStringAsync().Result;
 
                 GetMessagesResponse getMessagesResponse =
                     JsonConvert.DeserializeObject<GetMessagesResponse>(responseMessageBody);
@@ -184,30 +234,91 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 ValidateRetrieveMessageArguments(messageId, authorizationToken);
 
-                HttpResponseMessage responseMessage =
+                HttpResponseMessage initialResponse =
                     await this.meshBroker.GetMessageAsync(messageId, authorizationToken);
 
-                ValidateResponse(responseMessage);
-                string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+                ValidateReceivedResponse(initialResponse);
 
-                Message outputMessage = new Message
+                string contentType = initialResponse.Content.Headers
+                    .FirstOrDefault(h => h.Key == "Content-Type")
+                        .Value.FirstOrDefault();
+
+                bool isStringContent = contentType switch
                 {
-                    MessageId = messageId,
-                    StringContent = responseMessageBody,
+                    var value when value.Contains("text/plain") => true,
+                    var value when value.Contains("text/html") => true,
+                    var value when value.Contains("application/json") => true,
+                    var value when value.Contains("text/xml") => true,
+                    var value when value.Contains("application/xml") => true,
+                    _ => false
                 };
 
-                foreach (var header in responseMessage.Headers)
+                string stringBody = null;
+                byte[] fileBody = null;
+
+                if (isStringContent)
                 {
-                    outputMessage.Headers.Add(header.Key, header.Value.ToList());
+                    stringBody = initialResponse.Content.ReadAsStringAsync().Result;
+                }
+                else
+                {
+                    fileBody = initialResponse.Content.ReadAsByteArrayAsync().Result;
+                };
+
+                Message firstMessage = new Message
+                {
+                    MessageId = messageId,
+                    StringContent = stringBody,
+                    FileContent = fileBody,
+                };
+
+                foreach (var header in initialResponse.Headers)
+                {
+                    firstMessage.Headers.Add(header.Key, header.Value.ToList());
                 }
 
-                foreach (var header in responseMessage.Content.Headers)
+                foreach (var header in initialResponse.Content.Headers)
                 {
-                    outputMessage.Headers.Add(header.Key, header.Value.ToList());
+                    firstMessage.Headers.Add(header.Key, header.Value.ToList());
                 }
 
-                return outputMessage;
+                if (initialResponse.StatusCode == HttpStatusCode.OK)
+                {
+                    return firstMessage;
+                }
+
+                var chunks = initialResponse.Content.Headers
+                    .FirstOrDefault(h => h.Key == "Mex-Chunk-Range")
+                        .Value.FirstOrDefault();
+                        
+                string chunkRange = chunks.Replace("{", string.Empty).Replace("}", string.Empty);
+                string[] parts = chunkRange.Split(":");
+                int totalChunks = int.Parse(parts[1]);
+
+                for (int chunkId = 1; chunkId < totalChunks; chunkId++)
+                {
+                    HttpResponseMessage responseMessage =
+                        await this.meshBroker.GetMessageAsync(messageId, (chunkId + 1)
+                            .ToString(), authorizationToken);
+
+                    ValidateResponse(responseMessage);
+
+                    if (isStringContent)
+                    {
+                        string messageContent = responseMessage.Content.ReadAsStringAsync().Result;
+                        firstMessage.StringContent += messageContent;
+                    }
+                    else
+                    {
+                        byte[] fileContent = responseMessage.Content.ReadAsByteArrayAsync().Result;
+                        firstMessage.FileContent = firstMessage.FileContent.Concat(fileContent).ToArray();
+                    };
+
+                }
+
+                return firstMessage;
             });
+
 
         public ValueTask<bool> AcknowledgeMessageAsync(string messageId, string authorizationToken) =>
             TryCatch(async () =>
@@ -216,6 +327,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
                 HttpResponseMessage response =
                     await this.meshBroker.AcknowledgeMessageAsync(messageId, authorizationToken);
+
                 ValidateResponse(response);
 
                 return response.IsSuccessStatusCode;

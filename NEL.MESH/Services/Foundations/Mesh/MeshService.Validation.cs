@@ -30,6 +30,36 @@ namespace NEL.MESH.Services.Foundations.Mesh
             }
         }
 
+        private static void ValidateReceivedResponse(HttpResponseMessage response)
+        {
+            if (response.IsSuccessStatusCode == false)
+            {
+                string message = $"{(int)response.StatusCode} - {response.ReasonPhrase}";
+                var httpRequestException = new HttpRequestException(message);
+
+                switch ((int)response.StatusCode)
+                {
+                    case var code when code >= 400 && code <= 499:
+                        {
+                            throw new FailedMeshClientException(httpRequestException);
+                        }
+                    case var code when code >= 500 && code <= 599:
+                        {
+                            throw new FailedMeshServerException(httpRequestException);
+                        }
+                    default:
+                        {
+                            throw new Exception(message);
+                        }
+                }
+            }
+
+            Validate<InvalidMeshException>(
+                (Rule: IsInvalid(response.Content.Headers
+                    .FirstOrDefault(h => h.Key == "Content-Type")
+                        .Value.FirstOrDefault()), Parameter: "Content-Type"));
+        }
+
         private static void ValidateOnHandshake(string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
@@ -70,6 +100,12 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 (Rule: IsInvalid(message.Headers, "Mex-Content-Checksum"), Parameter: "Mex-Content-Checksum"),
                 (Rule: IsInvalid(message.Headers, "Mex-Content-Encrypted"), Parameter: "Mex-Content-Encrypted"),
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+        }
+
+        private static void ValidateMexChunkRangeOnMultiPartFile(Message message)
+        {
+            Validate<InvalidMeshException>(
+                (Rule: IsInvalid(message.Headers, "Mex-Chunk-Range"), Parameter: "Mex-Chunk-Range"));
         }
 
         public static void ValidateTrackMessageArguments(string messageId, string authorizationToken)
