@@ -39,7 +39,7 @@ namespace NEL.MESH.Infrastructure.Services
                 {
                     Build = new BuildJob
                     {
-                        RunsOn = BuildMachines.Windows2019,
+                        RunsOn = BuildMachines.WindowsLatest,
 
                         Steps = new List<GithubTask>
                     {
