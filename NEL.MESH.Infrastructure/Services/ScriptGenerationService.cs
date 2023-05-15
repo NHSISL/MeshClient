@@ -42,38 +42,38 @@ namespace NEL.MESH.Infrastructure.Services
                         RunsOn = BuildMachines.WindowsLatest,
 
                         Steps = new List<GithubTask>
-                    {
-                        new CheckoutTaskV2
                         {
-                            Name = "Check Out"
-                        },
-
-                        new SetupDotNetTaskV1
-                        {
-                            Name = "Setup Dot Net Version",
-
-                            TargetDotNetVersion = new TargetDotNetVersion
+                            new CheckoutTaskV2
                             {
-                                DotNetVersion = "7.0.100",
-                                IncludePrerelease = false
+                                Name = "Check Out"
+                            },
+
+                            new SetupDotNetTaskV1
+                            {
+                                Name = "Setup Dot Net Version",
+
+                                TargetDotNetVersion = new TargetDotNetVersion
+                                {
+                                    DotNetVersion = "7.0.210",
+                                    IncludePrerelease = false
+                                }
+                            },
+
+                            new RestoreTask
+                            {
+                                Name = "Restore"
+                            },
+
+                            new DotNetBuildTask
+                            {
+                                Name = "Build"
+                            },
+
+                            new TestTask
+                            {
+                                Name = "Test"
                             }
-                        },
-
-                        new RestoreTask
-                        {
-                            Name = "Restore"
-                        },
-
-                        new DotNetBuildTask
-                        {
-                            Name = "Build"
-                        },
-
-                        new TestTask
-                        {
-                            Name = "Test"
                         }
-                    }
                     }
                 }
             };
