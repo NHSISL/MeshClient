@@ -5,7 +5,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
-using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Services.Orchestrations.Mesh;
@@ -48,10 +47,32 @@ namespace NEL.MESH.Clients.Mailboxes
             }
         }
 
-        public async ValueTask<Message> SendMessageAsync(Message message)
+        public async ValueTask<Message> SendMessageAsync(
+            string mexTo,
+            string mexWorkflowId,
+            string content,
+            string mexSubject = "",
+            string mexLocalId = "",
+            string mexFileName = "",
+            string mexContentChecksum = "",
+            string contentType = "",
+            string contentEncoding = "",
+            string accept = "application/json")
         {
             try
             {
+                Message message = ComposeMessage.CreateStringMessage(
+                    mexTo,
+                    mexWorkflowId,
+                    content,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding,
+                    accept);
+
                 return await meshOrchestrationService.SendMessageAsync(message);
             }
             catch (MeshValidationException meshValidationException)
@@ -76,10 +97,34 @@ namespace NEL.MESH.Clients.Mailboxes
             }
         }
 
-        public async ValueTask<Message> SendFileAsync(Message message)
+        public async ValueTask<Message> SendFileAsync(
+            string mexTo,
+            string mexWorkflowId,
+            byte[] fileContent,
+            string mexContentEncrypted,
+            string mexSubject = "",
+            string mexLocalId = "",
+            string mexFileName = "",
+            string mexContentChecksum = "",
+            string contentType = "",
+            string contentEncoding = "",
+            string accept = "application/json")
         {
             try
             {
+                Message message = ComposeMessage.CreateFileMessage(
+                    mexTo,
+                    mexWorkflowId,
+                    fileContent,
+                    mexContentEncrypted,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding,
+                    accept);
+
                 return await meshOrchestrationService.SendFileAsync(message);
             }
             catch (MeshValidationException meshValidationException)

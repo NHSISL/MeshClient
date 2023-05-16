@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Moq;
+using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Tokens.Exceptions;
@@ -24,17 +25,20 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         private readonly Mock<IMeshService> meshServiceMock;
         private readonly Mock<IChunkService> chunkServiceMock;
         private readonly IMeshOrchestrationService meshOrchestrationService;
+        private readonly Mock<IMeshConfigurationBroker> meshConfigurationBrokerMock;
 
         public MeshOrchestrationTests()
         {
             this.tokenServiceMock = new Mock<ITokenService>();
             this.meshServiceMock = new Mock<IMeshService>();
             this.chunkServiceMock = new Mock<IChunkService>();
+            this.meshConfigurationBrokerMock = new Mock<IMeshConfigurationBroker>();
 
             this.meshOrchestrationService = new MeshOrchestrationService(
                 tokenService: this.tokenServiceMock.Object,
                 meshService: this.meshServiceMock.Object,
-                chunkService: this.chunkServiceMock.Object);
+                chunkService: this.chunkServiceMock.Object,
+                meshConfigurationBroker: this.meshConfigurationBrokerMock.Object);
         }
 
         private static string GetRandomString(int wordCount = 0)

@@ -15,7 +15,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldSendFirstChunkPartFileAsync()
+        public async Task ShouldSendFirstChunkPartFileMessageAsync()
         {
             // given
             string authorizationToken = GetRandomString();
@@ -42,7 +42,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(inputFileMessage, contentHeaders);
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(
+                inputFileMessage, contentHeaders);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendFileAsync(
@@ -60,7 +61,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     inputFileMessage.FileContent))
                         .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageWithFileContentFromHttpResponseMessage(responseMessage);
+            Message expectedMessage = GetMessageWithFileContentFromHttpResponseMessage(
+                responseMessage, inputFileMessage);
 
             // when
             Message actualMessage = await this.meshService.SendFileAsync(inputFileMessage, authorizationToken);
@@ -116,7 +118,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(inputFileMessage, contentHeaders);
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(
+                inputFileMessage, contentHeaders);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendFileAsync(
@@ -136,7 +139,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     chunkPart))
                         .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageWithFileContentFromHttpResponseMessage(responseMessage);
+            Message expectedMessage = GetMessageWithFileContentFromHttpResponseMessage(
+                responseMessage, inputFileMessage);
 
             // when
             Message actualMessage = await this.meshService.SendFileAsync(inputFileMessage, authorizationToken);

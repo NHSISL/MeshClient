@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.ExternalModels;
 using Newtonsoft.Json;
@@ -15,51 +16,49 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class MeshClientTests
     {
-        [Fact(Skip = "Excluded")]
+        [Fact]
         [Trait("Category", "Acceptance")]
         public async Task ShouldSendMessageAsync()
         {
             // given
             string path = $"/messageexchange/{this.meshConfigurations.MailboxId}/outbox";
-            string mexFrom = this.meshConfigurations.MailboxId;
+            string randomId = GetRandomString();
+            string outputId = randomId;
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
-            string mexLocalId = GetRandomString();
+            string content = GetRandomString(wordMinLength: GetRandomNumber());
             string mexSubject = GetRandomString();
+            string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();
             string mexContentChecksum = GetRandomString();
-            string mexContentEncrypted = GetRandomString();
-            string mexEncoding = GetRandomString();
-            string mexChunkRange = GetRandomString();
             string contentType = "text/plain";
-            string content = GetRandomString();
+            string contentEncoding = GetRandomString();
 
-            Message randomMessage = CreateRandomSendMessage(
-                mexFrom,
+            Message randomMessage = ComposeMessage.CreateStringMessage(
                 mexTo,
                 mexWorkflowId,
-                mexLocalId,
+                content,
                 mexSubject,
+                mexLocalId,
                 mexFileName,
                 mexContentChecksum,
-                mexContentEncrypted,
-                mexEncoding,
-                mexChunkRange,
                 contentType,
-                content);
+                contentEncoding);
+
+            Message inputMessage = randomMessage;
 
             SendMessageResponse responseMessage = new SendMessageResponse
             {
-                MessageId = randomMessage.MessageId,
-                Message = randomMessage.MessageId
+                MessageId = outputId,
+                Message = outputId,
             };
 
             string serialisedResponseMessage = JsonConvert.SerializeObject(responseMessage);
 
             Message outputMessage = new Message
             {
-                MessageId = randomMessage.MessageId,
-                StringContent = serialisedResponseMessage
+                MessageId = outputId,
+                StringContent = inputMessage.StringContent
             };
 
             Message expectedSendMessageResult = outputMessage;
@@ -73,15 +72,15 @@ namespace NEL.MESH.Tests.Acceptance
                         .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
                         .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion)
                         .WithHeader("Mex-From", this.meshConfigurations.MailboxId)
-                        .WithHeader("Mex-To", mexTo)
-                        .WithHeader("Mex-WorkflowID", mexWorkflowId)
-                        .WithHeader("Mex-LocalID", mexLocalId)
-                        .WithHeader("Mex-Subject", mexSubject)
-                        .WithHeader("Mex-FileName", mexFileName)
-                        .WithHeader("Mex-Content-Checksum", mexContentChecksum)
-                        .WithHeader("Mex-Content-Encrypted", mexContentEncrypted)
-                        .WithHeader("Mex-Encoding", mexEncoding)
-                        .WithHeader("Mex-Chunk-Range", mexChunkRange)
+                        .WithHeader("Mex-To", GetKeyStringValue("Mex-To", inputMessage.Headers))
+                        .WithHeader("Mex-WorkflowID", GetKeyStringValue("Mex-WorkflowID", inputMessage.Headers))
+                        .WithHeader("Mex-LocalID", GetKeyStringValue("Mex-LocalID", inputMessage.Headers))
+                        .WithHeader("Mex-Subject", GetKeyStringValue("Mex-Subject", inputMessage.Headers))
+                        .WithHeader("Mex-FileName", GetKeyStringValue("Mex-FileName", inputMessage.Headers))
+                        .WithHeader("Mex-Content-Checksum", GetKeyStringValue("Mex-Content-Checksum", inputMessage.Headers))
+                        .WithHeader("Mex-Content-Encrypted", GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers))
+                        .WithHeader("Mex-Encoding", GetKeyStringValue("Mex-Encoding", inputMessage.Headers))
+                        .WithHeader("Mex-Chunk-Range", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
                         .WithHeader("Authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
                         .WithBody(randomMessage.StringContent)
                     )
@@ -92,7 +91,16 @@ namespace NEL.MESH.Tests.Acceptance
 
             // when
             Message actualSendMessageResult = await this.meshClient.Mailbox
-                .SendMessageAsync(randomMessage);
+                .SendMessageAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    content,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding);
 
             // then
             actualSendMessageResult.Should().BeEquivalentTo(expectedSendMessageResult);

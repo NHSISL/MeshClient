@@ -9,6 +9,7 @@ using NEL.MESH.Brokers.Identifiers;
 using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Configurations;
+using NEL.MESH.Services.Foundations.Chunks;
 using NEL.MESH.Services.Foundations.Mesh;
 using NEL.MESH.Services.Foundations.Tokens;
 using NEL.MESH.Services.Orchestrations.Mesh;
@@ -35,9 +36,11 @@ namespace NEL.MESH.Clients
             builder.ConfigureServices(configuration =>
             {
                 configuration.AddSingleton(options => meshConfigurations);
+                configuration.AddTransient<IMeshConfigurationBroker, MeshConfigurationBroker>();
                 configuration.AddTransient<IMeshBroker, MeshBroker>();
                 configuration.AddTransient<IDateTimeBroker, DateTimeBroker>();
                 configuration.AddTransient<IIdentifierBroker, IdentifierBroker>();
+                configuration.AddTransient<IChunkService, ChunkService>();
                 configuration.AddTransient<IMeshService, MeshService>();
                 configuration.AddTransient<ITokenService, TokenService>();
                 configuration.AddTransient<IMeshOrchestrationService, MeshOrchestrationService>();

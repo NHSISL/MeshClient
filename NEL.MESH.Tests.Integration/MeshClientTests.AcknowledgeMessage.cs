@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -12,27 +13,35 @@ namespace NEL.MESH.Tests.Integration
 {
     public partial class MeshClientTests
     {
-        [Fact(Skip = "Excluded")]
+        [Fact]
         [Trait("Category", "Integration")]
         public async Task ShouldAcknowledgeMessageAsync()
         {
             // given
-            Message randomMessage = CreateRandomSendMessage(
-                mexFrom: this.meshConfigurations.MailboxId,
-                mexTo: this.meshConfigurations.MailboxId,
-                mexWorkflowId: "INTEGRATION TEST",
-                mexLocalId: GetRandomString(),
-                mexSubject: "INTEGRATION TEST -  ShouldAcknowledgeMessageAsync",
-                mexFileName: $"ShouldAcknowledgeMessageAsync.csv",
-                mexContentChecksum: null,
-                mexContentEncrypted: null,
-                mexEncoding: null,
-                mexChunkRange: null,
-                contentType: "text/plain",
-                content: GetRandomString());
+            // given
+            string mexTo = this.meshConfigurations.MailboxId;
+            string mexWorkflowId = "INTEGRATION TEST";
+            byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString());
+            string mexContentEncrypted = GetRandomString();
+            string mexSubject = "INTEGRATION TEST -  ShouldAcknowledgeMessageAsync";
+            string mexLocalId = GetRandomString();
+            string mexFileName = $"ShouldAcknowledgeMessageAsync.csv";
+            string mexContentChecksum = GetRandomString();
+            string contentType = "application/octet-stream";
+            string contentEncoding = GetRandomString();
 
             Message sendMessageResponse =
-                await this.meshClient.Mailbox.SendMessageAsync(randomMessage);
+                await this.meshClient.Mailbox.SendFileAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    fileContent,
+                    mexContentEncrypted,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding);
 
             // when
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);

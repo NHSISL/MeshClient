@@ -6,7 +6,7 @@ using System;
 
 namespace NEL.MESH.Brokers.Identifiers
 {
-    public class IdentifierBroker : IIdentifierBroker
+    internal class IdentifierBroker : IIdentifierBroker
     {
         public Guid GetIdentifier() =>
             Guid.NewGuid();

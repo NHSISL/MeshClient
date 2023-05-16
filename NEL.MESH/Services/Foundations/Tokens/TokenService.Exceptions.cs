@@ -9,7 +9,7 @@ using Xeptions;
 
 namespace NEL.MESH.Services.Foundations.Tokens
 {
-    internal partial class TokenService : ITokenService
+    internal partial class TokenService
     {
         private delegate ValueTask<string> ReturningStringFunction();
 

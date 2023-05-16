@@ -12,27 +12,32 @@ namespace NEL.MESH.Tests.Integration
 {
     public partial class MeshClientTests
     {
-        [Fact(Skip = "Excluded")]
+        [Fact]
         [Trait("Category", "Integration")]
-        public async Task ShouldGetMessagesAsync()
+        public async Task ShouldRetrieveMessagesAsync()
         {
             // given
-            Message randomMessage = CreateRandomSendMessage(
-                mexFrom: this.meshConfigurations.MailboxId,
-                mexTo: this.meshConfigurations.MailboxId,
-                mexWorkflowId: "INTEGRATION TEST",
-                mexLocalId: GetRandomString(),
-                mexSubject: "INTEGRATION TEST -  ShouldGetMessagesAsync",
-                mexFileName: $"ShouldGetMessagesAsync.csv",
-                mexContentChecksum: null,
-                mexContentEncrypted: null,
-                mexEncoding: null,
-                mexChunkRange: null,
-                contentType: "text/plain",
-                content: GetRandomString());
+            string mexTo = this.meshConfigurations.MailboxId;
+            string mexWorkflowId = "INTEGRATION TEST";
+            string content = GetRandomString();
+            string mexSubject = "INTEGRATION TEST -  ShouldRetrieveMessagesAsync";
+            string mexLocalId = GetRandomString();
+            string mexFileName = $"ShouldRetrieveMessagesAsync.csv";
+            string mexContentChecksum = GetRandomString();
+            string contentType = "text/plain";
+            string contentEncoding = GetRandomString();
 
             Message sendMessageResponse =
-                await this.meshClient.Mailbox.SendMessageAsync(randomMessage);
+                await this.meshClient.Mailbox.SendMessageAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    content,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding);
 
             // when
             List<string> messageList = await this.meshClient.Mailbox.RetrieveMessagesAsync();

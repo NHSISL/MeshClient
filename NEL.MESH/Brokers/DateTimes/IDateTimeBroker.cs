@@ -6,7 +6,7 @@ using System;
 
 namespace NEL.MESH.Brokers.DateTimes
 {
-    public interface IDateTimeBroker
+    internal interface IDateTimeBroker
     {
         DateTimeOffset GetCurrentDateTimeOffset();
     }

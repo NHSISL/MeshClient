@@ -7,7 +7,7 @@ using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 
 namespace NEL.MESH.Services.Foundations.Chunks
 {
-    internal partial class ChunkService : IChunkService
+    internal partial class ChunkService
     {
         private static void ValidateMessageIsNotNull(Message message)
         {
