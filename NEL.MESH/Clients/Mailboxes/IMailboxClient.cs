@@ -33,7 +33,7 @@ namespace NEL.MESH.Clients.Mailboxes
             string mexLocalId = "",
             string mexFileName = "",
             string mexContentChecksum = "",
-            string contentType = "",
+            string contentType = "application/octet-stream",
             string contentEncoding = "",
             string accept = "application/json");
 

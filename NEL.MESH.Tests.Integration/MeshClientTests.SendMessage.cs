@@ -16,23 +16,28 @@ namespace NEL.MESH.Tests.Integration
         public async Task ShouldSendMessageAsync()
         {
             // given
-            Message randomMessage = CreateRandomSendMessage(
-                mexFrom: this.meshConfigurations.MailboxId,
-                mexTo: this.meshConfigurations.MailboxId,
-                mexWorkflowId: "INTEGRATION TEST",
-                mexLocalId: GetRandomString(),
-                mexSubject: "INTEGRATION TEST -  ShouldSendMessageAsync",
-                mexFileName: $"ShouldSendMessageAsync.csv",
-                mexContentChecksum: null,
-                mexContentEncrypted: null,
-                mexEncoding: null,
-                mexChunkRange: null,
-                contentType: "text/plain",
-                content: GetRandomString());
+            string mexTo = this.meshConfigurations.MailboxId;
+            string mexWorkflowId = "INTEGRATION TEST";
+            string content = GetRandomString();
+            string mexSubject = "INTEGRATION TEST -  ShouldSendMessageAsync";
+            string mexLocalId = GetRandomString();
+            string mexFileName = $"ShouldSendMessageAsync.csv";
+            string mexContentChecksum = GetRandomString();
+            string contentType = "text/plain";
+            string contentEncoding = GetRandomString();
 
             // when
             Message sendMessageResponse =
-                await this.meshClient.Mailbox.SendMessageAsync(randomMessage);
+                await this.meshClient.Mailbox.SendMessageAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    content,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding);
 
             // then
             sendMessageResponse.MessageId.Should().NotBeNullOrEmpty();

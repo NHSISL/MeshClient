@@ -10,7 +10,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Configurations;
-using NEL.MESH.Models.Foundations.Mesh;
 
 namespace NEL.MESH.Brokers.Mesh
 {
@@ -87,7 +86,7 @@ namespace NEL.MESH.Brokers.Mesh
             string chunkRange,
             string contentType,
             string authorizationToken,
-            string stringConent,
+            string stringContent,
             string messageId,
             string chunkNumber)
         {
@@ -95,7 +94,7 @@ namespace NEL.MESH.Brokers.Mesh
 
             var request = new HttpRequestMessage(HttpMethod.Post, path)
             {
-                Content = new StringContent(stringConent, Encoding.UTF8, contentType)
+                Content = new StringContent(stringContent, Encoding.UTF8, contentType)
 
             };
 

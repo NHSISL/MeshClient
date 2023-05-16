@@ -20,24 +20,27 @@ namespace NEL.MESH.Tests.Integration
             string recipient = this.meshConfigurations.MailboxId;
             string workflowId = "INTEGRATION TEST";
 
-            Message randomMessage = CreateRandomSendMessage(
-                mexFrom: sender,
-                mexTo: recipient,
-                mexWorkflowId: workflowId,
-                mexLocalId: GetRandomString(),
-                mexSubject: "INTEGRATION TEST -  ShouldTrackMessageAsync",
-                mexFileName: $"ShouldTrackMessageAsync.csv",
-                mexContentChecksum: null,
-                mexContentEncrypted: null,
-                mexEncoding: null,
-                mexChunkRange: null,
-                contentType: "text/plain",
-                content: GetRandomString());
-
-            Message expectedMessage = randomMessage;
+            string mexTo = this.meshConfigurations.MailboxId;
+            string mexWorkflowId = "INTEGRATION TEST";
+            string content = GetRandomString();
+            string mexSubject = "INTEGRATION TEST -  ShouldTrackMessageAsync";
+            string mexLocalId = GetRandomString();
+            string mexFileName = $"ShouldTrackMessageAsync.csv";
+            string mexContentChecksum = GetRandomString();
+            string contentType = "text/plain";
+            string contentEncoding = GetRandomString();
 
             Message sendMessageResponse =
-                await this.meshClient.Mailbox.SendMessageAsync(randomMessage);
+                await this.meshClient.Mailbox.SendMessageAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    content,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding);
 
             // when
             Message trackedMessage = await this.meshClient.Mailbox.TrackMessageAsync(sendMessageResponse.MessageId);
