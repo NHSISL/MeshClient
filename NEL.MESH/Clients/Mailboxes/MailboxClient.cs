@@ -97,6 +97,7 @@ namespace NEL.MESH.Clients.Mailboxes
             }
         }
 
+        //TODO: Remove File
         public async ValueTask<Message> SendFileAsync(
             string mexTo,
             string mexWorkflowId,
