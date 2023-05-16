@@ -5,10 +5,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mail;
+using System.Net.Mime;
 using System.Text;
+using KellermanSoftware.CompareNetObjects;
 using Microsoft.Extensions.Hosting;
 using Moq;
 using NEL.MESH.Brokers.Mesh;
@@ -25,11 +29,13 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
     {
         private readonly Mock<IMeshBroker> meshBrokerMock;
         private readonly IMeshService meshService;
+        private readonly ICompareLogic compareLogic;
 
         public MeshServiceTests()
         {
             this.meshBrokerMock = new Mock<IMeshBroker>();
             this.meshService = new MeshService(meshBroker: this.meshBrokerMock.Object);
+            this.compareLogic = new CompareLogic();
         }
 
         public static TheoryData DependencyValidationResponseMessages()
@@ -150,10 +156,211 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 : string.Empty;
         }
 
-        private static HttpResponseMessage CreateHttpResponseContentMessage(
+        public static List<string> GetStringContentParts(string stringContent, int chunkParts)
+        {
+            if (string.IsNullOrEmpty(stringContent) || chunkParts <= 0)
+            {
+                return new List<string>();
+            }
+
+            int length = stringContent.Length;
+            int chunkSize = length / chunkParts;
+            int remainder = length % chunkParts;
+            List<string> partsList = new List<string>();
+
+            int currentStartIndex = 0;
+            for (int i = 0; i < chunkParts; i++)
+            {
+                int currentChunkSize = i < remainder ? chunkSize + 1 : chunkSize;
+                string chunk = stringContent.Substring(currentStartIndex, currentChunkSize);
+                partsList.Add(chunk);
+                currentStartIndex += currentChunkSize;
+            }
+
+            return partsList;
+        }
+
+        public static List<byte[]> GetByteContentParts(byte[] content, int chunkParts)
+        {
+            if (content == null || content.Length == 0 || chunkParts <= 0)
+            {
+                return new List<byte[]>();
+            }
+
+            int length = content.Length;
+            int chunkSize = length / chunkParts;
+            int remainder = length % chunkParts;
+            List<byte[]> partsList = new List<byte[]>();
+
+            int currentStartIndex = 0;
+            for (int i = 0; i < chunkParts; i++)
+            {
+                int currentChunkSize = i < remainder ? chunkSize + 1 : chunkSize;
+                byte[] chunk = new byte[currentChunkSize];
+                Array.Copy(content, currentStartIndex, chunk, 0, currentChunkSize);
+                partsList.Add(chunk);
+                currentStartIndex += currentChunkSize;
+            }
+
+            return partsList;
+        }
+
+        private static List<HttpResponseMessage> CreateHttpResponseContentMessagesWithStringContentForRetrieveMessage(
             Message message,
             Dictionary<string, List<string>> contentHeaders,
-            Dictionary<string, List<string>> headers = null)
+            Dictionary<string, List<string>> headers = null,
+            int chunks = 1,
+            HttpStatusCode statusCode = HttpStatusCode.OK)
+        {
+            List<HttpResponseMessage> messages = new List<HttpResponseMessage>();
+            List<string> parts = GetStringContentParts(message.StringContent, chunks);
+
+            for (int i = 0; i < parts.Count; i++)
+            {
+                Message chunkMessage = new Message
+                {
+                    MessageId = message.MessageId,
+                    StringContent = parts[i],
+                };
+
+                HttpResponseMessage httpResponseMessage = 
+                    CreateHttpResponseContentMessageWithStringContentForRetrieveMessage(
+                        chunkMessage,
+                        contentHeaders,
+                        headers,
+                        statusCode);
+
+                string chunkRangeValue = $"{i+1}:{chunks}";
+
+                if (httpResponseMessage.Content.Headers.Contains("Mex-Chunk-Range"))
+                {
+                    httpResponseMessage.Content.Headers.Remove("Mex-Chunk-Range");
+                }
+
+                httpResponseMessage.Content.Headers.Add("Mex-Chunk-Range", chunkRangeValue);
+
+                messages.Add(httpResponseMessage);
+            }
+
+            return messages;
+        }
+
+        private static HttpResponseMessage CreateHttpResponseContentMessageWithStringContentForRetrieveMessage(
+            Message message,
+            Dictionary<string, List<string>> contentHeaders,
+            Dictionary<string, List<string>> headers = null,
+            HttpStatusCode statusCode = HttpStatusCode.OK)
+        {
+            string contentType = message.Headers.ContainsKey("Content-Type")
+                ? message.Headers["Content-Type"].FirstOrDefault()
+                : "text/plain";
+
+            if (string.IsNullOrEmpty(contentType))
+            {
+                contentType = "text/plain";
+            }
+
+            HttpResponseMessage responseMessage = new HttpResponseMessage()
+            {
+                StatusCode = statusCode,
+                Content = new StringContent(message.StringContent, Encoding.UTF8, contentType)
+            };
+
+            foreach (var item in contentHeaders)
+            {
+                if (item.Key != "Content-Type")
+                {
+                    responseMessage.Content.Headers.Add(item.Key, item.Value);
+                }
+            }
+
+            if (headers != null)
+            {
+                foreach (var item in headers)
+                {
+                    if (item.Key != "Content-Type")
+                    {
+                        responseMessage.Content.Headers.Add(item.Key, item.Value);
+                    }
+                }
+            }
+
+            return responseMessage;
+        }
+
+        private static List<HttpResponseMessage> CreateHttpResponseContentMessagesWithFileContentForRetrieveMessage(
+            Message message,
+            Dictionary<string, List<string>> contentHeaders,
+            Dictionary<string, List<string>> headers = null,
+            int chunks = 1,
+            HttpStatusCode statusCode = HttpStatusCode.OK)
+        {
+            List<HttpResponseMessage> messages = new List<HttpResponseMessage>();
+            List<byte[]> parts = GetByteContentParts(message.FileContent, chunks);
+
+            for (int i = 0; i < parts.Count; i++)
+            {
+                Message chunkMessage = new Message
+                {
+                    MessageId = message.MessageId,
+                    Headers = message.Headers,
+                    FileContent = parts[i],
+                };
+
+                HttpResponseMessage httpResponseMessage = 
+                    CreateHttpResponseContentMessageWithFileContentForRetrieveMessage(
+                        chunkMessage,
+                        contentHeaders,
+                        headers,
+                        statusCode);
+
+                string chunkRangeValue = $"{i + 1}:{chunks}";
+
+                if (httpResponseMessage.Content.Headers.Contains("Mex-Chunk-Range"))
+                {
+                    httpResponseMessage.Content.Headers.Remove("Mex-Chunk-Range");
+                }
+
+                httpResponseMessage.Content.Headers.Add("Mex-Chunk-Range", chunkRangeValue);
+                messages.Add(httpResponseMessage);
+            }
+
+            return messages;
+        }
+
+        private static HttpResponseMessage CreateHttpResponseContentMessageWithFileContentForRetrieveMessage(
+            Message message,
+            Dictionary<string, List<string>> contentHeaders,
+            Dictionary<string, List<string>> headers = null,
+            HttpStatusCode statusCode = HttpStatusCode.OK)
+        {
+            HttpResponseMessage responseMessage = new HttpResponseMessage()
+            {
+                StatusCode = statusCode,
+                Content = new ByteArrayContent(message.FileContent),
+            };
+
+            foreach (var item in contentHeaders)
+            {
+                responseMessage.Content.Headers.Add(item.Key, item.Value);
+            }
+
+            if (headers != null)
+            {
+                foreach (var item in headers)
+                {
+                    responseMessage.Content.Headers.Add(item.Key, item.Value);
+                }
+            }
+
+            return responseMessage;
+        }
+
+        private static HttpResponseMessage CreateHttpResponseContentMessageForSendMessage(
+                    Message message,
+                    Dictionary<string, List<string>> contentHeaders,
+                    Dictionary<string, List<string>> headers = null,
+                    HttpStatusCode statusCode = HttpStatusCode.OK)
         {
 
             string contentType = message.Headers.ContainsKey("Content-Type")
@@ -167,7 +374,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             HttpResponseMessage responseMessage = new HttpResponseMessage()
             {
-                StatusCode = HttpStatusCode.OK,
+                StatusCode = statusCode,
                 Content =
                     new StringContent("{\"messageID\": \"" + message.MessageId + "\"}", Encoding.UTF8, contentType)
             };
@@ -194,7 +401,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return responseMessage;
         }
 
-        private static HttpResponseMessage CreateTrackingHttpResponseMessage(TrackMessageResponse trackMessageResponse)
+        private static HttpResponseMessage CreateTrackingHttpResponseMessage(
+            TrackMessageResponse trackMessageResponse)
         {
             string contentType = "application/json";
             string jsonContent = JsonConvert.SerializeObject(trackMessageResponse);
@@ -208,18 +416,70 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return responseMessage;
         }
 
-        private static Message GetMessageWithStringContentFromHttpResponseMessage(HttpResponseMessage responseMessage)
+        private static Message GetMessageWithStringContentFromHttpResponseMessageForSend(HttpResponseMessage responseMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
             Dictionary<string, List<string>> contentHeaders = GetContentHeaders(responseMessage.Content.Headers);
             Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
 
-
-
             Message message = new Message
             {
                 MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
                 StringContent = responseMessageBody,
+            };
+
+            foreach (var item in contentHeaders)
+            {
+                message.Headers.Add(item.Key, item.Value);
+            }
+
+            foreach (var item in headers)
+            {
+                message.Headers.Add(item.Key, item.Value);
+            }
+
+            return message;
+        }
+
+        private static Message GetMessageWithStringContentFromHttpResponseMessageForReceive(
+            HttpResponseMessage responseMessage, 
+            string messageId)
+        {
+            string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+            Dictionary<string, List<string>> contentHeaders = GetContentHeaders(responseMessage.Content.Headers);
+            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
+
+            Message message = new Message
+            {
+                MessageId = messageId,
+                StringContent = responseMessageBody,
+            };
+
+            foreach (var item in contentHeaders)
+            {
+                message.Headers.Add(item.Key, item.Value);
+            }
+
+            foreach (var item in headers)
+            {
+                message.Headers.Add(item.Key, item.Value);
+            }
+
+            return message;
+        }
+
+        private static Message GetMessageWithFileContentFromHttpResponseMessageForReceive(
+            HttpResponseMessage responseMessage, 
+            string messageId)
+        {
+            byte[] responseMessageBody = responseMessage.Content.ReadAsByteArrayAsync().Result;
+            Dictionary<string, List<string>> contentHeaders = GetContentHeaders(responseMessage.Content.Headers);
+            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
+
+            Message message = new Message
+            {
+                MessageId = messageId,
+                FileContent = responseMessageBody,
             };
 
             foreach (var item in contentHeaders)
@@ -402,28 +662,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return dictionary;
         }
 
-        private static Message CreateRandomSendMessage()
+        private static Message CreateRandomSendMessage(
+            string chunkSize = "{1:1}", 
+            string contentType = "text/plain")
         {
             var message = CreateMessageFiller().Create();
-            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
-            message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Content-Encrypted", new List<string> { "encrypted" });
-            message.Headers.Add("Mex-From", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-To", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Chunk-Range", new List<string> { "{1:1}" });
-
-            return message;
-        }
-
-        private static Message CreateRandomSendMessage(string chunkSize)
-        {
-            var message = CreateMessageFiller().Create();
-            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
+            message.Headers.Add("Content-Type", new List<string> { contentType });
             message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
@@ -434,14 +678,17 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Chunk-Range", new List<string> { chunkSize });
+            message.FileContent = null;
 
             return message;
         }
 
-        private static Message CreateRandomSendFileMessage()
+        private static Message CreateRandomSendFileMessage(
+            string chunkSize = "{1:1}", 
+            string contentType = "application/octet-stream")
         {
             var message = CreateMessageFiller().Create();
-            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
+            message.Headers.Add("Content-Type", new List<string> { contentType });
             message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
@@ -451,9 +698,18 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Chunk-Range", new List<string> { chunkSize });
+            message.StringContent = null;
 
             return message;
+        }
+
+        private Expression<Func<string, bool>> SameStringAs(
+            string expectedString)
+        {
+            return actualString =>
+            this.compareLogic.Compare(expectedString, actualString)
+            .AreEqual;
         }
 
         private static Message CreateRandomMessage() =>

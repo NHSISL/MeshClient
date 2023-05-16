@@ -69,10 +69,10 @@ namespace NEL.MESH.Clients.Mailboxes
         }
 
         public static Message CreateFileMessage(
-            string authorization,
             string mexTo,
             string mexWorkflowId,
             byte[] fileContent,
+            string mexContentEncrypted,
             string mexSubject = "",
             string mexLocalId = "",
             string mexFileName = "",
@@ -82,10 +82,10 @@ namespace NEL.MESH.Clients.Mailboxes
             string accept = "application/json")
         {
             Message message = new Message();
-            message.Headers.Add("Authorization", new List<string> { authorization });
             message.Headers.Add("Mex-To", new List<string> { mexTo });
             message.Headers.Add("Mex-WorkflowID", new List<string> { mexWorkflowId });
             message.FileContent = fileContent;
+            message.Headers.Add("Mex-Content-Encrypted", new List<string> { mexContentEncrypted });
 
             if (!string.IsNullOrWhiteSpace(mexSubject))
             {

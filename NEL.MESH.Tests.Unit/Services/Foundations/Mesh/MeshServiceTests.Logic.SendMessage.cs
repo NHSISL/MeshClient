@@ -42,7 +42,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            HttpResponseMessage responseMessage = CreateHttpResponseContentMessage(inputMessage, contentHeaders);
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(inputMessage, contentHeaders);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
@@ -60,7 +60,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     inputMessage.StringContent))
                         .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessage(responseMessage);
+            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessageForSend(responseMessage);
 
             // when
             var actualMessage = await this.meshService.SendMessageAsync(inputMessage, authorizationToken);
@@ -116,7 +116,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            HttpResponseMessage responseMessage = CreateHttpResponseContentMessage(inputMessage, contentHeaders);
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(inputMessage, contentHeaders);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
@@ -136,7 +136,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     chunkPart))
                         .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessage(responseMessage);
+            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessageForSend(responseMessage);
 
             // when
             var actualMessage = await this.meshService.SendMessageAsync(inputMessage, authorizationToken);

@@ -205,5 +205,62 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task ShouldThrowValidationExceptionOnSendFileIfMessageIdAndChunkSizeIsNullAsync(
+            string invalidInput)
+        {
+            // given
+            string invalidAuthorizationToken = GetRandomString();
+            string chunkSize = "{2:2}";
+            Message randomFileMessage = CreateRandomSendFileMessage(chunkSize);
+
+            randomFileMessage.MessageId = invalidInput;
+
+            var invalidMeshException =
+               new InvalidMeshException();
+
+            invalidMeshException.AddData(
+                key: nameof(Message.MessageId),
+                values: "Text is required");
+
+            var expectedMeshValidationException =
+                new MeshValidationException(innerException: invalidMeshException);
+
+            // when
+            ValueTask<Message> addMessageTask =
+                this.meshService.SendFileAsync(randomFileMessage, invalidAuthorizationToken);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    addMessageTask.AsTask());
+
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.SendFileAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                        Times.Never);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
