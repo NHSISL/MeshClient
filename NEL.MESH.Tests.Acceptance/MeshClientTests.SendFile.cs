@@ -2,8 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.ExternalModels;
 using Newtonsoft.Json;
@@ -15,51 +18,41 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class MeshClientTests
     {
-        [Fact(Skip = "Excluded")]
+        [Fact]
         [Trait("Category", "Acceptance")]
         public async Task ShouldSendFileAsync()
         {
             // given
             string path = $"/messageexchange/{this.meshConfigurations.MailboxId}/outbox";
-            string mexFrom = GetRandomString();
-            string mexTo = GetRandomString();
-            string mexWorkflowId = GetRandomString();
-            string mexLocalId = GetRandomString();
-            string mexSubject = GetRandomString();
-            string mexFileName = GetRandomString();
-            string mexContentChecksum = GetRandomString();
-            string mexContentEncrypted = GetRandomString();
-            string mexEncoding = GetRandomString();
-            string mexChunkRange = GetRandomString();
-            string contentType = "application/octet-stream";
-            string content = GetRandomString();
+            string randomId = GetRandomString();
+            string outputId = randomId;
 
-            Message randomMessage = CreateRandomSendFile(
-                mexFrom,
-                mexTo,
-                mexWorkflowId,
-                mexLocalId,
-                mexSubject,
-                mexFileName,
-                mexContentChecksum,
-                mexContentEncrypted,
-                mexEncoding,
-                mexChunkRange,
-                contentType,
-                content);
+            Message randomMessage = ComposeMessage.CreateFileMessage(
+                mexTo: GetRandomString(),
+                mexWorkflowId: GetRandomString(),
+                fileContent: Encoding.ASCII.GetBytes(GetRandomString(wordMinLength: GetRandomNumber())),
+                mexContentEncrypted: GetRandomString(),
+                mexSubject: GetRandomString(),
+                mexLocalId: GetRandomString(),
+                mexFileName: GetRandomString(),
+                mexContentChecksum: GetRandomString(),
+                contentType: "application/octet-stream",
+                contentEncoding: GetRandomString()); ;
 
-            SendFileResponse responseMessage = new SendFileResponse
+            Message inputMessage = randomMessage;
+
+            SendMessageResponse responseMessage = new SendMessageResponse
             {
-                MessageId = randomMessage.MessageId,
-                Message = randomMessage.MessageId
+                MessageId = outputId,
+                Message = outputId,
             };
 
             string serialisedResponseMessage = JsonConvert.SerializeObject(responseMessage);
 
             Message outputMessage = new Message
             {
-                MessageId = randomMessage.MessageId,
-                StringContent = serialisedResponseMessage
+                MessageId = outputId,
+                FileContent = inputMessage.FileContent
             };
 
             Message expectedSendMessageResult = outputMessage;
@@ -73,15 +66,15 @@ namespace NEL.MESH.Tests.Acceptance
                         .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
                         .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion)
                         .WithHeader("Mex-From", this.meshConfigurations.MailboxId)
-                        .WithHeader("Mex-To", mexTo)
-                        .WithHeader("Mex-WorkflowID", mexWorkflowId)
-                        .WithHeader("Mex-LocalID", mexLocalId)
-                        .WithHeader("Mex-Subject", mexSubject)
-                        .WithHeader("Mex-FileName", mexFileName)
-                        .WithHeader("Mex-Content-Checksum", mexContentChecksum)
-                        .WithHeader("Mex-Content-Encrypted", mexContentEncrypted)
-                        .WithHeader("Mex-Encoding", mexEncoding)
-                        .WithHeader("Mex-Chunk-Range", mexChunkRange)
+                        .WithHeader("Mex-To", GetKeyStringValue("Mex-To", inputMessage.Headers))
+                        .WithHeader("Mex-WorkflowID", GetKeyStringValue("Mex-WorkflowID", inputMessage.Headers))
+                        .WithHeader("Mex-LocalID", GetKeyStringValue("Mex-LocalID", inputMessage.Headers))
+                        .WithHeader("Mex-Subject", GetKeyStringValue("Mex-Subject", inputMessage.Headers))
+                        .WithHeader("Mex-FileName", GetKeyStringValue("Mex-FileName", inputMessage.Headers))
+                        .WithHeader("Mex-Content-Checksum", GetKeyStringValue("Mex-Content-Checksum", inputMessage.Headers))
+                        .WithHeader("Mex-Content-Encrypted", GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers))
+                        .WithHeader("Mex-Encoding", GetKeyStringValue("Mex-Encoding", inputMessage.Headers))
+                        .WithHeader("Mex-Chunk-Range", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
                         .WithHeader("Authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
                         .WithBody(randomMessage.FileContent))
                 .RespondWith(

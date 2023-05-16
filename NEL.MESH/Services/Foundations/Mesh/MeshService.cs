@@ -104,7 +104,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 Message outputMessage = new Message
                 {
                     MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                    StringContent = responseMessageBody,
+                    StringContent = message.StringContent,
                 };
 
                 GetHeaderValues(responseMessage, outputMessage);
@@ -179,7 +179,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 Message outputMessage = new Message
                 {
                     MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                    StringContent = responseMessageBody,
+                    FileContent = message.FileContent,
                 };
 
                 GetHeaderValues(responseFileMessage, outputMessage);

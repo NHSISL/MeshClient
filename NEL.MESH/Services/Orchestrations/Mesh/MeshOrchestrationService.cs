@@ -73,6 +73,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         public ValueTask<Message> SendFileAsync(Message message) =>
             TryCatch(async () =>
             {
+                SetHeader(message, "Mex-From", this.meshConfigurationBroker.MexFrom);
                 ValidateMessageIsNotNull(message);
                 List<Message> chunkedMessages = this.chunkService.SplitFileMessageIntoChunks(message);
                 ValidateChunksOnSendFile(chunkedMessages);

@@ -81,8 +81,6 @@ namespace NEL.MESH.Tests.Acceptance
                         .WithSuccess()
                         .WithBody(serialisedResponseMessage));
 
-
-
             // when
             Message actualSendMessageResult = await this.meshClient.Mailbox
                 .SendMessageAsync(randomMessage);
