@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -45,8 +44,8 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         public ValueTask<Message> SendMessageAsync(Message message) =>
             TryCatch(async () =>
             {
-                SetHeader(message, "Mex-From", this.meshConfigurationBroker.MexFrom);
                 ValidateMessageIsNotNull(message);
+                SetHeader(message, "Mex-From", this.meshConfigurationBroker.MexFrom);
                 List<Message> chunkedMessages = this.chunkService.SplitMessageIntoChunks(message);
                 ValidateChunksOnSendMessage(chunkedMessages);
                 Message outputMessage = null;
@@ -73,8 +72,8 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         public ValueTask<Message> SendFileAsync(Message message) =>
             TryCatch(async () =>
             {
-                SetHeader(message, "Mex-From", this.meshConfigurationBroker.MexFrom);
                 ValidateMessageIsNotNull(message);
+                SetHeader(message, "Mex-From", this.meshConfigurationBroker.MexFrom);
                 List<Message> chunkedMessages = this.chunkService.SplitFileMessageIntoChunks(message);
                 ValidateChunksOnSendFile(chunkedMessages);
                 Message outputMessage = null;
@@ -144,7 +143,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
 
         private static void SetHeader(Message message, string key, string value)
         {
-            if (message.Headers.ContainsKey(key)) 
+            if (message.Headers.ContainsKey(key))
             {
                 message.Headers[key] = new List<string> { value };
             }

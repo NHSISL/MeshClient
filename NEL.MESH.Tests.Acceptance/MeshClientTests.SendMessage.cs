@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System.Threading.Tasks;
-using DevLab.JmesPath.Functions;
 using FluentAssertions;
 using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -25,17 +24,26 @@ namespace NEL.MESH.Tests.Acceptance
             string path = $"/messageexchange/{this.meshConfigurations.MailboxId}/outbox";
             string randomId = GetRandomString();
             string outputId = randomId;
+            string mexTo = GetRandomString();
+            string mexWorkflowId = GetRandomString();
+            string content = GetRandomString(wordMinLength: GetRandomNumber());
+            string mexSubject = GetRandomString();
+            string mexLocalId = GetRandomString();
+            string mexFileName = GetRandomString();
+            string mexContentChecksum = GetRandomString();
+            string contentType = "text/plain";
+            string contentEncoding = GetRandomString();
 
             Message randomMessage = ComposeMessage.CreateStringMessage(
-                mexTo: GetRandomString(),
-                mexWorkflowId: GetRandomString(),
-                content: GetRandomString(wordMinLength: GetRandomNumber()),
-                mexSubject: GetRandomString(),
-                mexLocalId: GetRandomString(),
-                mexFileName: GetRandomString(),
-                mexContentChecksum: GetRandomString(),
-                contentType: "text/plain",
-                contentEncoding: GetRandomString());
+                mexTo,
+                mexWorkflowId,
+                content,
+                mexSubject,
+                mexLocalId,
+                mexFileName,
+                mexContentChecksum,
+                contentType,
+                contentEncoding);
 
             Message inputMessage = randomMessage;
 
@@ -83,7 +91,16 @@ namespace NEL.MESH.Tests.Acceptance
 
             // when
             Message actualSendMessageResult = await this.meshClient.Mailbox
-                .SendMessageAsync(randomMessage);
+                .SendMessageAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    content,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding);
 
             // then
             actualSendMessageResult.Should().BeEquivalentTo(expectedSendMessageResult);

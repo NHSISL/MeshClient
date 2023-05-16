@@ -15,7 +15,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldSendFirstChunkPartAsync()
+        public async Task ShouldSendFirstChunkPartOfSendMessageAsync()
         {
             // given
             string authorizationToken = GetRandomString();
@@ -42,7 +42,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(inputMessage, contentHeaders);
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(
+                inputMessage, contentHeaders);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
@@ -60,7 +61,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     inputMessage.StringContent))
                         .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessageForSend(responseMessage);
+            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessageForSendMessage(
+                responseMessage, inputMessage);
 
             // when
             var actualMessage = await this.meshService.SendMessageAsync(inputMessage, authorizationToken);
@@ -88,7 +90,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         }
 
         [Fact]
-        public async Task ShouldSendSecondChunkPartAsync()
+        public async Task ShouldSendSecondChunkPartOfSendMessageAsync()
         {
             // given
             string authorizationToken = GetRandomString();
@@ -116,7 +118,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(inputMessage, contentHeaders);
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(
+                inputMessage, contentHeaders);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
@@ -136,7 +139,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     chunkPart))
                         .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessageForSend(responseMessage);
+            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessageForSendMessage(
+                responseMessage, inputMessage);
 
             // when
             var actualMessage = await this.meshService.SendMessageAsync(inputMessage, authorizationToken);

@@ -9,11 +9,8 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Mail;
-using System.Net.Mime;
 using System.Text;
 using KellermanSoftware.CompareNetObjects;
-using Microsoft.Extensions.Hosting;
 using Moq;
 using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -223,14 +220,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     StringContent = parts[i],
                 };
 
-                HttpResponseMessage httpResponseMessage = 
+                HttpResponseMessage httpResponseMessage =
                     CreateHttpResponseContentMessageWithStringContentForRetrieveMessage(
                         chunkMessage,
                         contentHeaders,
                         headers,
                         statusCode);
 
-                string chunkRangeValue = $"{i+1}:{chunks}";
+                string chunkRangeValue = $"{i + 1}:{chunks}";
 
                 if (httpResponseMessage.Content.Headers.Contains("Mex-Chunk-Range"))
                 {
@@ -307,7 +304,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     FileContent = parts[i],
                 };
 
-                HttpResponseMessage httpResponseMessage = 
+                HttpResponseMessage httpResponseMessage =
                     CreateHttpResponseContentMessageWithFileContentForRetrieveMessage(
                         chunkMessage,
                         contentHeaders,
@@ -416,7 +413,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return responseMessage;
         }
 
-        private static Message GetMessageWithStringContentFromHttpResponseMessageForSend(HttpResponseMessage responseMessage)
+        private static Message GetMessageWithStringContentFromHttpResponseMessageForSendMessage(
+            HttpResponseMessage responseMessage, Message inputMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
             Dictionary<string, List<string>> contentHeaders = GetContentHeaders(responseMessage.Content.Headers);
@@ -425,7 +423,33 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message message = new Message
             {
                 MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                StringContent = responseMessageBody,
+                StringContent = inputMessage.StringContent,
+            };
+
+            foreach (var item in contentHeaders)
+            {
+                message.Headers.Add(item.Key, item.Value);
+            }
+
+            foreach (var item in headers)
+            {
+                message.Headers.Add(item.Key, item.Value);
+            }
+
+            return message;
+        }
+
+        private static Message GetMessageWithStringContentFromHttpResponseMessageForSendFileMessage(
+            HttpResponseMessage responseMessage, Message inputMessage)
+        {
+            string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+            Dictionary<string, List<string>> contentHeaders = GetContentHeaders(responseMessage.Content.Headers);
+            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
+
+            Message message = new Message
+            {
+                MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
+                FileContent = inputMessage.FileContent,
             };
 
             foreach (var item in contentHeaders)
@@ -442,7 +466,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         }
 
         private static Message GetMessageWithStringContentFromHttpResponseMessageForReceive(
-            HttpResponseMessage responseMessage, 
+            HttpResponseMessage responseMessage,
             string messageId)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
@@ -469,7 +493,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         }
 
         private static Message GetMessageWithFileContentFromHttpResponseMessageForReceive(
-            HttpResponseMessage responseMessage, 
+            HttpResponseMessage responseMessage,
             string messageId)
         {
             byte[] responseMessageBody = responseMessage.Content.ReadAsByteArrayAsync().Result;
@@ -495,7 +519,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return message;
         }
 
-        private static Message GetMessageWithFileContentFromHttpResponseMessage(HttpResponseMessage responseMessage)
+        private static Message GetMessageWithFileContentFromHttpResponseMessage(
+            HttpResponseMessage responseMessage, Message inputMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
             Dictionary<string, List<string>> headers = GetContentHeaders(responseMessage.Content.Headers);
@@ -503,7 +528,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message message = new Message
             {
                 MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                StringContent = responseMessageBody,
+                FileContent = inputMessage.FileContent,
                 Headers = headers
             };
 
@@ -663,7 +688,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         }
 
         private static Message CreateRandomSendMessage(
-            string chunkSize = "{1:1}", 
+            string chunkSize = "{1:1}",
             string contentType = "text/plain")
         {
             var message = CreateMessageFiller().Create();
@@ -684,7 +709,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         }
 
         private static Message CreateRandomSendFileMessage(
-            string chunkSize = "{1:1}", 
+            string chunkSize = "{1:1}",
             string contentType = "application/octet-stream")
         {
             var message = CreateMessageFiller().Create();

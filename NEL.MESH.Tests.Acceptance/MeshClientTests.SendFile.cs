@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -26,18 +25,28 @@ namespace NEL.MESH.Tests.Acceptance
             string path = $"/messageexchange/{this.meshConfigurations.MailboxId}/outbox";
             string randomId = GetRandomString();
             string outputId = randomId;
+            string mexTo = GetRandomString();
+            string mexWorkflowId = GetRandomString();
+            byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString(wordMinLength: GetRandomNumber()));
+            string mexContentEncrypted = GetRandomString();
+            string mexSubject = GetRandomString();
+            string mexLocalId = GetRandomString();
+            string mexFileName = GetRandomString();
+            string mexContentChecksum = GetRandomString();
+            string contentType = "application/octet-stream";
+            string contentEncoding = GetRandomString();
 
             Message randomMessage = ComposeMessage.CreateFileMessage(
-                mexTo: GetRandomString(),
-                mexWorkflowId: GetRandomString(),
-                fileContent: Encoding.ASCII.GetBytes(GetRandomString(wordMinLength: GetRandomNumber())),
-                mexContentEncrypted: GetRandomString(),
-                mexSubject: GetRandomString(),
-                mexLocalId: GetRandomString(),
-                mexFileName: GetRandomString(),
-                mexContentChecksum: GetRandomString(),
-                contentType: "application/octet-stream",
-                contentEncoding: GetRandomString()); ;
+                mexTo,
+                mexWorkflowId,
+                fileContent,
+                mexContentEncrypted,
+                mexSubject,
+                mexLocalId,
+                mexFileName,
+                mexContentChecksum,
+                contentType,
+                contentEncoding);
 
             Message inputMessage = randomMessage;
 
@@ -84,7 +93,18 @@ namespace NEL.MESH.Tests.Acceptance
 
             // when
             Message actualSendMessageResult = await this.meshClient.Mailbox
-                .SendFileAsync(randomMessage);
+                .SendFileAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    fileContent,
+                    mexContentEncrypted,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding
+                );
 
             // then
             actualSendMessageResult.Should().BeEquivalentTo(expectedSendMessageResult);

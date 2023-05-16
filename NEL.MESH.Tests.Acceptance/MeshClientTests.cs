@@ -93,12 +93,12 @@ namespace NEL.MESH.Tests.Acceptance
             int wordMinLength = 1,
             int wordMaxLength = 10) =>
                 new MnemonicString(
-                    wordCount: wordCount, 
+                    wordCount: wordCount,
                     wordMinLength: wordMinLength,
-                    wordMaxLength: wordMaxLength == 0 
-                        ? GetRandomNumber() 
-                        : (wordMaxLength <= wordMinLength 
-                            ? wordMinLength + 1 
+                    wordMaxLength: wordMaxLength == 0
+                        ? GetRandomNumber()
+                        : (wordMaxLength <= wordMinLength
+                            ? wordMinLength + 1
                             : wordMaxLength)).GetValue();
 
         private static List<string> GetRandomStrings()
@@ -114,71 +114,6 @@ namespace NEL.MESH.Tests.Acceptance
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
-
-        private static Message CreateRandomMessage()
-        {
-            return CreateMessageFiller(GetRandomString()).Create();
-        }
-
-        private static Message CreateRandomSendMessage(
-            string mexFrom,
-            string mexTo,
-            string mexWorkflowId,
-            string mexLocalId,
-            string mexSubject,
-            string mexFileName,
-            string mexContentChecksum,
-            string mexContentEncrypted,
-            string mexEncoding,
-            string mexChunkRange,
-            string contentType,
-            string content)
-        {
-            var message = CreateMessageFiller(content).Create();
-            message.Headers.Add("Mex-From", new List<string> { mexFrom });
-            message.Headers.Add("Mex-To", new List<string> { mexTo });
-            message.Headers.Add("Mex-WorkflowID", new List<string> { mexWorkflowId });
-            message.Headers.Add("Mex-LocalID", new List<string> { mexLocalId });
-            message.Headers.Add("Mex-Subject", new List<string> { mexSubject });
-            message.Headers.Add("Mex-FileName", new List<string> { mexFileName });
-            message.Headers.Add("Mex-Content-Checksum", new List<string> { mexContentChecksum });
-            message.Headers.Add("Mex-Content-Encrypted", new List<string> { mexContentEncrypted });
-            message.Headers.Add("Mex-Encoding", new List<string> { mexEncoding });
-            message.Headers.Add("Mex-Chunk-Range", new List<string> { mexChunkRange });
-            message.Headers.Add("Content-Type", new List<string> { contentType });
-
-            return message;
-        }
-
-        private static Message CreateRandomSendFile(
-            string mexFrom,
-            string mexTo,
-            string mexWorkflowId,
-            string mexLocalId,
-            string mexSubject,
-            string mexFileName,
-            string mexContentChecksum,
-            string mexContentEncrypted,
-            string mexEncoding,
-            string mexChunkRange,
-            string contentType,
-            string content)
-        {
-            var message = CreateMessageFiller(content).Create();
-            message.Headers.Add("Mex-From", new List<string> { mexFrom });
-            message.Headers.Add("Mex-To", new List<string> { mexTo });
-            message.Headers.Add("Mex-WorkflowID", new List<string> { mexWorkflowId });
-            message.Headers.Add("Mex-LocalID", new List<string> { mexLocalId });
-            message.Headers.Add("Mex-Subject", new List<string> { mexSubject });
-            message.Headers.Add("Mex-FileName", new List<string> { mexFileName });
-            message.Headers.Add("Mex-Content-Checksum", new List<string> { mexContentChecksum });
-            message.Headers.Add("Mex-Content-Encrypted", new List<string> { mexContentEncrypted });
-            message.Headers.Add("Mex-Encoding", new List<string> { mexEncoding });
-            message.Headers.Add("Mex-Chunk-Range", new List<string> { mexChunkRange });
-            message.Headers.Add("Content-Type", new List<string> { contentType });
-
-            return message;
-        }
 
         private static Filler<Message> CreateMessageFiller(string content)
         {
