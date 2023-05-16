@@ -10,7 +10,7 @@ on:
     - reopened
     - closed
     branches:
-    - master
+    - main
 env:
   IS_RELEASE_CANDIDATE: >-
     ${{
