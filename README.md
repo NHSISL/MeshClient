@@ -1,7 +1,7 @@
 # MESH CLIENT
 
 <a href="https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-meshm"><img src="https://raw.githubusercontent.com/NHSISL/MeshClient/main/Resources/MeshBannerNarrow.png"></a>
-[![.NET](https://github.com/NHSISL/MeshClient/actions/workflows/dotnet.yml/badge.svg)](https://github.com/NHSISL/MeshClient/actions/workflows/dotnet.yml)
+[![.Net](https://github.com/NHSISL/MeshClient/actions/workflows/build.yml/badge.svg)](https://github.com/NHSISL/MeshClient/actions/workflows/build.yml)
 [![The Standard - COMPLIANT](https://img.shields.io/badge/The_Standard-COMPLIANT-2ea44f)](https://github.com/hassanhabib/The-Standard)
 [![Nuget](https://img.shields.io/nuget/v/NEL.MESH?logo=nuget)](https://www.nuget.org/packages/NEL.MESH)
 ![Nuget](https://img.shields.io/nuget/dt/NEL.MESH?color=blue&label=Downloads)
