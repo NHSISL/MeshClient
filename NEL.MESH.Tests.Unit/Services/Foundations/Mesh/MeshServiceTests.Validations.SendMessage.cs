@@ -141,7 +141,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             // given
             string authorizationToken = GetRandomString();
             string chunkSize = "{1:2}";
-            Message randomFileMessage = CreateRandomSendMessage(chunkSize);
+            Message randomFileMessage = CreateRandomInvalidSendMessage(chunkSize);
+
             Message inputFileMessage = randomFileMessage;
 
             var invalidMeshException =

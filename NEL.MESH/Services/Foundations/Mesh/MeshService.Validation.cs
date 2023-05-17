@@ -64,7 +64,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 (Rule: IsInvalid(message.Headers, "Mex-From", 100), Parameter: "Mex-From"),
                 (Rule: IsInvalid(message.Headers, "Mex-To", 100), Parameter: "Mex-To"),
                 (Rule: IsInvalid(message.Headers, "Mex-WorkflowID", 300), Parameter: "Mex-WorkflowID"),
-                (Rule: IsInvalid(message.Headers, "Mex-Chunk-Range", 20), Parameter: "Content-Type"),
+                (Rule: IsInvalid(message.Headers, "Mex-Chunk-Range", 20), Parameter: "Mex-Chunk-Range"),
                 (Rule: IsInvalid(message.Headers, "Mex-Subject", 500), Parameter: "Mex-Subject"),
                 (Rule: IsInvalid(message.Headers, "Mex-LocalID", 300), Parameter: "Mex-LocalID"),
                 (Rule: IsInvalid(message.Headers, "Mex-FileName", 300), Parameter: "Mex-FileName"),
