@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,24 +19,21 @@ namespace NEL.MESH.Tests.Integration
         public async Task ShouldAcknowledgeMessageAsync()
         {
             // given
-            // given
             string mexTo = this.meshConfigurations.MailboxId;
             string mexWorkflowId = "INTEGRATION TEST";
             byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString());
-            string mexContentEncrypted = GetRandomString();
             string mexSubject = "INTEGRATION TEST -  ShouldAcknowledgeMessageAsync";
-            string mexLocalId = GetRandomString();
+            string mexLocalId = Guid.NewGuid().ToString();
             string mexFileName = $"ShouldAcknowledgeMessageAsync.csv";
-            string mexContentChecksum = GetRandomString();
+            string mexContentChecksum = Guid.NewGuid().ToString();
             string contentType = "application/octet-stream";
-            string contentEncoding = GetRandomString();
+            string contentEncoding = "";
 
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
                     fileContent,
-                    mexContentEncrypted,
                     mexSubject,
                     mexLocalId,
                     mexFileName,

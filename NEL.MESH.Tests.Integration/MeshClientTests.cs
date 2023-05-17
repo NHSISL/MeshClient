@@ -81,8 +81,11 @@ namespace NEL.MESH.Tests.Integration
             return new X509Certificate2(certBytes);
         }
 
-        private static string GetRandomString() =>
-            new MnemonicString(wordCount: 1, wordMinLength: 1, wordMaxLength: GetRandomNumber()).GetValue();
+        private static string GetRandomString(int wordMinLength = 2, int wordMaxLength = 100) =>
+            new MnemonicString(
+                wordCount: 1,
+                wordMinLength: 1,
+                wordMaxLength: wordMaxLength < wordMinLength ? wordMinLength : wordMaxLength).GetValue();
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
