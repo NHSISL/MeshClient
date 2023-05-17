@@ -208,7 +208,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             string invalidAuthorizationToken = GetRandomString();
             string chunkSize = "{2:2}";
             Message randomMessage = CreateRandomSendMessage(chunkSize);
-            randomMessage.Headers.Add("Mex-Chunk-Range", new List<string> { "0" });
 
             randomMessage.MessageId = invalidInput;
 
@@ -218,10 +217,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             invalidMeshException.AddData(
                 key: nameof(Message.MessageId),
                 values: "Text is required");
-
-            invalidMeshException.AddData(
-                key: "Mex-Chunk-Range",
-                values: "Value is required");
 
             var expectedMeshValidationException =
                 new MeshValidationException(innerException: invalidMeshException);

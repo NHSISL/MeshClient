@@ -41,9 +41,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
                 string chunkRange = GetKeyStringValue("Mex-Chunk-Range", message.Headers)
                     .Replace("{", string.Empty)
-                        .Replace("}", string.Empty);
+                        .Replace("}", string.Empty)
+                            .Trim();
 
-                if (string.IsNullOrEmpty(chunkRange))
+                if (string.IsNullOrWhiteSpace(chunkRange))
                 {
                     chunkRange = "1";
                 }
