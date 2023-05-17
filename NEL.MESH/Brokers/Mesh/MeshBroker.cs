@@ -7,7 +7,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Configurations;
 
@@ -36,98 +35,18 @@ namespace NEL.MESH.Brokers.Mesh
         }
 
         public async ValueTask<HttpResponseMessage> SendMessageAsync(
-            string mailboxTo,
-            string workflowId,
-            string localId,
-            string subject,
-            string fileName,
-            string contentChecksum,
-            string contentEncrypted,
-            string encoding,
-            string chunkRange,
-            string contentType,
             string authorizationToken,
-            string stringConent)
-        {
-            var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox";
-
-            var request = new HttpRequestMessage(HttpMethod.Post, path)
-            {
-                Content = new StringContent(stringConent, Encoding.UTF8, contentType)
-            };
-
-            request.Headers.Add("Mex-From", this.MeshConfiguration.MailboxId);
-            request.Headers.Add("Mex-To", mailboxTo);
-            request.Headers.Add("Mex-WorkflowID", workflowId);
-            request.Headers.Add("Mex-LocalID", localId);
-            request.Headers.Add("Mex-Subject", subject);
-            request.Headers.Add("Mex-FileName", fileName);
-            request.Headers.Add("Mex-Content-Checksum", contentChecksum);
-            request.Headers.Add("Mex-Content-Encrypted", contentEncrypted);
-            request.Headers.Add("Mex-Encoding", encoding);
-            request.Headers.Add("Mex-Chunk-Range", chunkRange);
-            request.Headers.Add("Authorization", authorizationToken);
-            request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-
-            var response = await this.httpClient.SendAsync(request);
-
-            return response;
-        }
-
-        public async ValueTask<HttpResponseMessage> SendMessageAsync(
-            string mailboxTo,
-            string workflowId,
-            string localId,
-            string subject,
-            string fileName,
-            string contentChecksum,
-            string contentEncrypted,
-            string encoding,
-            string chunkRange,
+            string mexFrom,
+            string mexTo,
+            string mexWorkflowId,
+            string mexChunkRange,
+            string mexSubject,
+            string mexLocalId,
+            string mexFileName,
+            string mexContentChecksum,
+            string contentEncoding,
             string contentType,
-            string authorizationToken,
-            string stringContent,
-            string messageId,
-            string chunkNumber)
-        {
-            var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox/{messageId}/{chunkNumber}";
-
-            var request = new HttpRequestMessage(HttpMethod.Post, path)
-            {
-                Content = new StringContent(stringContent, Encoding.UTF8, contentType)
-
-            };
-
-            request.Headers.Add("Mex-From", this.MeshConfiguration.MailboxId);
-            request.Headers.Add("Mex-To", mailboxTo);
-            request.Headers.Add("Mex-WorkflowID", workflowId);
-            request.Headers.Add("Mex-LocalID", localId);
-            request.Headers.Add("Mex-Subject", subject);
-            request.Headers.Add("Mex-FileName", fileName);
-            request.Headers.Add("Mex-Content-Checksum", contentChecksum);
-            request.Headers.Add("Mex-Content-Encrypted", contentEncrypted);
-            request.Headers.Add("Mex-Encoding", encoding);
-            request.Headers.Add("Mex-Chunk-Range", chunkRange);
-            request.Headers.Add("Authorization", authorizationToken);
-            request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-
-            var response = await this.httpClient.SendAsync(request);
-
-            return response;
-        }
-
-        public async ValueTask<HttpResponseMessage> SendFileAsync(
-            string mailboxTo,
-            string workflowId,
-            string localId,
-            string subject,
-            string fileName,
-            string contentChecksum,
-            string contentEncrypted,
-            string encoding,
-            string chunkRange,
-            string contentType,
-            string authorizationToken,
+            string accept,
             byte[] fileContents)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox";
@@ -137,36 +56,37 @@ namespace NEL.MESH.Brokers.Mesh
                 Content = new ByteArrayContent(fileContents)
             };
 
-            request.Headers.Add("Mex-From", this.MeshConfiguration.MailboxId);
-            request.Headers.Add("Mex-To", mailboxTo);
-            request.Headers.Add("Mex-WorkflowID", workflowId);
-            request.Headers.Add("Mex-LocalID", localId);
-            request.Headers.Add("Mex-Subject", subject);
-            request.Headers.Add("Mex-FileName", fileName);
-            request.Headers.Add("Mex-Content-Checksum", contentChecksum);
-            request.Headers.Add("Mex-Content-Encrypted", contentEncrypted);
-            request.Headers.Add("Mex-Encoding", encoding);
-            request.Headers.Add("Mex-Chunk-Range", chunkRange);
             request.Headers.Add("Authorization", authorizationToken);
+            request.Headers.Add("Mex-From", mexFrom);
+            request.Headers.Add("Mex-To", mexTo);
+            request.Headers.Add("Mex-WorkflowID", mexWorkflowId);
+            request.Headers.Add("Mex-Chunk-Range", mexChunkRange);
+            request.Headers.Add("Mex-Subject", mexSubject);
+            request.Headers.Add("Mex-LocalID", mexLocalId);
+            request.Headers.Add("Mex-FileName", mexFileName);
+            request.Headers.Add("Mex-Content-Checksum", mexContentChecksum);
             request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+            request.Headers.Add("Content-Encoding", contentEncoding);
+            request.Headers.Add("Accept", accept);
 
             var response = await this.httpClient.SendAsync(request);
 
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> SendFileAsync(
-            string mailboxTo,
-            string workflowId,
-            string localId,
-            string subject,
-            string fileName,
-            string contentChecksum,
-            string contentEncrypted,
-            string encoding,
-            string chunkRange,
-            string contentType,
+        public async ValueTask<HttpResponseMessage> SendMessageAsync(
             string authorizationToken,
+            string mexFrom,
+            string mexTo,
+            string mexWorkflowId,
+            string mexChunkRange,
+            string mexSubject,
+            string mexLocalId,
+            string mexFileName,
+            string mexContentChecksum,
+            string contentEncoding,
+            string contentType,
+            string accept,
             byte[] fileContents,
             string messageId,
             string chunkNumber)
@@ -178,18 +98,18 @@ namespace NEL.MESH.Brokers.Mesh
                 Content = new ByteArrayContent(fileContents)
             };
 
-            request.Headers.Add("Mex-From", this.MeshConfiguration.MailboxId);
-            request.Headers.Add("Mex-To", mailboxTo);
-            request.Headers.Add("Mex-WorkflowID", workflowId);
-            request.Headers.Add("Mex-LocalID", localId);
-            request.Headers.Add("Mex-Subject", subject);
-            request.Headers.Add("Mex-FileName", fileName);
-            request.Headers.Add("Mex-Content-Checksum", contentChecksum);
-            request.Headers.Add("Mex-Content-Encrypted", contentEncrypted);
-            request.Headers.Add("Mex-Encoding", encoding);
-            request.Headers.Add("Mex-Chunk-Range", chunkRange);
             request.Headers.Add("Authorization", authorizationToken);
+            request.Headers.Add("Mex-From", mexFrom);
+            request.Headers.Add("Mex-To", mexTo);
+            request.Headers.Add("Mex-WorkflowID", mexWorkflowId);
+            request.Headers.Add("Mex-Chunk-Range", mexChunkRange);
+            request.Headers.Add("Mex-Subject", mexSubject);
+            request.Headers.Add("Mex-LocalID", mexLocalId);
+            request.Headers.Add("Mex-FileName", mexFileName);
+            request.Headers.Add("Mex-Content-Checksum", mexContentChecksum);
             request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+            request.Headers.Add("Content-Encoding", contentEncoding);
+            request.Headers.Add("Accept", accept);
 
             var response = await this.httpClient.SendAsync(request);
 

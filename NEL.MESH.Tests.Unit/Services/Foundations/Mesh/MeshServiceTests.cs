@@ -202,90 +202,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return partsList;
         }
 
-        private static List<HttpResponseMessage> CreateHttpResponseContentMessagesWithStringContentForRetrieveMessage(
-            Message message,
-            Dictionary<string, List<string>> contentHeaders,
-            Dictionary<string, List<string>> headers = null,
-            int chunks = 1,
-            HttpStatusCode statusCode = HttpStatusCode.OK)
-        {
-            List<HttpResponseMessage> messages = new List<HttpResponseMessage>();
-            List<string> parts = GetStringContentParts(message.StringContent, chunks);
-
-            for (int i = 0; i < parts.Count; i++)
-            {
-                Message chunkMessage = new Message
-                {
-                    MessageId = message.MessageId,
-                    StringContent = parts[i],
-                };
-
-                HttpResponseMessage httpResponseMessage =
-                    CreateHttpResponseContentMessageWithStringContentForRetrieveMessage(
-                        chunkMessage,
-                        contentHeaders,
-                        headers,
-                        statusCode);
-
-                string chunkRangeValue = $"{i + 1}:{chunks}";
-
-                if (httpResponseMessage.Content.Headers.Contains("Mex-Chunk-Range"))
-                {
-                    httpResponseMessage.Content.Headers.Remove("Mex-Chunk-Range");
-                }
-
-                httpResponseMessage.Content.Headers.Add("Mex-Chunk-Range", chunkRangeValue);
-
-                messages.Add(httpResponseMessage);
-            }
-
-            return messages;
-        }
-
-        private static HttpResponseMessage CreateHttpResponseContentMessageWithStringContentForRetrieveMessage(
-            Message message,
-            Dictionary<string, List<string>> contentHeaders,
-            Dictionary<string, List<string>> headers = null,
-            HttpStatusCode statusCode = HttpStatusCode.OK)
-        {
-            string contentType = message.Headers.ContainsKey("Content-Type")
-                ? message.Headers["Content-Type"].FirstOrDefault()
-                : "text/plain";
-
-            if (string.IsNullOrEmpty(contentType))
-            {
-                contentType = "text/plain";
-            }
-
-            HttpResponseMessage responseMessage = new HttpResponseMessage()
-            {
-                StatusCode = statusCode,
-                Content = new StringContent(message.StringContent, Encoding.UTF8, contentType)
-            };
-
-            foreach (var item in contentHeaders)
-            {
-                if (item.Key != "Content-Type")
-                {
-                    responseMessage.Content.Headers.Add(item.Key, item.Value);
-                }
-            }
-
-            if (headers != null)
-            {
-                foreach (var item in headers)
-                {
-                    if (item.Key != "Content-Type")
-                    {
-                        responseMessage.Content.Headers.Add(item.Key, item.Value);
-                    }
-                }
-            }
-
-            return responseMessage;
-        }
-
-        private static List<HttpResponseMessage> CreateHttpResponseContentMessagesWithFileContentForRetrieveMessage(
+        private static List<HttpResponseMessage> CreateHttpResponseContentMessagesForRetrieveMessage(
             Message message,
             Dictionary<string, List<string>> contentHeaders,
             Dictionary<string, List<string>> headers = null,
@@ -305,7 +222,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 };
 
                 HttpResponseMessage httpResponseMessage =
-                    CreateHttpResponseContentMessageWithFileContentForRetrieveMessage(
+                    CreateHttpResponseContentMessageForRetrieveMessage(
                         chunkMessage,
                         contentHeaders,
                         headers,
@@ -325,7 +242,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return messages;
         }
 
-        private static HttpResponseMessage CreateHttpResponseContentMessageWithFileContentForRetrieveMessage(
+        private static HttpResponseMessage CreateHttpResponseContentMessageForRetrieveMessage(
             Message message,
             Dictionary<string, List<string>> contentHeaders,
             Dictionary<string, List<string>> headers = null,
@@ -413,86 +330,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return responseMessage;
         }
 
-        private static Message GetMessageWithStringContentFromHttpResponseMessageForSendMessage(
-            HttpResponseMessage responseMessage, Message inputMessage)
-        {
-            string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
-            Dictionary<string, List<string>> contentHeaders = GetContentHeaders(responseMessage.Content.Headers);
-            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
-
-            Message message = new Message
-            {
-                MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                StringContent = inputMessage.StringContent,
-            };
-
-            foreach (var item in contentHeaders)
-            {
-                message.Headers.Add(item.Key, item.Value);
-            }
-
-            foreach (var item in headers)
-            {
-                message.Headers.Add(item.Key, item.Value);
-            }
-
-            return message;
-        }
-
-        private static Message GetMessageWithStringContentFromHttpResponseMessageForSendFileMessage(
-            HttpResponseMessage responseMessage, Message inputMessage)
-        {
-            string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
-            Dictionary<string, List<string>> contentHeaders = GetContentHeaders(responseMessage.Content.Headers);
-            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
-
-            Message message = new Message
-            {
-                MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                FileContent = inputMessage.FileContent,
-            };
-
-            foreach (var item in contentHeaders)
-            {
-                message.Headers.Add(item.Key, item.Value);
-            }
-
-            foreach (var item in headers)
-            {
-                message.Headers.Add(item.Key, item.Value);
-            }
-
-            return message;
-        }
-
-        private static Message GetMessageWithStringContentFromHttpResponseMessageForReceive(
-            HttpResponseMessage responseMessage,
-            string messageId)
-        {
-            string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
-            Dictionary<string, List<string>> contentHeaders = GetContentHeaders(responseMessage.Content.Headers);
-            Dictionary<string, List<string>> headers = GetHeaders(responseMessage.Headers);
-
-            Message message = new Message
-            {
-                MessageId = messageId,
-                StringContent = responseMessageBody,
-            };
-
-            foreach (var item in contentHeaders)
-            {
-                message.Headers.Add(item.Key, item.Value);
-            }
-
-            foreach (var item in headers)
-            {
-                message.Headers.Add(item.Key, item.Value);
-            }
-
-            return message;
-        }
-
-        private static Message GetMessageWithFileContentFromHttpResponseMessageForReceive(
+        private static Message GetMessageFromHttpResponseMessageForReceive(
             HttpResponseMessage responseMessage,
             string messageId)
         {
@@ -519,7 +357,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             return message;
         }
 
-        private static Message GetMessageWithFileContentFromHttpResponseMessage(
+        private static Message GetMessageFromHttpResponseMessage(
             HttpResponseMessage responseMessage, Message inputMessage)
         {
             string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
@@ -704,27 +542,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Chunk-Range", new List<string> { chunkSize });
             message.FileContent = null;
-
-            return message;
-        }
-
-        private static Message CreateRandomSendFileMessage(
-            string chunkSize = "{1:1}",
-            string contentType = "application/octet-stream")
-        {
-            var message = CreateMessageFiller().Create();
-            message.Headers.Add("Content-Type", new List<string> { contentType });
-            message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Content-Encrypted", new List<string> { "encrypted" });
-            message.Headers.Add("Mex-From", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-To", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Chunk-Range", new List<string> { chunkSize });
-            message.StringContent = null;
 
             return message;
         }

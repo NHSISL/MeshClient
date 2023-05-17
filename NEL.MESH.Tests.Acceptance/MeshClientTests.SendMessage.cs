@@ -58,7 +58,7 @@ namespace NEL.MESH.Tests.Acceptance
             Message outputMessage = new Message
             {
                 MessageId = outputId,
-                StringContent = inputMessage.StringContent
+                FileContent = inputMessage.FileContent
             };
 
             Message expectedSendMessageResult = outputMessage;
@@ -82,7 +82,7 @@ namespace NEL.MESH.Tests.Acceptance
                         .WithHeader("Mex-Encoding", GetKeyStringValue("Mex-Encoding", inputMessage.Headers))
                         .WithHeader("Mex-Chunk-Range", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
                         .WithHeader("Authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
-                        .WithBody(randomMessage.StringContent)
+                        .WithBody(randomMessage.FileContent)
                     )
                 .RespondWith(
                     Response.Create()

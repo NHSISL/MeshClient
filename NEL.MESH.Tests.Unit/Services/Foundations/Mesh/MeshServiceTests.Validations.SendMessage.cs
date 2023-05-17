@@ -3,10 +3,8 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xunit;
@@ -40,22 +38,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshValidationException.Should()
                 .BeEquivalentTo(expectedMeshValidationException);
 
-            this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>()),
-                        Times.Never);
-
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -88,22 +70,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshValidationException.Should()
                 .BeEquivalentTo(expectedMeshValidationException);
 
-            this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>()),
-                        Times.Never);
-
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
 
@@ -121,7 +87,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             {
                 MessageId = GetRandomString(),
                 Headers = new Dictionary<string, List<string>>(),
-                StringContent = invalidInput
+                FileContent = null
             };
 
             randomMessage.Headers.Add("Mex-From", new List<string> { invalidInput });
@@ -134,16 +100,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new InvalidMeshException();
 
             invalidMeshException.AddData(
-                key: nameof(Message.StringContent),
+                key: "Token",
                 values: "Text is required");
-
-            invalidMeshException.AddData(
-                key: "Content-Type",
-                values: "Header value is required");
-
-            invalidMeshException.AddData(
-                key: "Mex-FileName",
-                values: "Header value is required");
 
             invalidMeshException.AddData(
                 key: "Mex-From",
@@ -158,8 +116,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 values: "Header value is required");
 
             invalidMeshException.AddData(
-                key: "Token",
-                values: "Text is required");
+                key: nameof(Message.FileContent),
+                values: "Content is required");
 
             var expectedMeshValidationException =
                 new MeshValidationException(innerException: invalidMeshException);
@@ -176,21 +134,67 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshValidationException.Should()
                 .BeEquivalentTo(expectedMeshValidationException);
 
-            this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>()),
-                        Times.Never);
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfLengthRequirementsNotMetAsync()
+        {
+            // given
+            string authorizationToken = GetRandomString();
+            string chunkSize = "{1:2}";
+            Message randomFileMessage = CreateRandomSendMessage(chunkSize);
+            Message inputFileMessage = randomFileMessage;
+
+            var invalidMeshException =
+               new InvalidMeshException();
+
+            invalidMeshException.AddData(
+                key: "Mex-From",
+                values: $"Text length should not be greater than 100");
+
+            invalidMeshException.AddData(
+                key: "Mex-To",
+                values: $"Text length should not be greater than 100");
+
+            invalidMeshException.AddData(
+                key: "Mex-WorkflowID",
+                values: $"Text length should not be greater than 300");
+
+            invalidMeshException.AddData(
+                key: "Mex-Chunk-Range",
+                values: $"Text length should not be greater than 20");
+
+            invalidMeshException.AddData(
+                key: "Mex-Subject",
+                values: $"Text length should not be greater than 500");
+
+            invalidMeshException.AddData(
+                key: "Mex-LocalID",
+                values: $"Text length should not be greater than 300");
+
+            invalidMeshException.AddData(
+                key: "Mex-FileName",
+                values: $"Text length should not be greater than 300");
+
+            invalidMeshException.AddData(
+                key: "Mex-Content-Checksum",
+                values: $"Text length should not be greater than 100");
+
+            var expectedMeshValidationException =
+                new MeshValidationException(innerException: invalidMeshException);
+
+            // when
+            ValueTask<Message> addMessageTask =
+                this.meshService.SendMessageAsync(inputFileMessage, authorizationToken);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    addMessageTask.AsTask());
+
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
@@ -206,15 +210,20 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             string invalidAuthorizationToken = GetRandomString();
             string chunkSize = "{2:2}";
             Message randomMessage = CreateRandomSendMessage(chunkSize);
+            randomMessage.Headers.Add("Mex-Chunk-Range", new List<string> { "0" });
 
             randomMessage.MessageId = invalidInput;
 
-             var invalidMeshException =
-                new InvalidMeshException();
+            var invalidMeshException =
+               new InvalidMeshException();
 
             invalidMeshException.AddData(
                 key: nameof(Message.MessageId),
                 values: "Text is required");
+
+            invalidMeshException.AddData(
+                key: "Mex-Chunk-Range",
+                values: "Value is required");
 
             var expectedMeshValidationException =
                 new MeshValidationException(innerException: invalidMeshException);
@@ -230,24 +239,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             // then
             actualMeshValidationException.Should()
                 .BeEquivalentTo(expectedMeshValidationException);
-
-            this.meshBrokerMock.Verify(broker =>
-                broker.SendMessageAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(), 
-                    It.IsAny<string>()),
-                        Times.Never);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }

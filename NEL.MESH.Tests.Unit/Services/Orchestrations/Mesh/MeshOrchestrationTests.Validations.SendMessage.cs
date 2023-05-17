@@ -15,7 +15,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
     public partial class MeshOrchestrationTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnSendFileIfMessageIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIsNullAndLogItAsync()
         {
             // given
             Message nullMessage = null;
@@ -46,15 +46,15 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnSendFileIfTokenIsNullAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnSendMessageIfTokenIsNullAndLogItAsync(string invalidText)
         {
             // given
             string invalidToken = invalidText;
             string randomToken = GetRandomString();
-            Message randomMessage = CreateRandomSendFileMessage();
+            Message randomMessage = CreateRandomSendMessage();
             Message inputMessage = randomMessage;
             int randomChunkCount = GetRandomNumber();
-            List<Message> randomChunkedMessages = CreateRandomChunkedSendFileMessages(randomChunkCount);
+            List<Message> randomChunkedMessages = CreateRandomChunkedSendMessages(randomChunkCount);
             List<Message> chunkedInputMessages = randomChunkedMessages;
 
             this.chunkServiceMock.Setup(service =>
@@ -101,7 +101,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
         [Theory]
         [MemberData(nameof(InvalidMessageList))]
-        public async Task ShouldThrowValidationExceptionOnSendFileMessageIfChunksIsNullOrEmptyAndLogItAsync(
+        public async Task ShouldThrowValidationExceptionOnSendMessageMessageIfChunksIsNullOrEmptyAndLogItAsync(
             List<Message> invalidData)
         {
             // given

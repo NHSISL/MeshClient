@@ -32,7 +32,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             int expectedChunkCount = randomChunkCount;
 
             Message randomMessage =
-                CreateRandomSendFileMessage(byteArrayContent: randomByteContent);
+                CreateRandomSendMessage(byteArrayContent: randomByteContent);
 
             Message inputMessage = randomMessage;
             List<Message> outputMessages = new List<Message>();

@@ -51,7 +51,7 @@ namespace NEL.MESH.Tests.Acceptance
             Message outputMessage = new Message
             {
                 MessageId = randomMessage.MessageId,
-                StringContent = randomMessage.StringContent
+                FileContent = randomMessage.FileContent
             };
 
             Message expectedGetMessageResult = outputMessage;
@@ -70,7 +70,7 @@ namespace NEL.MESH.Tests.Acceptance
                     Response.Create()
                         .WithSuccess()
                         .WithHeader("Content-Type", contentType)
-                        .WithBody(randomMessage.StringContent));
+                        .WithBody(randomMessage.FileContent));
 
             // when
             Message actualGetMessageResult =
@@ -78,7 +78,7 @@ namespace NEL.MESH.Tests.Acceptance
 
             // then
             actualGetMessageResult.MessageId.Should().BeEquivalentTo(expectedGetMessageResult.MessageId);
-            actualGetMessageResult.StringContent.Should().BeEquivalentTo(expectedGetMessageResult.StringContent);
+            actualGetMessageResult.FileContent.Should().BeEquivalentTo(expectedGetMessageResult.FileContent);
         }
 
         [Fact]
@@ -118,7 +118,7 @@ namespace NEL.MESH.Tests.Acceptance
             Message outputMessage = new Message
             {
                 MessageId = randomMessage.MessageId,
-                StringContent = randomMessage.StringContent
+                FileContent = randomMessage.FileContent
             };
 
             Message expectedGetMessageResult = outputMessage;
@@ -145,7 +145,7 @@ namespace NEL.MESH.Tests.Acceptance
 
             // then
             actualGetMessageResult.MessageId.Should().BeEquivalentTo(expectedGetMessageResult.MessageId);
-            actualGetMessageResult.StringContent.Should().BeEquivalentTo(expectedGetMessageResult.StringContent);
+            actualGetMessageResult.FileContent.Should().BeEquivalentTo(expectedGetMessageResult.FileContent);
         }
     }
 }

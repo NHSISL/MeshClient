@@ -13,7 +13,7 @@ namespace NEL.MESH.Tests.Integration
 {
     public partial class MeshClientTests
     {
-        [Fact(Skip = "Waiting on reply from nhs digital")]
+        [Fact]
         [Trait("Category", "Integration")]
         public async Task ShouldRetrieveStringMessageAsync()
         {
@@ -59,7 +59,7 @@ namespace NEL.MESH.Tests.Integration
 
             // then
             retrievedMessage.MessageId.Should().BeEquivalentTo(sendMessageResponse.MessageId);
-            retrievedMessage.StringContent.Should().BeEquivalentTo(expectedMessage.StringContent);
+            retrievedMessage.FileContent.Should().BeEquivalentTo(expectedMessage.FileContent);
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
         }
 
@@ -112,7 +112,7 @@ namespace NEL.MESH.Tests.Integration
 
             // then
             retrievedMessage.MessageId.Should().BeEquivalentTo(sendMessageResponse.MessageId);
-            retrievedMessage.StringContent.Should().BeEquivalentTo(expectedMessage.StringContent);
+            retrievedMessage.FileContent.Should().BeEquivalentTo(expectedMessage.FileContent);
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
         }
     }

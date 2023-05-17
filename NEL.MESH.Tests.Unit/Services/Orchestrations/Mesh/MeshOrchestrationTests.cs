@@ -112,56 +112,21 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             return messages;
         }
 
-        private static List<Message> CreateRandomChunkedSendFileMessages(int messageChunkCount)
-        {
-            List<Message> messages = new List<Message>();
-
-            for (int i = 0; i < messageChunkCount; i++)
-            {
-                var message = CreateRandomSendFileMessage();
-                message.Headers["Mex-Chunk-Range"] = new List<string> { $"{{{i + 1}:{messageChunkCount}}}" };
-                messages.Add(message);
-            }
-
-            return messages;
-        }
-
         private static Message CreateRandomSendMessage()
         {
             var message = CreateMessageFiller().Create();
-            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
-            message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Content-Encrypted", new List<string> { "encrypted" });
             message.Headers.Add("Mex-From", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-To", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
-            message.MessageId = null;
-            message.FileContent = null;
-
-            return message;
-        }
-
-        private static Message CreateRandomSendFileMessage()
-        {
-            var message = CreateMessageFiller().Create();
-            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
-            message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Content-Encrypted", new List<string> { "encrypted" });
-            message.Headers.Add("Mex-From", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-To", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
+            message.Headers.Add("Content-Type", new List<string> { "text/plain" });
+            message.Headers.Add("Content-Encoding", new List<string> { GetRandomString() });
+            message.Headers.Add("Accept", new List<string> { "application/json" });
             message.MessageId = null;
-            message.StringContent = null;
 
             return message;
         }

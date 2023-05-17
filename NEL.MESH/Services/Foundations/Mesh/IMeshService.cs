@@ -12,7 +12,6 @@ namespace NEL.MESH.Services.Foundations.Mesh
     {
         ValueTask<bool> HandshakeAsync(string authorizationToken);
         ValueTask<Message> SendMessageAsync(Message message, string authorizationToken);
-        ValueTask<Message> SendFileAsync(Message message, string authorizationToken);
         ValueTask<Message> TrackMessageAsync(string messageId, string authorizationToken);
         ValueTask<List<string>> RetrieveMessagesAsync(string authorizationToken);
         ValueTask<Message> RetrieveMessageAsync(string messageId, string authorizationToken);

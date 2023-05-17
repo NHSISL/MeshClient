@@ -15,27 +15,27 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
     public partial class MeshServiceTests
     {
         [Fact]
-        public async Task ShouldSendFirstChunkPartOfSendMessageAsync()
+        public async Task ShouldSendFirstChunkPartFileMessageAsync()
         {
             // given
             string authorizationToken = GetRandomString();
             string chunkSize = "{1:2}";
-            Message randomMessage = CreateRandomSendMessage(chunkSize);
-            Message inputMessage = randomMessage;
+            Message randomFileMessage = CreateRandomSendMessage(chunkSize);
+            Message inputFileMessage = randomFileMessage;
 
             Dictionary<string, List<string>> contentHeaders = new Dictionary<string, List<string>>
             {
-                { "Content-Type", new List<string>() { "text/plain" }},
-                { "Content-Encoding", new List<string>() },
-                { "Mex-FileName", new List<string>() },
                 { "Mex-From", new List<string>() },
                 { "Mex-To", new List<string>() },
                 { "Mex-WorkflowID", new List<string>() },
                 { "Mex-Chunk-Range", new List<string>() },
-                { "Mex-LocalID", new List<string>() },
                 { "Mex-Subject", new List<string>() },
+                { "Mex-LocalID", new List<string>() },
+                { "Mex-FileName", new List<string>() },
                 { "Mex-Content-Checksum", new List<string>() },
-                { "Mex-Content-Encrypted", new List<string>() },
+                { "Content-Type", new List<string>() { "application/octet-stream" }},
+                { "Content-Encoding", new List<string>() },
+                { "Accept", new List<string>() },
                 { "Mex-ClientVersion", new List<string>() },
                 { "Mex-OSVersion", new List<string>() },
                 { "Mex-OSArchitecture", new List<string>() },
@@ -43,75 +43,77 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             };
 
             HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(
-                inputMessage, contentHeaders);
+                inputFileMessage, contentHeaders);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
-                    GetKeyStringValue("Mex-To", inputMessage.Headers),
-                    GetKeyStringValue("Mex-WorkflowID", inputMessage.Headers),
-                    GetKeyStringValue("Mex-LocalID", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Subject", inputMessage.Headers),
-                    GetKeyStringValue("Mex-FileName", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Content-Checksum", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Encoding", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Chunk-Range", inputMessage.Headers),
-                    GetKeyStringValue("Content-Type", inputMessage.Headers),
                     authorizationToken,
-                    inputMessage.StringContent))
+                    GetKeyStringValue("Mex-From", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-To", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-WorkflowID", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-Chunk-Range", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-Subject", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-LocalID", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-FileName", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-Content-Checksum", inputFileMessage.Headers),
+                    GetKeyStringValue("Content-Type", inputFileMessage.Headers),
+                    GetKeyStringValue("Content-Encoding", inputFileMessage.Headers),
+                    GetKeyStringValue("Accept", inputFileMessage.Headers),
+                    inputFileMessage.FileContent))
                         .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessageForSendMessage(
-                responseMessage, inputMessage);
+            Message expectedMessage = GetMessageFromHttpResponseMessage(
+                responseMessage, inputFileMessage);
 
             // when
-            var actualMessage = await this.meshService.SendMessageAsync(inputMessage, authorizationToken);
+            Message actualMessage = await this.meshService.SendMessageAsync(inputFileMessage, authorizationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(
-                    GetKeyStringValue("Mex-To", inputMessage.Headers),
-                    GetKeyStringValue("Mex-WorkflowID", inputMessage.Headers),
-                    GetKeyStringValue("Mex-LocalID", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Subject", inputMessage.Headers),
-                    GetKeyStringValue("Mex-FileName", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Content-Checksum", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Encoding", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Chunk-Range", inputMessage.Headers),
-                    GetKeyStringValue("Content-Type", inputMessage.Headers),
                     authorizationToken,
-                    inputMessage.StringContent),
+                    GetKeyStringValue("Mex-From", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-To", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-WorkflowID", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-Chunk-Range", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-Subject", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-LocalID", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-FileName", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-Content-Checksum", inputFileMessage.Headers),
+                    GetKeyStringValue("Content-Type", inputFileMessage.Headers),
+                    GetKeyStringValue("Content-Encoding", inputFileMessage.Headers),
+                    GetKeyStringValue("Accept", inputFileMessage.Headers),
+                    inputFileMessage.FileContent),
                         Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
-        public async Task ShouldSendSecondChunkPartOfSendMessageAsync()
+        public async Task ShouldSendSecondChunkPartFileAsync()
         {
             // given
             string authorizationToken = GetRandomString();
             string chunkSize = "{2:2}";
-            Message randomMessage = CreateRandomSendMessage(chunkSize);
-            Message inputMessage = randomMessage;
+            Message randomFileMessage = CreateRandomSendMessage(chunkSize);
+            Message inputFileMessage = randomFileMessage;
             string chunkPart = "2";
 
             Dictionary<string, List<string>> contentHeaders = new Dictionary<string, List<string>>
             {
-                { "Content-Type", new List<string>() { "text/plain" }},
-                { "Content-Encoding", new List<string>() },
-                { "Mex-FileName", new List<string>() },
                 { "Mex-From", new List<string>() },
                 { "Mex-To", new List<string>() },
                 { "Mex-WorkflowID", new List<string>() },
-                { "Mex-Chunk-Range", new List<string>{} },
-                { "Mex-LocalID", new List<string>() },
+                { "Mex-Chunk-Range", new List<string>() },
                 { "Mex-Subject", new List<string>() },
+                { "Mex-LocalID", new List<string>() },
+                { "Mex-FileName", new List<string>() },
                 { "Mex-Content-Checksum", new List<string>() },
-                { "Mex-Content-Encrypted", new List<string>() },
+                { "Content-Type", new List<string>() { "application/octet-stream" }},
+                { "Content-Encoding", new List<string>() },
+                { "Accept", new List<string>() },
                 { "Mex-ClientVersion", new List<string>() },
                 { "Mex-OSVersion", new List<string>() },
                 { "Mex-OSArchitecture", new List<string>() },
@@ -119,50 +121,52 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             };
 
             HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(
-                inputMessage, contentHeaders);
+                inputFileMessage, contentHeaders);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
-                    GetKeyStringValue("Mex-To", inputMessage.Headers),
-                    GetKeyStringValue("Mex-WorkflowID", inputMessage.Headers),
-                    GetKeyStringValue("Mex-LocalID", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Subject", inputMessage.Headers),
-                    GetKeyStringValue("Mex-FileName", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Content-Checksum", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Encoding", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Chunk-Range", inputMessage.Headers),
-                    GetKeyStringValue("Content-Type", inputMessage.Headers),
                     authorizationToken,
-                    inputMessage.StringContent,
-                    inputMessage.MessageId,
+                    GetKeyStringValue("Mex-From", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-To", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-WorkflowID", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-Chunk-Range", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-Subject", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-LocalID", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-FileName", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-Content-Checksum", inputFileMessage.Headers),
+                    GetKeyStringValue("Content-Type", inputFileMessage.Headers),
+                    GetKeyStringValue("Content-Encoding", inputFileMessage.Headers),
+                    GetKeyStringValue("Accept", inputFileMessage.Headers),
+                    inputFileMessage.FileContent,
+                    inputFileMessage.MessageId,
                     chunkPart))
                         .ReturnsAsync(responseMessage);
 
-            Message expectedMessage = GetMessageWithStringContentFromHttpResponseMessageForSendMessage(
-                responseMessage, inputMessage);
+            Message expectedMessage = GetMessageFromHttpResponseMessage(
+                responseMessage, inputFileMessage);
 
             // when
-            var actualMessage = await this.meshService.SendMessageAsync(inputMessage, authorizationToken);
+            Message actualMessage = await this.meshService.SendMessageAsync(inputFileMessage, authorizationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             this.meshBrokerMock.Verify(broker =>
                 broker.SendMessageAsync(
-                    GetKeyStringValue("Mex-To", inputMessage.Headers),
-                    GetKeyStringValue("Mex-WorkflowID", inputMessage.Headers),
-                    GetKeyStringValue("Mex-LocalID", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Subject", inputMessage.Headers),
-                    GetKeyStringValue("Mex-FileName", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Content-Checksum", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Encoding", inputMessage.Headers),
-                    GetKeyStringValue("Mex-Chunk-Range", inputMessage.Headers),
-                    GetKeyStringValue("Content-Type", inputMessage.Headers),
                     authorizationToken,
-                    inputMessage.StringContent,
-                    inputMessage.MessageId,
+                    GetKeyStringValue("Mex-From", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-To", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-WorkflowID", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-Chunk-Range", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-Subject", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-LocalID", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-FileName", inputFileMessage.Headers),
+                    GetKeyStringValue("Mex-Content-Checksum", inputFileMessage.Headers),
+                    GetKeyStringValue("Content-Type", inputFileMessage.Headers),
+                    GetKeyStringValue("Content-Encoding", inputFileMessage.Headers),
+                    GetKeyStringValue("Accept", inputFileMessage.Headers),
+                    inputFileMessage.FileContent,
+                    inputFileMessage.MessageId,
                     chunkPart),
                         Times.Once);
 

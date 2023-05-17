@@ -57,7 +57,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                     chunkedMessage.MessageId = outputMessage?.MessageId;
 
                     Message sentMessage = await this.meshService
-                        .SendFileAsync(chunkedMessage, authorizationToken: token);
+                        .SendMessageAsync(chunkedMessage, authorizationToken: token);
 
                     if (chunkedMessage == chunkedMessages.First())
                     {
