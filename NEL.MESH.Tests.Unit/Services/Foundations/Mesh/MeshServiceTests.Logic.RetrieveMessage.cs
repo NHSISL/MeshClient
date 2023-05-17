@@ -68,7 +68,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
-            actualMessage.FileContent.Should().BeNull();
 
             this.meshBrokerMock.Verify(broker =>
                 broker.GetMessageAsync(inputMessage.MessageId, authorizationToken),

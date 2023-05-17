@@ -29,7 +29,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(
                 inputMessage,
-                new Dictionary<string, List<string>>(),
                 new Dictionary<string, List<string>>());
 
             this.meshBrokerMock.Setup(broker =>

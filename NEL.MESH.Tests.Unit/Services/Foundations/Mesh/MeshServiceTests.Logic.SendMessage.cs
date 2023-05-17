@@ -23,7 +23,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message randomFileMessage = CreateRandomSendMessage(chunkSize);
             Message inputFileMessage = randomFileMessage;
 
-            Dictionary<string, List<string>> contentHeaders = new Dictionary<string, List<string>>
+            Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>
             {
                 { "Mex-From", new List<string>() },
                 { "Mex-To", new List<string>() },
@@ -43,7 +43,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             };
 
             HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(
-                inputFileMessage, contentHeaders);
+                inputFileMessage, headers);
 
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
