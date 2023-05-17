@@ -167,7 +167,6 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 Message = $"Text length should not be greater than {maxLength}"
             };
 
-
         private static dynamic IsArgInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
@@ -203,7 +202,6 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
             return true;
         }
-
 
         private static bool IsInvalidKey(Dictionary<string, List<string>> dictionary, string key)
         {
