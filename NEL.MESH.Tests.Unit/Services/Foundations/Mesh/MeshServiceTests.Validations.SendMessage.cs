@@ -93,8 +93,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             randomMessage.Headers.Add("Mex-From", new List<string> { invalidInput });
             randomMessage.Headers.Add("Mex-To", new List<string> { invalidInput });
             randomMessage.Headers.Add("Mex-WorkflowID", new List<string> { invalidInput });
-            randomMessage.Headers.Add("Content-Type", new List<string> { invalidInput });
-            randomMessage.Headers.Add("Mex-FileName", new List<string> { invalidInput });
 
             var invalidMeshException =
                 new InvalidMeshException();

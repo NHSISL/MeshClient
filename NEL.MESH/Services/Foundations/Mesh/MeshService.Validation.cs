@@ -60,6 +60,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"),
                 (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
                 (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
+                (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
                 (Rule: IsInvalid(message.Headers, "Mex-From", 100), Parameter: "Mex-From"),
                 (Rule: IsInvalid(message.Headers, "Mex-To", 100), Parameter: "Mex-To"),
                 (Rule: IsInvalid(message.Headers, "Mex-WorkflowID", 300), Parameter: "Mex-WorkflowID"),
