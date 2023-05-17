@@ -49,7 +49,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "Mex-JavaVersion", new List<string>() }
             };
 
-            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(
+            HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForRetrieveMessage(
                 inputMessage,
                 contentHeaders,
                 headers,
