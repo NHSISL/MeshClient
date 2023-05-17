@@ -44,8 +44,8 @@ namespace NEL.MESH.Brokers.Mesh
             string mexLocalId,
             string mexFileName,
             string mexContentChecksum,
-            string contentEncoding,
             string contentType,
+            string contentEncoding,
             string accept,
             byte[] fileContents)
         {
@@ -66,7 +66,7 @@ namespace NEL.MESH.Brokers.Mesh
             request.Headers.Add("Mex-FileName", mexFileName);
             request.Headers.Add("Mex-Content-Checksum", mexContentChecksum);
             request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            request.Headers.Add("Content-Encoding", contentEncoding);
+            request.Content.Headers.Add("Content-Encoding", contentEncoding);
             request.Headers.Add("Accept", accept);
 
             var response = await this.httpClient.SendAsync(request);
@@ -84,8 +84,8 @@ namespace NEL.MESH.Brokers.Mesh
             string mexLocalId,
             string mexFileName,
             string mexContentChecksum,
-            string contentEncoding,
             string contentType,
+            string contentEncoding,
             string accept,
             byte[] fileContents,
             string messageId,

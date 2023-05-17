@@ -275,9 +275,11 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
         private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
         {
-            return dictionary.ContainsKey(key)
+            string value = dictionary.ContainsKey(key)
                 ? dictionary[key]?.First()
                 : string.Empty;
+
+            return value;
         }
 
         private static string GetKeyStringValue(string key, HttpContentHeaders headers)
