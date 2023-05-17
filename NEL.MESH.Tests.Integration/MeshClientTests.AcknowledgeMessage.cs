@@ -31,7 +31,7 @@ namespace NEL.MESH.Tests.Integration
             string contentEncoding = GetRandomString();
 
             Message sendMessageResponse =
-                await this.meshClient.Mailbox.SendFileAsync(
+                await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
                     fileContent,

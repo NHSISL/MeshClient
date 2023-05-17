@@ -24,11 +24,10 @@ namespace NEL.MESH.Clients.Mailboxes
             string contentEncoding = "",
             string accept = "application/json");
 
-        ValueTask<Message> SendFileAsync(
+        ValueTask<Message> SendMessageAsync(
             string mexTo,
             string mexWorkflowId,
             byte[] fileContent,
-            string mexContentEncrypted,
             string mexSubject = "",
             string mexLocalId = "",
             string mexFileName = "",

@@ -12,7 +12,6 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
     {
         ValueTask<bool> HandshakeAsync();
         ValueTask<Message> SendMessageAsync(Message message);
-        ValueTask<Message> SendFileAsync(Message message);
         ValueTask<Message> TrackMessageAsync(string messageId);
         ValueTask<List<string>> RetrieveMessagesAsync();
         ValueTask<Message> RetrieveMessageAsync(string messageId);

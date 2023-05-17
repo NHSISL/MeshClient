@@ -93,11 +93,10 @@ namespace NEL.MESH.Tests.Acceptance
 
             // when
             Message actualSendMessageResult = await this.meshClient.Mailbox
-                .SendFileAsync(
+                .SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
                     fileContent,
-                    mexContentEncrypted,
                     mexSubject,
                     mexLocalId,
                     mexFileName,

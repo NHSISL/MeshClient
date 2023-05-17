@@ -15,7 +15,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
     public partial class MeshOrchestrationTests
     {
         [Fact]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfMessageIsNullAndLogItAsync()
+        public async Task ShouldThrowValidationExceptionOnSendFileIfMessageIsNullAndLogItAsync()
         {
             // given
             Message nullMessage = null;
@@ -46,14 +46,15 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfTokenIsNullAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnSendFileIfTokenIsNullAndLogItAsync(string invalidText)
         {
             // given
             string invalidToken = invalidText;
-            Message randomMessage = CreateRandomSendMessage();
+            string randomToken = GetRandomString();
+            Message randomMessage = CreateRandomSendFileMessage();
             Message inputMessage = randomMessage;
             int randomChunkCount = GetRandomNumber();
-            List<Message> randomChunkedMessages = CreateRandomChunkedSendMessages(randomChunkCount);
+            List<Message> randomChunkedMessages = CreateRandomChunkedSendFileMessages(randomChunkCount);
             List<Message> chunkedInputMessages = randomChunkedMessages;
 
             this.chunkServiceMock.Setup(service =>
@@ -100,7 +101,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
         [Theory]
         [MemberData(nameof(InvalidMessageList))]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfChunksIsNullOrEmptyAndLogItAsync(
+        public async Task ShouldThrowValidationExceptionOnSendFileMessageIfChunksIsNullOrEmptyAndLogItAsync(
             List<Message> invalidData)
         {
             // given
@@ -140,5 +141,6 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
         }
+
     }
 }

@@ -15,20 +15,20 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
     public partial class MeshOrchestrationTests
     {
         [Fact]
-        public async Task ShouldSendMessageAsync()
+        public async Task ShouldSendFileAsync()
         {
             // given
             string randomToken = GetRandomString();
-            Message randomMessage = CreateRandomSendMessage();
+            Message randomMessage = CreateRandomSendFileMessage();
             Message inputMessage = randomMessage;
             int randomChunkCount = GetRandomNumber();
-            List<Message> randomChunkedMessages = CreateRandomChunkedSendMessages(randomChunkCount);
+            List<Message> randomChunkedMessages = CreateRandomChunkedSendFileMessages(randomChunkCount);
             List<Message> chunkedInputMessages = randomChunkedMessages;
             List<Message> chunkedOutputMessages = chunkedInputMessages.DeepClone();
             string randomMessageId = GetRandomString();
             chunkedOutputMessages[0].MessageId = randomMessageId;
             Message outputMessage = chunkedOutputMessages[0].DeepClone();
-            outputMessage.StringContent = inputMessage.StringContent;
+            outputMessage.FileContent = inputMessage.FileContent;
             Message expectedMessage = outputMessage.DeepClone();
 
             this.chunkServiceMock.Setup(service =>
@@ -44,7 +44,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 if (i == 0)
                 {
                     this.meshServiceMock.Setup(service =>
-                        service.SendMessageAsync(chunkedInputMessages[i], randomToken))
+                        service.SendFileAsync(chunkedInputMessages[i], randomToken))
                             .ReturnsAsync(chunkedOutputMessages[0]);
                 }
                 else
@@ -53,7 +53,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     chunk.MessageId = randomMessageId;
 
                     this.meshServiceMock.Setup(service =>
-                        service.SendMessageAsync(chunk, randomToken))
+                        service.SendFileAsync(chunk, randomToken))
                             .ReturnsAsync(chunkedOutputMessages[0]);
                 }
             }
@@ -69,17 +69,16 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.SplitMessageIntoChunks(inputMessage),
                     Times.Once);
 
-
             this.tokenServiceMock.Verify(service =>
-                service.GenerateTokenAsync(),
-                    Times.Exactly(chunkedInputMessages.Count));
+               service.GenerateTokenAsync(),
+                   Times.Exactly(chunkedInputMessages.Count));
 
             for (int i = 0; i < chunkedInputMessages.Count; i++)
             {
                 if (i == 0)
                 {
                     this.meshServiceMock.Verify(service =>
-                        service.SendMessageAsync(chunkedInputMessages[i], randomToken),
+                        service.SendFileAsync(chunkedInputMessages[i], randomToken),
                             Times.Once);
                 }
                 else
@@ -88,7 +87,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     chunk.MessageId = randomMessageId;
 
                     this.meshServiceMock.Verify(service =>
-                        service.SendMessageAsync(chunk, randomToken),
+                        service.SendFileAsync(chunk, randomToken),
                             Times.Once);
                 }
             }

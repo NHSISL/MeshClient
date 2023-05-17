@@ -94,7 +94,7 @@ namespace NEL.MESH.Tests.Integration
             Message expectedMessage = randomMessage;
 
             Message sendMessageResponse =
-                await this.meshClient.Mailbox.SendFileAsync(
+                await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
                     fileContent,
