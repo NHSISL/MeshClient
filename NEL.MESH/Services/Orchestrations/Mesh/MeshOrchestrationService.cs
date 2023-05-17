@@ -47,7 +47,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 ValidateMessageIsNotNull(message);
                 SetHeader(message, "Mex-From", this.meshConfigurationBroker.MexFrom);
                 List<Message> chunkedMessages = this.chunkService.SplitMessageIntoChunks(message);
-                ValidateChunksOnSendFile(chunkedMessages);
+                ValidateChunksOnSendMessage(chunkedMessages);
                 Message outputMessage = null;
 
                 foreach (Message chunkedMessage in chunkedMessages)
