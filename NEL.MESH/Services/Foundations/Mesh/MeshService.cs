@@ -57,11 +57,11 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     chunkNumber = 1;
                 }
 
-                HttpResponseMessage responseFileMessage;
+                HttpResponseMessage responseMessage;
 
                 if (chunkNumber <= 1)
                 {
-                    responseFileMessage = await this.meshBroker.SendMessageAsync(
+                    responseMessage = await this.meshBroker.SendMessageAsync(
                         authorizationToken,
                         mexFrom: GetKeyStringValue("Mex-From", message.Headers),
                         mexTo: GetKeyStringValue("Mex-To", message.Headers),
@@ -81,7 +81,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     ValidateMessageId(message.MessageId);
                     ValidateMexChunkRangeOnMultiPartFile(message);
 
-                    responseFileMessage = await this.meshBroker.SendMessageAsync(
+                    responseMessage = await this.meshBroker.SendMessageAsync(
                         authorizationToken,
                         mexFrom: GetKeyStringValue("Mex-From", message.Headers),
                         mexTo: GetKeyStringValue("Mex-To", message.Headers),
@@ -99,7 +99,8 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         chunkNumber: chunkNumber.ToString());
                 }
 
-                string responseMessageBody = responseFileMessage.Content.ReadAsStringAsync().Result;
+                ValidateResponse(responseMessage);
+                string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
 
                 Message outputMessage = new Message
                 {
@@ -107,7 +108,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     FileContent = message.FileContent,
                 };
 
-                GetHeaderValues(responseFileMessage, outputMessage);
+                GetHeaderValues(responseMessage, outputMessage);
 
                 return outputMessage;
             });

@@ -46,7 +46,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             var missingValue =
                 new HttpResponseMessage((HttpStatusCode)Enum.Parse(typeof(HttpStatusCode), "400"))
                 {
-                    ReasonPhrase = "Invalid Value"
+                    ReasonPhrase = "Missing Value"
                 };
 
             var accessDenied =
@@ -140,8 +140,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             };
         }
 
-        private static string GetRandomString() =>
-            new MnemonicString(wordCount: GetRandomNumber()).GetValue();
+        private static string GetRandomString(int wordMinLength = 2, int wordMaxLength = 100) =>
+            new MnemonicString(
+                wordCount: 1,
+                wordMinLength,
+                wordMaxLength: wordMaxLength < wordMinLength ? wordMinLength : wordMaxLength)
+                    .GetValue();
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
@@ -536,17 +540,31 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             string contentType = "text/plain")
         {
             var message = CreateMessageFiller().Create();
-            message.Headers.Add("Content-Type", new List<string> { contentType });
-            message.Headers.Add("Mex-LocalID", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Subject", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Content-Checksum", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Content-Encrypted", new List<string> { "encrypted" });
-            message.Headers.Add("Mex-From", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-To", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-WorkflowID", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-FileName", new List<string> { GetRandomString() });
-            message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
+            message.Headers.Add("Mex-From",
+                new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 100) });
+
+            message.Headers.Add("Mex-To",
+                new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 100) });
+
+            message.Headers.Add("Mex-WorkflowID",
+                new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 300) });
+
             message.Headers.Add("Mex-Chunk-Range", new List<string> { chunkSize });
+
+            message.Headers.Add("Mex-Subject",
+                new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 500) });
+
+            message.Headers.Add("Mex-LocalID",
+                new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 300) });
+
+            message.Headers.Add("Mex-FileName",
+                new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 300) });
+
+            message.Headers.Add("Mex-Content-Checksum",
+                new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 100) });
+
+            message.Headers.Add("Content-Type", new List<string> { contentType });
+            message.Headers.Add("Content-Encoding", new List<string> { GetRandomString() });
 
             return message;
         }

@@ -43,7 +43,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                         .ReturnsAsync(dependencyValidationResponseMessage);
 
             var httpRequestException =
-                new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
+                new HttpRequestException(
+                    $"{(int)response.StatusCode} - {response.ReasonPhrase}",
+                    null,
+                    response.StatusCode);
 
             var failedMeshClientException =
                 new FailedMeshClientException(httpRequestException);
@@ -109,7 +112,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     .ReturnsAsync(dependencyResponseMessage);
 
             var httpRequestException =
-                new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
+                new HttpRequestException(
+                    $"{(int)response.StatusCode} - {response.ReasonPhrase}",
+                    null,
+                    response.StatusCode);
 
             var failedMeshServerException =
                 new FailedMeshServerException(httpRequestException);
