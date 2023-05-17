@@ -122,7 +122,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             message.Headers.Add("Mex-Encoding", new List<string> { GetRandomString() });
             message.Headers.Add("Mex-Chunk-Range", new List<string> { GetRandomString() });
             message.FileContent = byteArrayContent;
-            message.FileContent = null;
             message.MessageId = null;
 
             return message;
