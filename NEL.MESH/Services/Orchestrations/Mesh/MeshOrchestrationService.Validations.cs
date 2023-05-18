@@ -32,12 +32,6 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 (Rule: IsInvalid(chunkedMessages), Parameter: "ChunkedMessages"));
         }
 
-        private static void ValidateChunksOnSendFile(List<Message> chunkedMessages)
-        {
-            Validate<InvalidMeshOrchestrationArgsException>(
-                (Rule: IsInvalid(chunkedMessages), Parameter: "ChunkedMessages"));
-        }
-
         private static void ValidateTrackMessageArgs(string messageId)
         {
             Validate<InvalidMeshOrchestrationArgsException>(

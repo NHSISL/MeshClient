@@ -10,8 +10,5 @@ namespace NEL.MESH.Services.Foundations.Chunks
     internal interface IChunkService
     {
         List<Message> SplitMessageIntoChunks(Message message);
-        List<Message> SplitFileMessageIntoChunks(Message message);
-        Message CombineChunkedMessages(List<Message> chunks);
-        Message CombineChunkedFileMessages(List<Message> chunks);
     }
 }

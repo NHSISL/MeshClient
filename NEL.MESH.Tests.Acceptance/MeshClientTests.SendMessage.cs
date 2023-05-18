@@ -18,7 +18,7 @@ namespace NEL.MESH.Tests.Acceptance
     {
         [Fact]
         [Trait("Category", "Acceptance")]
-        public async Task ShouldSendMessageAsync()
+        public async Task ShouldSendStringMessageAsync()
         {
             // given
             string path = $"/messageexchange/{this.meshConfigurations.MailboxId}/outbox";
@@ -58,7 +58,7 @@ namespace NEL.MESH.Tests.Acceptance
             Message outputMessage = new Message
             {
                 MessageId = outputId,
-                StringContent = inputMessage.StringContent
+                FileContent = inputMessage.FileContent
             };
 
             Message expectedSendMessageResult = outputMessage;
@@ -68,21 +68,20 @@ namespace NEL.MESH.Tests.Acceptance
                     Request.Create()
                         .WithPath(path)
                         .UsingPost()
-                        .WithHeader("Mex-ClientVersion", this.meshConfigurations.MexClientVersion)
-                        .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
-                        .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion)
+                        .WithHeader("Authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
                         .WithHeader("Mex-From", this.meshConfigurations.MailboxId)
                         .WithHeader("Mex-To", GetKeyStringValue("Mex-To", inputMessage.Headers))
                         .WithHeader("Mex-WorkflowID", GetKeyStringValue("Mex-WorkflowID", inputMessage.Headers))
-                        .WithHeader("Mex-LocalID", GetKeyStringValue("Mex-LocalID", inputMessage.Headers))
+                        .WithHeader("Mex-Chunk-Range", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
                         .WithHeader("Mex-Subject", GetKeyStringValue("Mex-Subject", inputMessage.Headers))
+                        .WithHeader("Mex-LocalID", GetKeyStringValue("Mex-LocalID", inputMessage.Headers))
                         .WithHeader("Mex-FileName", GetKeyStringValue("Mex-FileName", inputMessage.Headers))
                         .WithHeader("Mex-Content-Checksum", GetKeyStringValue("Mex-Content-Checksum", inputMessage.Headers))
-                        .WithHeader("Mex-Content-Encrypted", GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers))
-                        .WithHeader("Mex-Encoding", GetKeyStringValue("Mex-Encoding", inputMessage.Headers))
-                        .WithHeader("Mex-Chunk-Range", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
-                        .WithHeader("Authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
-                        .WithBody(randomMessage.StringContent)
+                        .WithHeader("Accept", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
+                        .WithHeader("Mex-ClientVersion", this.meshConfigurations.MexClientVersion)
+                        .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
+                        .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion)
+                        .WithBody(randomMessage.FileContent)
                     )
                 .RespondWith(
                     Response.Create()

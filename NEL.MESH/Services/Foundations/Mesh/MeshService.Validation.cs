@@ -57,35 +57,19 @@ namespace NEL.MESH.Services.Foundations.Mesh
             ValidateMessageIsNotNull(message);
             ValidateHeadersIsNotNull(message);
             Validate<InvalidMeshException>(
-                (Rule: IsInvalid(message.StringContent), Parameter: nameof(Message.StringContent)),
-                (Rule: IsInvalid(message.Headers, "Content-Type"), Parameter: "Content-Type"),
-                (Rule: IsInvalid(message.Headers, "Mex-FileName"), Parameter: "Mex-FileName"),
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"),
                 (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
                 (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
                 (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
-                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
-        }
-
-        private static void ValidateMexChunkRangeOnMultiPartMessage(Message message)
-        {
-            Validate<InvalidMeshException>(
-                (Rule: IsInvalid(message.Headers, "Mex-Chunk-Range"), Parameter: "Mex-Chunk-Range"));
-        }
-
-        private static void ValidateMeshMessageOnSendFile(Message message, string authorizationToken)
-        {
-            ValidateMessageIsNotNull(message);
-            ValidateHeadersIsNotNull(message);
-            Validate<InvalidMeshException>(
-                (Rule: IsInvalid(message.FileContent), Parameter: nameof(Message.FileContent)),
-                (Rule: IsInvalid(message.Headers, "Content-Type"), Parameter: "Content-Type"),
-                (Rule: IsInvalid(message.Headers, "Mex-FileName"), Parameter: "Mex-FileName"),
-                (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
-                (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
-                (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
-                (Rule: IsInvalid(message.Headers, "Mex-Content-Checksum"), Parameter: "Mex-Content-Checksum"),
-                (Rule: IsInvalid(message.Headers, "Mex-Content-Encrypted"), Parameter: "Mex-Content-Encrypted"),
-                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+                (Rule: IsInvalid(message.Headers, "Mex-From", 100), Parameter: "Mex-From"),
+                (Rule: IsInvalid(message.Headers, "Mex-To", 100), Parameter: "Mex-To"),
+                (Rule: IsInvalid(message.Headers, "Mex-WorkflowID", 300), Parameter: "Mex-WorkflowID"),
+                (Rule: IsInvalid(message.Headers, "Mex-Chunk-Range", 20), Parameter: "Mex-Chunk-Range"),
+                (Rule: IsInvalid(message.Headers, "Mex-Subject", 500), Parameter: "Mex-Subject"),
+                (Rule: IsInvalid(message.Headers, "Mex-LocalID", 300), Parameter: "Mex-LocalID"),
+                (Rule: IsInvalid(message.Headers, "Mex-FileName", 300), Parameter: "Mex-FileName"),
+                (Rule: IsInvalid(message.Headers, "Mex-Content-Checksum", 100), Parameter: "Mex-Content-Checksum"),
+                (Rule: IsInvalid(message.FileContent), Parameter: nameof(Message.FileContent)));
         }
 
         private static void ValidateMexChunkRangeOnMultiPartFile(Message message)
@@ -174,6 +158,15 @@ namespace NEL.MESH.Services.Foundations.Mesh
             Message = "Header value is required"
         };
 
+        private static dynamic IsInvalid(
+            Dictionary<string, List<string>> dictionary,
+            string key,
+            int maxLength) => new
+            {
+                Condition = IsInvalidKeyLength(dictionary, key, maxLength),
+                Message = $"Text length should not be greater than {maxLength}"
+            };
+
         private static dynamic IsArgInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
@@ -185,6 +178,30 @@ namespace NEL.MESH.Services.Foundations.Mesh
             Condition = (data == null || data.Length == 0),
             Message = "Content is required"
         };
+
+        private static bool IsInvalidKeyLength(Dictionary<string, List<string>> dictionary, string key, int maxLength)
+        {
+            if (dictionary == null)
+            {
+                return false;
+            }
+
+            bool keyExists = dictionary.ContainsKey(key);
+
+            if (!keyExists)
+            {
+                return false;
+            }
+
+            string value = dictionary[key].FirstOrDefault();
+
+            if (value == null || value.Length <= maxLength)
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         private static bool IsInvalidKey(Dictionary<string, List<string>> dictionary, string key)
         {

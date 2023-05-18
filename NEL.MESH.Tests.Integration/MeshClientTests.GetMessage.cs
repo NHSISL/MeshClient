@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -13,7 +14,7 @@ namespace NEL.MESH.Tests.Integration
 {
     public partial class MeshClientTests
     {
-        [Fact(Skip = "Waiting on reply from nhs digital")]
+        [Fact]
         [Trait("Category", "Integration")]
         public async Task ShouldRetrieveStringMessageAsync()
         {
@@ -22,11 +23,11 @@ namespace NEL.MESH.Tests.Integration
             string mexWorkflowId = "INTEGRATION TEST";
             string content = GetRandomString();
             string mexSubject = "INTEGRATION TEST -  ShouldRetrieveStringMessageAsync";
-            string mexLocalId = GetRandomString();
+            string mexLocalId = Guid.NewGuid().ToString();
             string mexFileName = $"ShouldRetrieveStringMessageAsync.csv";
-            string mexContentChecksum = GetRandomString();
+            string mexContentChecksum = Guid.NewGuid().ToString();
             string contentType = "text/plain";
-            string contentEncoding = GetRandomString();
+            string contentEncoding = "";
 
             Message randomMessage = ComposeMessage.CreateStringMessage(
                 mexTo,
@@ -59,7 +60,7 @@ namespace NEL.MESH.Tests.Integration
 
             // then
             retrievedMessage.MessageId.Should().BeEquivalentTo(sendMessageResponse.MessageId);
-            retrievedMessage.StringContent.Should().BeEquivalentTo(expectedMessage.StringContent);
+            retrievedMessage.FileContent.Should().BeEquivalentTo(expectedMessage.FileContent);
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
         }
 
@@ -71,19 +72,17 @@ namespace NEL.MESH.Tests.Integration
             string mexTo = this.meshConfigurations.MailboxId;
             string mexWorkflowId = "INTEGRATION TEST";
             byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString());
-            string mexContentEncrypted = GetRandomString();
             string mexSubject = "INTEGRATION TEST -  ShouldRetrieveFileMessageAsync";
-            string mexLocalId = GetRandomString();
+            string mexLocalId = Guid.NewGuid().ToString();
             string mexFileName = $"ShouldRetrieveFileMessageAsync.csv";
-            string mexContentChecksum = GetRandomString();
+            string mexContentChecksum = Guid.NewGuid().ToString();
             string contentType = "application/octet-stream";
-            string contentEncoding = GetRandomString();
+            string contentEncoding = "";
 
             Message randomMessage = ComposeMessage.CreateFileMessage(
                 mexTo,
                 mexWorkflowId,
                 fileContent,
-                mexContentEncrypted,
                 mexSubject,
                 mexLocalId,
                 mexFileName,
@@ -94,11 +93,10 @@ namespace NEL.MESH.Tests.Integration
             Message expectedMessage = randomMessage;
 
             Message sendMessageResponse =
-                await this.meshClient.Mailbox.SendFileAsync(
+                await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
                     fileContent,
-                    mexContentEncrypted,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -112,7 +110,7 @@ namespace NEL.MESH.Tests.Integration
 
             // then
             retrievedMessage.MessageId.Should().BeEquivalentTo(sendMessageResponse.MessageId);
-            retrievedMessage.StringContent.Should().BeEquivalentTo(expectedMessage.StringContent);
+            retrievedMessage.FileContent.Should().BeEquivalentTo(expectedMessage.FileContent);
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
         }
     }

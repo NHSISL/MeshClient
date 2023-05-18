@@ -19,7 +19,7 @@ namespace NEL.MESH.Tests.Acceptance
     {
         [Fact]
         [Trait("Category", "Acceptance")]
-        public async Task ShouldSendFileAsync()
+        public async Task ShouldSendFileMessageAsync()
         {
             // given
             string path = $"/messageexchange/{this.meshConfigurations.MailboxId}/outbox";
@@ -27,8 +27,7 @@ namespace NEL.MESH.Tests.Acceptance
             string outputId = randomId;
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
-            byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString(wordMinLength: GetRandomNumber()));
-            string mexContentEncrypted = GetRandomString();
+            byte[] content = Encoding.UTF8.GetBytes(GetRandomString(wordMinLength: GetRandomNumber()));
             string mexSubject = GetRandomString();
             string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();
@@ -39,8 +38,7 @@ namespace NEL.MESH.Tests.Acceptance
             Message randomMessage = ComposeMessage.CreateFileMessage(
                 mexTo,
                 mexWorkflowId,
-                fileContent,
-                mexContentEncrypted,
+                content,
                 mexSubject,
                 mexLocalId,
                 mexFileName,
@@ -71,21 +69,21 @@ namespace NEL.MESH.Tests.Acceptance
                     Request.Create()
                         .WithPath(path)
                         .UsingPost()
-                        .WithHeader("Mex-ClientVersion", this.meshConfigurations.MexClientVersion)
-                        .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
-                        .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion)
+                        .WithHeader("Authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
                         .WithHeader("Mex-From", this.meshConfigurations.MailboxId)
                         .WithHeader("Mex-To", GetKeyStringValue("Mex-To", inputMessage.Headers))
                         .WithHeader("Mex-WorkflowID", GetKeyStringValue("Mex-WorkflowID", inputMessage.Headers))
-                        .WithHeader("Mex-LocalID", GetKeyStringValue("Mex-LocalID", inputMessage.Headers))
+                        .WithHeader("Mex-Chunk-Range", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
                         .WithHeader("Mex-Subject", GetKeyStringValue("Mex-Subject", inputMessage.Headers))
+                        .WithHeader("Mex-LocalID", GetKeyStringValue("Mex-LocalID", inputMessage.Headers))
                         .WithHeader("Mex-FileName", GetKeyStringValue("Mex-FileName", inputMessage.Headers))
                         .WithHeader("Mex-Content-Checksum", GetKeyStringValue("Mex-Content-Checksum", inputMessage.Headers))
-                        .WithHeader("Mex-Content-Encrypted", GetKeyStringValue("Mex-Content-Encrypted", inputMessage.Headers))
-                        .WithHeader("Mex-Encoding", GetKeyStringValue("Mex-Encoding", inputMessage.Headers))
-                        .WithHeader("Mex-Chunk-Range", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
-                        .WithHeader("Authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
-                        .WithBody(randomMessage.FileContent))
+                        .WithHeader("Accept", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
+                        .WithHeader("Mex-ClientVersion", this.meshConfigurations.MexClientVersion)
+                        .WithHeader("Mex-OSName", this.meshConfigurations.MexOSName)
+                        .WithHeader("Mex-OSVersion", this.meshConfigurations.MexOSVersion)
+                        .WithBody(randomMessage.FileContent)
+                    )
                 .RespondWith(
                     Response.Create()
                         .WithSuccess()
@@ -93,18 +91,16 @@ namespace NEL.MESH.Tests.Acceptance
 
             // when
             Message actualSendMessageResult = await this.meshClient.Mailbox
-                .SendFileAsync(
+                .SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
-                    mexContentEncrypted,
+                    content,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
                     mexContentChecksum,
                     contentType,
-                    contentEncoding
-                );
+                    contentEncoding);
 
             // then
             actualSendMessageResult.Should().BeEquivalentTo(expectedSendMessageResult);

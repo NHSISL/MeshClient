@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -20,11 +21,11 @@ namespace NEL.MESH.Tests.Integration
             string mexWorkflowId = "INTEGRATION TEST";
             string content = GetRandomString();
             string mexSubject = "INTEGRATION TEST -  ShouldSendMessageAsync";
-            string mexLocalId = GetRandomString();
+            string mexLocalId = Guid.NewGuid().ToString();
             string mexFileName = $"ShouldSendMessageAsync.csv";
-            string mexContentChecksum = GetRandomString();
+            string mexContentChecksum = Guid.NewGuid().ToString();
             string contentType = "text/plain";
-            string contentEncoding = GetRandomString();
+            string contentEncoding = "";
 
             // when
             Message sendMessageResponse =

@@ -62,34 +62,6 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                     if (chunkedMessage == chunkedMessages.First())
                     {
                         outputMessage = sentMessage;
-                        outputMessage.StringContent = message.StringContent;
-                    }
-                }
-
-                return outputMessage;
-            });
-
-        public ValueTask<Message> SendFileAsync(Message message) =>
-            TryCatch(async () =>
-            {
-                ValidateMessageIsNotNull(message);
-                SetHeader(message, "Mex-From", this.meshConfigurationBroker.MexFrom);
-                List<Message> chunkedMessages = this.chunkService.SplitFileMessageIntoChunks(message);
-                ValidateChunksOnSendFile(chunkedMessages);
-                Message outputMessage = null;
-
-                foreach (Message chunkedMessage in chunkedMessages)
-                {
-                    string token = await this.tokenService.GenerateTokenAsync();
-                    ValidateToken(token);
-                    chunkedMessage.MessageId = outputMessage?.MessageId;
-
-                    Message sentMessage = await this.meshService
-                        .SendFileAsync(chunkedMessage, authorizationToken: token);
-
-                    if (chunkedMessage == chunkedMessages.First())
-                    {
-                        outputMessage = sentMessage;
                         outputMessage.FileContent = message.FileContent;
                     }
                 }

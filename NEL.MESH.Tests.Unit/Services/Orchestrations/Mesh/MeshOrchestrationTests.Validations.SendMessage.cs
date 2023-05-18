@@ -50,6 +50,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         {
             // given
             string invalidToken = invalidText;
+            string randomToken = GetRandomString();
             Message randomMessage = CreateRandomSendMessage();
             Message inputMessage = randomMessage;
             int randomChunkCount = GetRandomNumber();
@@ -100,7 +101,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
         [Theory]
         [MemberData(nameof(InvalidMessageList))]
-        public async Task ShouldThrowValidationExceptionOnSendMessageIfChunksIsNullOrEmptyAndLogItAsync(
+        public async Task ShouldThrowValidationExceptionOnSendMessageMessageIfChunksIsNullOrEmptyAndLogItAsync(
             List<Message> invalidData)
         {
             // given

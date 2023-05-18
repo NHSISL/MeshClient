@@ -97,11 +97,10 @@ namespace NEL.MESH.Clients.Mailboxes
             }
         }
 
-        public async ValueTask<Message> SendFileAsync(
+        public async ValueTask<Message> SendMessageAsync(
             string mexTo,
             string mexWorkflowId,
             byte[] fileContent,
-            string mexContentEncrypted,
             string mexSubject = "",
             string mexLocalId = "",
             string mexFileName = "",
@@ -116,7 +115,6 @@ namespace NEL.MESH.Clients.Mailboxes
                     mexTo,
                     mexWorkflowId,
                     fileContent,
-                    mexContentEncrypted,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -125,7 +123,7 @@ namespace NEL.MESH.Clients.Mailboxes
                     contentEncoding,
                     accept);
 
-                return await meshOrchestrationService.SendFileAsync(message);
+                return await meshOrchestrationService.SendMessageAsync(message);
             }
             catch (MeshValidationException meshValidationException)
             {
