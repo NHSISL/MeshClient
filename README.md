@@ -1,6 +1,10 @@
 # MESH CLIENT
 
-<a href="https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-meshm"><img src="https://raw.githubusercontent.com/NHSISL/MeshClient/main/Resources/MeshBannerNarrow.png"></a>
+<a href="https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-meshm">
+<img src="https://raw.githubusercontent.com/NHSISL/MeshClient/main/Resources/MeshBannerNew.png">
+</a>
+
+![](https://github.com/NHSISL/MeshClient/blob/main/Resources/MeshBannerNarrow.png?raw=true)
 [![Build](https://github.com/NHSISL/MeshClient/actions/workflows/build.yml/badge.svg)](https://github.com/NHSISL/MeshClient/actions/workflows/build.yml)
 [![The Standard - COMPLIANT](https://img.shields.io/badge/The_Standard-COMPLIANT-2ea44f)](https://github.com/hassanhabib/The-Standard)
 [![Nuget](https://img.shields.io/nuget/v/NEL.MESH?logo=nuget)](https://www.nuget.org/packages/NEL.MESH)
@@ -17,11 +21,10 @@ Nel.Mesh is a Standard-Compliant .NET library built on top of (MESH) to enable s
 This library was built according to The Standard. The library follows engineering principles, patterns and tooling as recommended by The Standard.
 
 This library was also built to be a community lead effort in order to eventually have all mesh end points covered.
-<br/><br/>
 
 # Diagram of components
 
-![](Resources/drawIo.png)
+![](https://github.com/NHSISL/MeshClient/blob/main/Resources/drawIo.png?raw=true)
 
 **NOTE**: Please find below the methods exposed on the Mesh Client.
 <br/><br/>
