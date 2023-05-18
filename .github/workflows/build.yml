@@ -71,7 +71,7 @@ jobs:
     - name: Extract Version Number
       id: extract_version
       run: |
-        echo "::set-output name=version_number::$(grep -oP '(?<=<Version>)[^<]+' NEL.MESH/NEL.MESH.csproj)"
+        echo "version_number=$(grep -oP '(?<=<Version>)[^<]+' NEL.MESH/NEL.MESH.csproj)" >> $GITHUB_ENV
     - name: Print Version Number
       run:
         echo "Release version number is ${{ steps.extract_version.outputs.version_number }}"
