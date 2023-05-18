@@ -84,6 +84,7 @@ jobs:
         git config user.email "action@github.com"
     - name: Generate Release Notes
       run: |-
+        npm install -g uuid@latest
         npm install -g conventional-changelog-cli
         npx conventional-changelog-cli -p angular -i CHANGELOG.md -s -r 0
     - name: Add Git Tag - Release
