@@ -10,7 +10,7 @@ Nel.Mesh is a Standard-Compliant .NET library built on top of (MESH) to enable s
 **MESH** - the Message Exchange for Social Care and Health  providing the ability to share data directly between health and care organisations and is the nationally recognised mechanism for this method of data sharing.
 
 [Link to NHS Digital](https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-mesh)
-<br/><br/>
+
 # Standard-Compliance
 This library was built according to The Standard. The library follows engineering principles, patterns and tooling as recommended by The Standard.
 
@@ -61,7 +61,6 @@ This is also called digital on-boarding. You'll need to submit information that 
 - You can manage risks
 - Your software conforms technically with the requirements for this API
 - This API can only be used where there is a legal basis to do so and you will be asked you to demonstrate this as part of the digital onboarding process before your software goes live.
-<br/><br/>
 
 # Current Mesh Functionality
 
