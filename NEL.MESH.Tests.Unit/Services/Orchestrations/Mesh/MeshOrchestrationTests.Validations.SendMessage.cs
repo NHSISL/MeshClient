@@ -141,6 +141,5 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             this.meshServiceMock.VerifyNoOtherCalls();
             this.tokenServiceMock.VerifyNoOtherCalls();
         }
-
     }
 }
