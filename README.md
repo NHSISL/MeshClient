@@ -18,7 +18,7 @@ This library was also built to be a community lead effort in order to eventually
 
 # Diagram of components
 
-![](https://raw.githubusercontent.com/NHSISL/MeshClient/blob/main/Resources/drawIo.png)
+![](https://raw.githubusercontent.com/NHSISL/MeshClient/main/Resources/drawIo.png)
 
 **NOTE**: Please find below the methods exposed on the Mesh Client.
 
