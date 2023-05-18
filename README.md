@@ -1,30 +1,27 @@
-# MESH CLIENT
-
-<a href="https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-meshm"><img src="https://raw.githubusercontent.com/NHSISL/MeshClient/main/Resources/MeshBannerNarrow.png"></a>
+![](https://github.com/NHSISL/MeshClient/blob/main/Resources/MeshBannerNew.png?raw=true)
 [![Build](https://github.com/NHSISL/MeshClient/actions/workflows/build.yml/badge.svg)](https://github.com/NHSISL/MeshClient/actions/workflows/build.yml)
 [![The Standard - COMPLIANT](https://img.shields.io/badge/The_Standard-COMPLIANT-2ea44f)](https://github.com/hassanhabib/The-Standard)
 [![Nuget](https://img.shields.io/nuget/v/NEL.MESH?logo=nuget)](https://www.nuget.org/packages/NEL.MESH)
 ![Nuget](https://img.shields.io/nuget/dt/NEL.MESH?color=blue&label=Downloads)
-<br/><br/>
+
 # Introduction
 Nel.Mesh is a Standard-Compliant .NET library built on top of (MESH) to enable software engineers to develop Mesh compliant solutions in .NET
 
 **MESH** - the Message Exchange for Social Care and Health  providing the ability to share data directly between health and care organisations and is the nationally recognised mechanism for this method of data sharing.
 
 [Link to NHS Digital](https://digital.nhs.uk/services/message-exchange-for-social-care-and-health-mesh)
-<br/><br/>
+
 # Standard-Compliance
 This library was built according to The Standard. The library follows engineering principles, patterns and tooling as recommended by The Standard.
 
 This library was also built to be a community lead effort in order to eventually have all mesh end points covered.
-<br/><br/>
 
 # Diagram of components
 
-![](Resources/drawIo.png)
+![](https://github.com/NHSISL/MeshClient/blob/main/Resources/drawIo.png?raw=true)
 
 **NOTE**: Please find below the methods exposed on the Mesh Client.
-<br/><br/>
+
 # Install library?
 
 You can get Nel.Mesh [Nuget](https://www.nuget.org/packages/NEL.MESH/) package by typing:
@@ -64,7 +61,6 @@ This is also called digital on-boarding. You'll need to submit information that 
 - You can manage risks
 - Your software conforms technically with the requirements for this API
 - This API can only be used where there is a legal basis to do so and you will be asked you to demonstrate this as part of the digital onboarding process before your software goes live.
-<br/><br/>
 
 # Current Mesh Functionality
 
