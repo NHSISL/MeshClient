@@ -60,7 +60,6 @@ jobs:
     needs:
     - build
     if: >
-      ${{ success() }} &&
       github.event.pull_request.merged &&
       github.event.pull_request.base.ref == 'main' &&
       startsWith(github.event.pull_request.title, 'RELEASES:') &&
