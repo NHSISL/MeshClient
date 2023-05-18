@@ -1,4 +1,4 @@
-![](https://github.com/NHSISL/MeshClient/blob/main/Resources/MeshBannerNew.png?raw=true)
+![](https://raw.githubusercontent.com/NHSISL/MeshClient/main/Resources/MeshBannerNew.png)
 [![Build](https://github.com/NHSISL/MeshClient/actions/workflows/build.yml/badge.svg)](https://github.com/NHSISL/MeshClient/actions/workflows/build.yml)
 [![The Standard - COMPLIANT](https://img.shields.io/badge/The_Standard-COMPLIANT-2ea44f)](https://github.com/hassanhabib/The-Standard)
 [![Nuget](https://img.shields.io/nuget/v/NEL.MESH?logo=nuget)](https://www.nuget.org/packages/NEL.MESH)
@@ -18,7 +18,7 @@ This library was also built to be a community lead effort in order to eventually
 
 # Diagram of components
 
-![](https://github.com/NHSISL/MeshClient/blob/main/Resources/drawIo.png?raw=true)
+![](https://raw.githubusercontent.com/NHSISL/MeshClient/blob/main/Resources/drawIo.png)
 
 **NOTE**: Please find below the methods exposed on the Mesh Client.
 
