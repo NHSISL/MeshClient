@@ -5,13 +5,13 @@ VisualStudioVersion = 17.6.33417.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEL.MESH", "NEL.MESH\NEL.MESH.csproj", "{1A553B8B-F4E1-4ABA-98EE-8213EED4EA03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEL.MESH.Tests.Unit", "NEL.MESH.Tests.Unit\NEL.MESH.Tests.Unit.csproj", "{5BF68B80-AF49-4763-9675-B25F8F84ABAA}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEL.MESH.Tests.Acceptance", "NEL.MESH.Tests.Acceptance\NEL.MESH.Tests.Acceptance.csproj", "{299FC8D5-3EB4-433E-A915-B793009C7B85}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEL.MESH.Tests.Integration", "NEL.MESH.Tests.Integration\NEL.MESH.Tests.Integration.csproj", "{D926BCA6-2F8C-4C39-A56E-34ED86B09542}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEL.MESH.Infrastructure", "NEL.MESH.Infrastructure\NEL.MESH.Infrastructure.csproj", "{F46C41FB-3129-4996-B272-1A5F7D477DDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEL.MESH.Infrastructure", "NEL.MESH.Infrastructure\NEL.MESH.Infrastructure.csproj", "{F46C41FB-3129-4996-B272-1A5F7D477DDA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEL.Mesh.Tests.Unit", "..\..\..\..\..\Repos\MeshClient\NEL.MESH.Tests.Unit\NEL.Mesh.Tests.Unit.csproj", "{3F1F2886-46A5-46FD-8CBB-C6EDA75BE03D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,14 +29,6 @@ Global
 		{1A553B8B-F4E1-4ABA-98EE-8213EED4EA03}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1A553B8B-F4E1-4ABA-98EE-8213EED4EA03}.Test|Any CPU.ActiveCfg = Release|Any CPU
 		{1A553B8B-F4E1-4ABA-98EE-8213EED4EA03}.Test|Any CPU.Build.0 = Release|Any CPU
-		{5BF68B80-AF49-4763-9675-B25F8F84ABAA}.Acceptance|Any CPU.ActiveCfg = Acceptance|Any CPU
-		{5BF68B80-AF49-4763-9675-B25F8F84ABAA}.Acceptance|Any CPU.Build.0 = Acceptance|Any CPU
-		{5BF68B80-AF49-4763-9675-B25F8F84ABAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5BF68B80-AF49-4763-9675-B25F8F84ABAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5BF68B80-AF49-4763-9675-B25F8F84ABAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5BF68B80-AF49-4763-9675-B25F8F84ABAA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5BF68B80-AF49-4763-9675-B25F8F84ABAA}.Test|Any CPU.ActiveCfg = Test|Any CPU
-		{5BF68B80-AF49-4763-9675-B25F8F84ABAA}.Test|Any CPU.Build.0 = Test|Any CPU
 		{299FC8D5-3EB4-433E-A915-B793009C7B85}.Acceptance|Any CPU.ActiveCfg = Acceptance|Any CPU
 		{299FC8D5-3EB4-433E-A915-B793009C7B85}.Acceptance|Any CPU.Build.0 = Acceptance|Any CPU
 		{299FC8D5-3EB4-433E-A915-B793009C7B85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -61,6 +53,14 @@ Global
 		{F46C41FB-3129-4996-B272-1A5F7D477DDA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F46C41FB-3129-4996-B272-1A5F7D477DDA}.Test|Any CPU.ActiveCfg = Debug|Any CPU
 		{F46C41FB-3129-4996-B272-1A5F7D477DDA}.Test|Any CPU.Build.0 = Debug|Any CPU
+		{3F1F2886-46A5-46FD-8CBB-C6EDA75BE03D}.Acceptance|Any CPU.ActiveCfg = Acceptance|Any CPU
+		{3F1F2886-46A5-46FD-8CBB-C6EDA75BE03D}.Acceptance|Any CPU.Build.0 = Acceptance|Any CPU
+		{3F1F2886-46A5-46FD-8CBB-C6EDA75BE03D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F1F2886-46A5-46FD-8CBB-C6EDA75BE03D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F1F2886-46A5-46FD-8CBB-C6EDA75BE03D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F1F2886-46A5-46FD-8CBB-C6EDA75BE03D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F1F2886-46A5-46FD-8CBB-C6EDA75BE03D}.Test|Any CPU.ActiveCfg = Test|Any CPU
+		{3F1F2886-46A5-46FD-8CBB-C6EDA75BE03D}.Test|Any CPU.Build.0 = Test|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
