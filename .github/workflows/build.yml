@@ -80,9 +80,13 @@ jobs:
         token: ${{ secrets.PAT_FOR_TAGGING }}
     - name: Configure Git
       run: |-
-        git config user.name "Add Git Release Tag Action"
-        git config user.email "github.action@noreply.github.com"
+        git config user.name "GitHub Action"
+        git config user.email "action@github.com"
+    - name: Generate Release Notes
+      run: npx conventional-changelog-cli -p angular -i CHANGELOG.md -s -r 0
     - name: Add Git Tag - Release
       run: |-
+        git add CHANGELOG.md
+        git commit -m "Update release notes"
         git tag -a "release-${{ steps.extract_version.outputs.version_number }}" -m "Release ${{ steps.extract_version.outputs.version_number }}"
         git push origin --tags
