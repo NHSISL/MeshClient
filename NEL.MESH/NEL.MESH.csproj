@@ -23,7 +23,7 @@
 		<RepositoryUrl>https://github.com/TowerHamletsCCG/MeshClient</RepositoryUrl>
 		<RepositoryType>Github</RepositoryType>
 		<PackageTags>.NET Client MESH Messaging</PackageTags>
-		<PackageReleaseNotes>Added A .NET Client To Send And Recieve MESH messages</PackageReleaseNotes>
+		<PackageReleaseNotes>A .NET Client To Send And Recieve MESH messages</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
