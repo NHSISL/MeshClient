@@ -110,11 +110,13 @@ jobs:
     steps:
     - name: Check out
       uses: actions/checkout@v3
+      with:
+        path: '**/NEL.MESH.Tests.Unit.csproj'
     - name: Setup .Net
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.201
-    - name: Restore NuGet Packages
+    - name: Restore
       run: dotnet restore
     - name: Build Release
       run: dotnet build --no-restore --configuration Release
