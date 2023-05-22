@@ -28,7 +28,7 @@ env:
     }}
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     env:
       NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID: ${{ secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID }}
       NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__PASSWORD: ${{ secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__PASSWORD }}
@@ -110,8 +110,6 @@ jobs:
     steps:
     - name: Check out
       uses: actions/checkout@v3
-      with:
-        path: '**/NEL.MESH.Tests.Unit.csproj'
     - name: Setup .Net
       uses: actions/setup-dotnet@v3
       with:
