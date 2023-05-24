@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using NEL.MESH.Models.Students;
 using NEL.MESH.Models.Students.Exceptions;
 using Xeptions;
@@ -23,6 +24,13 @@ namespace NEL.MESH.Services.Foundations.Students
             {
                 throw CreateAndLogValidationException(invalidStudentException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedStudentStorageException =
+                    new FailedStudentStorageException(sqlException);
+
+                throw CreateAndLogCriticalDependencyException(failedStudentStorageException);
+            }
         }
 
         private StudentValidationException CreateAndLogValidationException(Xeption exception)
@@ -33,6 +41,14 @@ namespace NEL.MESH.Services.Foundations.Students
             this.loggingBroker.LogError(studentValidationException);
 
             return studentValidationException;
+        }
+
+        private StudentDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var studentDependencyException = new StudentDependencyException(exception);
+            this.loggingBroker.LogCritical(studentDependencyException);
+
+            return studentDependencyException;
         }
     }
 }
