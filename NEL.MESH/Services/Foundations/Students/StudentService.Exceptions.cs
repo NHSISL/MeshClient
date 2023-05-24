@@ -19,6 +19,10 @@ namespace NEL.MESH.Services.Foundations.Students
             {
                 throw CreateAndLogValidationException(nullStudentException);
             }
+            catch (InvalidStudentException invalidStudentException)
+            {
+                throw CreateAndLogValidationException(invalidStudentException);
+            }
         }
 
         private StudentValidationException CreateAndLogValidationException(Xeption exception)
