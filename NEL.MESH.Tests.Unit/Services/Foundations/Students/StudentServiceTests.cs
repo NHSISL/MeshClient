@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using Moq;
 using NEL.MESH.Brokers.DateTimes;
 using NEL.MESH.Brokers.Loggings;
@@ -6,6 +7,7 @@ using NEL.MESH.Brokers.Storages;
 using NEL.MESH.Models.Students;
 using NEL.MESH.Services.Foundations.Students;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace NEL.MESH.Tests.Unit.Services.Foundations.Students
 {
@@ -27,6 +29,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Students
                 dateTimeBroker: this.dateTimeBrokerMock.Object,
                 loggingBroker: this.loggingBrokerMock.Object);
         }
+
+        private static Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static DateTimeOffset GetRandomDateTimeOffset() =>
             new DateTimeRange(earliestDate: new DateTime()).GetValue();
