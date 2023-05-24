@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using NEL.MESH.Brokers.DateTimes;
 using NEL.MESH.Brokers.Loggings;
@@ -29,5 +30,8 @@ namespace NEL.MESH.Services.Foundations.Students
 
                 return await this.storageBroker.InsertStudentAsync(student);
             });
+
+        public IQueryable<Student> RetrieveAllStudents() =>
+            throw new System.NotImplementedException();
     }
 }
