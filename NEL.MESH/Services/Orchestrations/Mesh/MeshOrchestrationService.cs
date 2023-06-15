@@ -45,7 +45,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             TryCatch(async () =>
             {
                 ValidateMessageIsNotNull(message);
-                SetHeader(message, "Mex-From", this.meshConfigurationBroker.MexFrom);
+                SetHeader(message, "mex-from", this.meshConfigurationBroker.MexFrom);
                 List<Message> chunkedMessages = this.chunkService.SplitMessageIntoChunks(message);
                 ValidateChunksOnSendMessage(chunkedMessages);
                 Message outputMessage = null;

@@ -90,9 +90,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 FileContent = null
             };
 
-            randomMessage.Headers.Add("Mex-From", new List<string> { invalidInput });
-            randomMessage.Headers.Add("Mex-To", new List<string> { invalidInput });
-            randomMessage.Headers.Add("Mex-WorkflowID", new List<string> { invalidInput });
+            randomMessage.Headers.Add("mex-from", new List<string> { invalidInput });
+            randomMessage.Headers.Add("mex-to", new List<string> { invalidInput });
+            randomMessage.Headers.Add("mex-workflowid", new List<string> { invalidInput });
 
             var invalidMeshException =
                 new InvalidMeshException();
@@ -102,15 +102,15 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 values: "Text is required");
 
             invalidMeshException.AddData(
-                key: "Mex-From",
+                key: "mex-from",
                 values: "Header value is required");
 
             invalidMeshException.AddData(
-                key: "Mex-To",
+                key: "mex-to",
                 values: "Header value is required");
 
             invalidMeshException.AddData(
-                key: "Mex-WorkflowID",
+                key: "mex-workflowid",
                 values: "Header value is required");
 
             invalidMeshException.AddData(
@@ -149,35 +149,35 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                new InvalidMeshException();
 
             invalidMeshException.AddData(
-                key: "Mex-From",
+                key: "mex-from",
                 values: $"Text length should not be greater than 100");
 
             invalidMeshException.AddData(
-                key: "Mex-To",
+                key: "mex-to",
                 values: $"Text length should not be greater than 100");
 
             invalidMeshException.AddData(
-                key: "Mex-WorkflowID",
+                key: "mex-workflowid",
                 values: $"Text length should not be greater than 300");
 
             invalidMeshException.AddData(
-                key: "Mex-Chunk-Range",
+                key: "mex-chunk-range",
                 values: $"Text length should not be greater than 20");
 
             invalidMeshException.AddData(
-                key: "Mex-Subject",
+                key: "mex-subject",
                 values: $"Text length should not be greater than 500");
 
             invalidMeshException.AddData(
-                key: "Mex-LocalID",
+                key: "mex-localid",
                 values: $"Text length should not be greater than 300");
 
             invalidMeshException.AddData(
-                key: "Mex-FileName",
+                key: "mex-filename",
                 values: $"Text length should not be greater than 300");
 
             invalidMeshException.AddData(
-                key: "Mex-Content-Checksum",
+                key: "mex-content-checksum",
                 values: $"Text length should not be greater than 100");
 
             var expectedMeshValidationException =

@@ -58,24 +58,24 @@ namespace NEL.MESH.Services.Foundations.Mesh
             ValidateHeadersIsNotNull(message);
             Validate<InvalidMeshException>(
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"),
-                (Rule: IsInvalid(message.Headers, "Mex-From"), Parameter: "Mex-From"),
-                (Rule: IsInvalid(message.Headers, "Mex-To"), Parameter: "Mex-To"),
-                (Rule: IsInvalid(message.Headers, "Mex-WorkflowID"), Parameter: "Mex-WorkflowID"),
-                (Rule: IsInvalid(message.Headers, "Mex-From", 100), Parameter: "Mex-From"),
-                (Rule: IsInvalid(message.Headers, "Mex-To", 100), Parameter: "Mex-To"),
-                (Rule: IsInvalid(message.Headers, "Mex-WorkflowID", 300), Parameter: "Mex-WorkflowID"),
-                (Rule: IsInvalid(message.Headers, "Mex-Chunk-Range", 20), Parameter: "Mex-Chunk-Range"),
-                (Rule: IsInvalid(message.Headers, "Mex-Subject", 500), Parameter: "Mex-Subject"),
-                (Rule: IsInvalid(message.Headers, "Mex-LocalID", 300), Parameter: "Mex-LocalID"),
-                (Rule: IsInvalid(message.Headers, "Mex-FileName", 300), Parameter: "Mex-FileName"),
-                (Rule: IsInvalid(message.Headers, "Mex-Content-Checksum", 100), Parameter: "Mex-Content-Checksum"),
+                (Rule: IsInvalid(message.Headers, "mex-from"), Parameter: "mex-from"),
+                (Rule: IsInvalid(message.Headers, "mex-to"), Parameter: "mex-to"),
+                (Rule: IsInvalid(message.Headers, "mex-workflowid"), Parameter: "mex-workflowid"),
+                (Rule: IsInvalid(message.Headers, "mex-from", 100), Parameter: "mex-from"),
+                (Rule: IsInvalid(message.Headers, "mex-to", 100), Parameter: "mex-to"),
+                (Rule: IsInvalid(message.Headers, "mex-workflowid", 300), Parameter: "mex-workflowid"),
+                (Rule: IsInvalid(message.Headers, "mex-chunk-range", 20), Parameter: "mex-chunk-range"),
+                (Rule: IsInvalid(message.Headers, "mex-subject", 500), Parameter: "mex-subject"),
+                (Rule: IsInvalid(message.Headers, "mex-localid", 300), Parameter: "mex-localid"),
+                (Rule: IsInvalid(message.Headers, "mex-filename", 300), Parameter: "mex-filename"),
+                (Rule: IsInvalid(message.Headers, "mex-content-checksum", 100), Parameter: "mex-content-checksum"),
                 (Rule: IsInvalid(message.FileContent), Parameter: nameof(Message.FileContent)));
         }
 
         private static void ValidateMexChunkRangeOnMultiPartFile(Message message)
         {
             Validate<InvalidMeshException>(
-                (Rule: IsInvalid(message.Headers, "Mex-Chunk-Range"), Parameter: "Mex-Chunk-Range"));
+                (Rule: IsInvalid(message.Headers, "mex-chunk-range"), Parameter: "mex-chunk-range"));
         }
 
         public static void ValidateTrackMessageArguments(string messageId, string authorizationToken)

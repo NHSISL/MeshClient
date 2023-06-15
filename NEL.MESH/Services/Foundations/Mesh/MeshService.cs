@@ -39,7 +39,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 ValidateMeshMessageOnSendMessage(message, authorizationToken);
 
-                string chunkRange = GetKeyStringValue("Mex-Chunk-Range", message.Headers)
+                string chunkRange = GetKeyStringValue("mex-chunk-range", message.Headers)
                     .Replace("{", string.Empty)
                         .Replace("}", string.Empty)
                             .Trim();
@@ -63,17 +63,17 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 {
                     responseMessage = await this.meshBroker.SendMessageAsync(
                         authorizationToken,
-                        mexFrom: GetKeyStringValue("Mex-From", message.Headers),
-                        mexTo: GetKeyStringValue("Mex-To", message.Headers),
-                        mexWorkflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
-                        mexChunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
-                        mexSubject: GetKeyStringValue("Mex-Subject", message.Headers),
-                        mexLocalId: GetKeyStringValue("Mex-LocalID", message.Headers),
-                        mexFileName: GetKeyStringValue("Mex-FileName", message.Headers),
-                        mexContentChecksum: GetKeyStringValue("Mex-Content-Checksum", message.Headers),
-                        contentType: GetKeyStringValue("Content-Type", message.Headers),
-                        contentEncoding: GetKeyStringValue("Content-Encoding", message.Headers),
-                        accept: GetKeyStringValue("Accept", message.Headers),
+                        mexFrom: GetKeyStringValue("mex-from", message.Headers),
+                        mexTo: GetKeyStringValue("mex-to", message.Headers),
+                        mexWorkflowId: GetKeyStringValue("mex-workflowid", message.Headers),
+                        mexChunkRange: GetKeyStringValue("mex-chunk-range", message.Headers),
+                        mexSubject: GetKeyStringValue("mex-subject", message.Headers),
+                        mexLocalId: GetKeyStringValue("mex-localid", message.Headers),
+                        mexFileName: GetKeyStringValue("mex-filename", message.Headers),
+                        mexContentChecksum: GetKeyStringValue("mex-content-checksum", message.Headers),
+                        contentType: GetKeyStringValue("content-type", message.Headers),
+                        contentEncoding: GetKeyStringValue("content-encoding", message.Headers),
+                        accept: GetKeyStringValue("accept", message.Headers),
                         fileContents: message.FileContent);
                 }
                 else
@@ -83,17 +83,17 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
                     responseMessage = await this.meshBroker.SendMessageAsync(
                         authorizationToken,
-                        mexFrom: GetKeyStringValue("Mex-From", message.Headers),
-                        mexTo: GetKeyStringValue("Mex-To", message.Headers),
-                        mexWorkflowId: GetKeyStringValue("Mex-WorkflowID", message.Headers),
-                        mexChunkRange: GetKeyStringValue("Mex-Chunk-Range", message.Headers),
-                        mexSubject: GetKeyStringValue("Mex-Subject", message.Headers),
-                        mexLocalId: GetKeyStringValue("Mex-LocalID", message.Headers),
-                        mexFileName: GetKeyStringValue("Mex-FileName", message.Headers),
-                        mexContentChecksum: GetKeyStringValue("Mex-Content-Checksum", message.Headers),
-                        contentType: GetKeyStringValue("Content-Type", message.Headers),
-                        contentEncoding: GetKeyStringValue("Content-Encoding", message.Headers),
-                        accept: GetKeyStringValue("Accept", message.Headers),
+                        mexFrom: GetKeyStringValue("mex-from", message.Headers),
+                        mexTo: GetKeyStringValue("mex-to", message.Headers),
+                        mexWorkflowId: GetKeyStringValue("mex-workflowid", message.Headers),
+                        mexChunkRange: GetKeyStringValue("mex-chunk-range", message.Headers),
+                        mexSubject: GetKeyStringValue("mex-subject", message.Headers),
+                        mexLocalId: GetKeyStringValue("mex-localid", message.Headers),
+                        mexFileName: GetKeyStringValue("mex-filename", message.Headers),
+                        mexContentChecksum: GetKeyStringValue("mex-content-checksum", message.Headers),
+                        contentType: GetKeyStringValue("content-type", message.Headers),
+                        contentEncoding: GetKeyStringValue("content-encoding", message.Headers),
+                        accept: GetKeyStringValue("accept", message.Headers),
                         fileContents: message.FileContent,
                         messageId: message.MessageId,
                         chunkNumber: chunkNumber.ToString());
@@ -175,12 +175,12 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
                 foreach (var header in initialResponse.Headers)
                 {
-                    firstMessage.Headers.Add(header.Key, header.Value.ToList());
+                    firstMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
                 }
 
                 foreach (var header in initialResponse.Content.Headers)
                 {
-                    firstMessage.Headers.Add(header.Key, header.Value.ToList());
+                    firstMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
                 }
 
                 if (initialResponse.StatusCode == HttpStatusCode.OK)
@@ -189,7 +189,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 }
 
                 var chunks = initialResponse.Content.Headers
-                    .FirstOrDefault(h => h.Key == "Mex-Chunk-Range")
+                    .FirstOrDefault(h => h.Key == "mex-chunk-range")
                         .Value.FirstOrDefault();
 
                 string chunkRange = chunks.Replace("{", string.Empty).Replace("}", string.Empty);
@@ -230,7 +230,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
             foreach (var header in responseMessage.Content.Headers)
             {
                 outputMessage.Headers
-                    .Add(header.Key, header.Value.ToList());
+                    .Add(header.Key.ToLower(), header.Value.ToList());
             }
         }
 
