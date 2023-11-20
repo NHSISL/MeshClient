@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEL.MESH.Infrastructure", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEL.Mesh.Tests.Unit", "NEL.MESH.Tests.Unit\NEL.Mesh.Tests.Unit.csproj", "{4ABB1AAA-A120-4E22-AF08-ABB553CBF1B5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEL.MESH.Tests.Integration.Witness", "NEL.MESH.Tests.Integration.Witness\NEL.MESH.Tests.Integration.Witness.csproj", "{BD5A3296-9B5B-4EDF-AD42-586DBFF7DAF4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Acceptance|Any CPU = Acceptance|Any CPU
@@ -61,6 +63,14 @@ Global
 		{4ABB1AAA-A120-4E22-AF08-ABB553CBF1B5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4ABB1AAA-A120-4E22-AF08-ABB553CBF1B5}.Test|Any CPU.ActiveCfg = Test|Any CPU
 		{4ABB1AAA-A120-4E22-AF08-ABB553CBF1B5}.Test|Any CPU.Build.0 = Test|Any CPU
+		{BD5A3296-9B5B-4EDF-AD42-586DBFF7DAF4}.Acceptance|Any CPU.ActiveCfg = Acceptance|Any CPU
+		{BD5A3296-9B5B-4EDF-AD42-586DBFF7DAF4}.Acceptance|Any CPU.Build.0 = Acceptance|Any CPU
+		{BD5A3296-9B5B-4EDF-AD42-586DBFF7DAF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD5A3296-9B5B-4EDF-AD42-586DBFF7DAF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD5A3296-9B5B-4EDF-AD42-586DBFF7DAF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD5A3296-9B5B-4EDF-AD42-586DBFF7DAF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD5A3296-9B5B-4EDF-AD42-586DBFF7DAF4}.Test|Any CPU.ActiveCfg = Test|Any CPU
+		{BD5A3296-9B5B-4EDF-AD42-586DBFF7DAF4}.Test|Any CPU.Build.0 = Test|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
