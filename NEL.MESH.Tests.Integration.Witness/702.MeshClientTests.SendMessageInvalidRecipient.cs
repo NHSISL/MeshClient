@@ -3,8 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -16,24 +14,26 @@ namespace NEL.MESH.Tests.Integration.Witness
     {
         [Fact]
         [Trait("Category", "Witness")]
-        public async Task ShouldAcknowledgeMessageAsync()
+        public async Task ShouldErrorSendMessageInvalidRecipientAsync()
         {
             // given
-            string mexTo = this.meshConfigurations.MailboxId;
-            string mexWorkflowId = "INTEGRATION TEST";
-            byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString());
-            string mexSubject = "INTEGRATION TEST -  ShouldAcknowledgeMessageAsync";
+            // string mexTo = this.meshConfigurations.MailboxId;
+            string mexTo = "aninvalidid1234";
+            string mexWorkflowId = "WHITNESS TEST";
+            string content = "9694116538, 9694116414"; //Test Patients
+            string mexSubject = "WHITNESS TEST -  ShouldSendMessageAsync";
             string mexLocalId = Guid.NewGuid().ToString();
-            string mexFileName = $"ShouldAcknowledgeMessageAsync.csv";
+            string mexFileName = $"ShouldSendMessageAsync.csv";
             string mexContentChecksum = Guid.NewGuid().ToString();
-            string contentType = "application/octet-stream";
+            string contentType = "text/plain";
             string contentEncoding = "";
 
+            // when
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    content,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -41,12 +41,9 @@ namespace NEL.MESH.Tests.Integration.Witness
                     contentType,
                     contentEncoding);
 
-            // when
-            await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
-            List<string> messageList = await this.meshClient.Mailbox.RetrieveMessagesAsync();
-
             // then
-            messageList.Should().NotContain(sendMessageResponse.MessageId);
+            sendMessageResponse.MessageId.Should().NotBeNullOrEmpty();
+            await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
         }
     }
 }

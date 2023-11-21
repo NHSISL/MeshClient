@@ -4,6 +4,7 @@
 
 using System.Threading.Tasks;
 using FluentAssertions;
+using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
 namespace NEL.MESH.Tests.Integration.Witness
@@ -12,16 +13,19 @@ namespace NEL.MESH.Tests.Integration.Witness
     {
         [Fact]
         [Trait("Category", "Witness")]
-        public async Task ShouldDoHandshakeAsync()
+        public async Task ShouldErrorSendMessageUndeliveredMessageAsync()
         {
             // given
-            bool expectedResult = true;
+            // Change MailboxId and Password to match deadletter mailbox
+            string invalidMessageId = "20231117125902185257_995DE8";
 
             // when
-            bool actualResult = await this.meshClient.Mailbox.HandshakeAsync();
+
+            Message retrievedMessage =
+                    await this.meshClient.Mailbox.RetrieveMessageAsync(invalidMessageId);
 
             // then
-            actualResult.Should().Be(expectedResult);
+            retrievedMessage.MessageId.Should().BeEquivalentTo(invalidMessageId);
         }
     }
 }

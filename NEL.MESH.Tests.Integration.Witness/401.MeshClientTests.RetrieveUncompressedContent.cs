@@ -20,11 +20,11 @@ namespace NEL.MESH.Tests.Integration.Witness
         {
             // given
             string mexTo = this.meshConfigurations.MailboxId;
-            string mexWorkflowId = "INTEGRATION TEST";
-            string content = GetRandomString();
-            string mexSubject = "INTEGRATION TEST -  ShouldRetrieveStringMessageAsync";
+            string mexWorkflowId = "401 WITNESS TEST";
+            string content = "9694116538, 9694116414"; //Test Patients
+            string mexSubject = "WITNESS TEST -  ShouldRetrieveStringMessageUncompressed";
             string mexLocalId = Guid.NewGuid().ToString();
-            string mexFileName = $"ShouldRetrieveStringMessageAsync.csv";
+            string mexFileName = $"ShouldRetrieveStringMessageUncompressed.csv";
             string mexContentChecksum = Guid.NewGuid().ToString();
             string contentType = "text/plain";
             string contentEncoding = "";
@@ -65,14 +65,14 @@ namespace NEL.MESH.Tests.Integration.Witness
         }
 
         [Fact]
-        [Trait("Category", "Integration")]
+        [Trait("Category", "Witness")]
         public async Task ShouldRetrieveFileMessageAsync()
         {
             // given
             string mexTo = this.meshConfigurations.MailboxId;
-            string mexWorkflowId = "INTEGRATION TEST";
-            byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString());
-            string mexSubject = "INTEGRATION TEST -  ShouldRetrieveFileMessageAsync";
+            string mexWorkflowId = "401 WITNESS TEST FILE";
+            byte[] fileContent = Encoding.ASCII.GetBytes("9694116538, 9694116414");
+            string mexSubject = "WITNESS TEST -  ShouldRetrieveFileMessageAsync";
             string mexLocalId = Guid.NewGuid().ToString();
             string mexFileName = $"ShouldRetrieveFileMessageAsync.csv";
             string mexContentChecksum = Guid.NewGuid().ToString();

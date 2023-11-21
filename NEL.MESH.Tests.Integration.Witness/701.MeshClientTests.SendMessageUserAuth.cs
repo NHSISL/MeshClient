@@ -14,13 +14,15 @@ namespace NEL.MESH.Tests.Integration.Witness
     {
         [Fact]
         [Trait("Category", "Witness")]
-        public async Task ShouldSendMessageAsync()
+        public async Task ShouldErrorSendMessageUserAuthAsync()
         {
             // given
+            //Connecting system's mailbox disabled through MOLES (by HSCIC)
+
             string mexTo = this.meshConfigurations.MailboxId;
-            string mexWorkflowId = "INTEGRATION TEST";
-            string content = GetRandomString();
-            string mexSubject = "INTEGRATION TEST -  ShouldSendMessageAsync";
+            string mexWorkflowId = "WHITNESS TEST";
+            string content = "9694116538, 9694116414"; //Test Patients
+            string mexSubject = "WHITNESS TEST -  ShouldSendMessageAsync";
             string mexLocalId = Guid.NewGuid().ToString();
             string mexFileName = $"ShouldSendMessageAsync.csv";
             string mexContentChecksum = Guid.NewGuid().ToString();

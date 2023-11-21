@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -15,19 +14,20 @@ namespace NEL.MESH.Tests.Integration.Witness
     {
         [Fact]
         [Trait("Category", "Witness")]
-        public async Task ShouldRetrieveMessagesAsync()
+        public async Task ShouldSendAndAcknowledgeMessageAsync()
         {
             // given
             string mexTo = this.meshConfigurations.MailboxId;
-            string mexWorkflowId = "INTEGRATION TEST";
-            string content = GetRandomString();
-            string mexSubject = "INTEGRATION TEST -  ShouldRetrieveMessagesAsync";
+            string mexWorkflowId = "WHITNESS TEST";
+            string content = "9694116538, 9694116414"; //Test Patients
+            string mexSubject = "WHITNESS TEST -  ShouldSendAndAckMessageAsync";
             string mexLocalId = Guid.NewGuid().ToString();
-            string mexFileName = $"ShouldRetrieveMessagesAsync.csv";
+            string mexFileName = $"ShouldSendAndAckMessageAsync.csv";
             string mexContentChecksum = Guid.NewGuid().ToString();
             string contentType = "text/plain";
             string contentEncoding = "";
 
+            // when
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
@@ -40,11 +40,8 @@ namespace NEL.MESH.Tests.Integration.Witness
                     contentType,
                     contentEncoding);
 
-            // when
-            List<string> messageList = await this.meshClient.Mailbox.RetrieveMessagesAsync();
-
             // then
-            messageList.Should().Contain(sendMessageResponse.MessageId);
+            sendMessageResponse.MessageId.Should().NotBeNullOrEmpty();
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
         }
     }

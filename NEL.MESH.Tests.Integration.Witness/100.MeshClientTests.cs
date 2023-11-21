@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Microsoft.Extensions.Configuration;
@@ -81,7 +82,7 @@ namespace NEL.MESH.Tests.Integration.Witness
             return new X509Certificate2(certBytes);
         }
 
-        private static string GetRandomString(int wordMinLength = 2, int wordMaxLength = 100) =>
+        private static string GetRandomString(int wordMinLength = 10, int wordMaxLength = 10) =>
             new MnemonicString(
                 wordCount: 1,
                 wordMinLength: 1,
@@ -89,6 +90,16 @@ namespace NEL.MESH.Tests.Integration.Witness
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
+
+        private static string GetFileWithXBytes(int targetSizeInMegabytes)
+        {
+            int bytesPerMegabyte = 1024 * 1024;
+            int targetSizeInBytes = targetSizeInMegabytes * bytesPerMegabyte;
+            string smallString = "9694116538, 9694116414,"; // Test Patients
+            int repeatCount = targetSizeInBytes / Encoding.UTF8.GetByteCount(smallString);
+
+            return string.Concat(Enumerable.Repeat(smallString, repeatCount));
+        }
 
         private static Message CreateRandomSendMessage(
             string mexFrom,

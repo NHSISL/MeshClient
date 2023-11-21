@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
@@ -14,22 +15,32 @@ namespace NEL.MESH.Tests.Integration.Witness
     {
         [Fact]
         [Trait("Category", "Witness")]
-        public async Task ShouldTrackMessageAsync()
+        public async Task ShouldSendChunckedMessageAsync()
         {
             // given
-            string sender = this.meshConfigurations.MailboxId;
-            string recipient = this.meshConfigurations.MailboxId;
-            string workflowId = "INTEGRATION TEST";
-
             string mexTo = this.meshConfigurations.MailboxId;
-            string mexWorkflowId = "INTEGRATION TEST";
-            string content = GetRandomString();
-            string mexSubject = "INTEGRATION TEST -  ShouldTrackMessageAsync";
+            string mexWorkflowId = "WITNESS TEST";
+            int targetSizeInMegabytes = 21; // You can adjust this value as needed
+            string content = GetFileWithXBytes(targetSizeInMegabytes);
+            string mexSubject = "WITNESS TEST -  ShouldRetrieveStringMessageAsync";
             string mexLocalId = Guid.NewGuid().ToString();
-            string mexFileName = $"ShouldTrackMessageAsync.csv";
+            string mexFileName = $"ShouldRetrieveStringMessageAsync.csv";
             string mexContentChecksum = Guid.NewGuid().ToString();
             string contentType = "text/plain";
             string contentEncoding = "";
+
+            Message randomMessage = ComposeMessage.CreateStringMessage(
+                mexTo,
+                mexWorkflowId,
+                content,
+                mexSubject,
+                mexLocalId,
+                mexFileName,
+                mexContentChecksum,
+                contentType,
+                contentEncoding);
+
+            Message expectedMessage = randomMessage;
 
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(
@@ -44,14 +55,13 @@ namespace NEL.MESH.Tests.Integration.Witness
                     contentEncoding);
 
             // when
-            Message trackedMessage = await this.meshClient.Mailbox.TrackMessageAsync(sendMessageResponse.MessageId);
+            Message retrievedMessage =
+                await this.meshClient.Mailbox.RetrieveMessageAsync(sendMessageResponse.MessageId);
 
             // then
-            trackedMessage.MessageId.Should().BeEquivalentTo(sendMessageResponse.MessageId);
-            trackedMessage.TrackingInfo.Should().NotBeNull();
-            trackedMessage.TrackingInfo.Sender.Should().BeEquivalentTo(sender);
-            trackedMessage.TrackingInfo.Recipient.Should().BeEquivalentTo(recipient);
-            trackedMessage.TrackingInfo.WorkflowId.Should().BeEquivalentTo(workflowId);
+            // output Chuncked filed
+            retrievedMessage.MessageId.Should().BeEquivalentTo(sendMessageResponse.MessageId);
+            retrievedMessage.FileContent.Should().BeEquivalentTo(expectedMessage.FileContent);
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
         }
     }
