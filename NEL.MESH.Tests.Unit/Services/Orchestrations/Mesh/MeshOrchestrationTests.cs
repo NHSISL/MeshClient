@@ -76,9 +76,9 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             return new TheoryData<Xeption>
             {
-                new TokenValidationException(innerException),
-                new TokenDependencyValidationException(innerException),
-                new MeshValidationException(innerException),
+                new TokenValidationException(innerException, innerException.Data),
+                new TokenDependencyValidationException(innerException, innerException.Data),
+                new MeshValidationException(innerException, innerException.Data),
                 new MeshDependencyValidationException(innerException, innerException.Data),
             };
         }

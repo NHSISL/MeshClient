@@ -35,7 +35,7 @@ namespace NEL.MESH.Services.Foundations.Tokens
         private TokenValidationException CreateValidationException(Xeption exception)
         {
             var tokenValidationException =
-                new TokenValidationException(exception);
+                new TokenValidationException(exception, exception.Data);
 
             return tokenValidationException;
         }

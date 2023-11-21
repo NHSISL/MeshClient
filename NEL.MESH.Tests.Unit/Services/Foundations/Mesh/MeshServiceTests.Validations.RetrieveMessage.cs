@@ -35,19 +35,21 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
               broker.GetMessageAsync(inputMessage.MessageId, invalidAuthorizationToken))
                   .ReturnsAsync(responseMessage);
 
-            var InvalidMeshArgsException =
+            var invalidMeshArgsException =
                 new InvalidArgumentsMeshException();
 
-            InvalidMeshArgsException.AddData(
+            invalidMeshArgsException.AddData(
                key: nameof(Message.MessageId),
                values: "Text is required");
 
-            InvalidMeshArgsException.AddData(
+            invalidMeshArgsException.AddData(
                 key: "Token",
                 values: "Text is required");
 
             var expectedMeshValidationException =
-                 new MeshValidationException(innerException: InvalidMeshArgsException);
+                 new MeshValidationException(
+                     innerException: invalidMeshArgsException,
+                     data: invalidMeshArgsException.Data);
 
             // when
             ValueTask<Message> getMessageTask =

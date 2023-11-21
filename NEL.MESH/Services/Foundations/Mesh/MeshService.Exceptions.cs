@@ -131,7 +131,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
         private MeshValidationException CreateValidationException(Xeption exception)
         {
-            var meshValidationException = new MeshValidationException(exception);
+            var meshValidationException = new MeshValidationException(exception, exception.Data);
 
             return meshValidationException;
         }
