@@ -24,7 +24,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new NullMessageException();
 
             var expectedMeshValidationException =
-                new MeshValidationException(nullMessageException);
+                new MeshValidationException(
+                    innerException: nullMessageException,
+                    data: nullMessageException.Data);
 
             // when
             ValueTask<Message> addMessageTask =
@@ -56,7 +58,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new NullHeadersException();
 
             var expectedMeshValidationException =
-                new MeshValidationException(nullHeadersException);
+                new MeshValidationException(
+                    innerException: nullHeadersException,
+                    data: nullHeadersException.Data);
 
             // when
             ValueTask<Message> addMessageTask =
@@ -118,7 +122,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 values: "Content is required");
 
             var expectedMeshValidationException =
-                new MeshValidationException(innerException: invalidMeshException);
+                new MeshValidationException(
+                    innerException: invalidMeshException,
+                    data: invalidMeshException.Data);
 
             // when
             ValueTask<Message> addMessageTask =
@@ -181,7 +187,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 values: $"Text length should not be greater than 100");
 
             var expectedMeshValidationException =
-                new MeshValidationException(innerException: invalidMeshException);
+                new MeshValidationException(
+                    innerException: invalidMeshException,
+                    data: invalidMeshException.Data);
 
             // when
             ValueTask<Message> addMessageTask =
@@ -220,7 +228,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 values: "Text is required");
 
             var expectedMeshValidationException =
-                new MeshValidationException(innerException: invalidMeshException);
+                new MeshValidationException(
+                    innerException: invalidMeshException,
+                    data: invalidMeshException.Data);
 
             // when
             ValueTask<Message> addMessageTask =
