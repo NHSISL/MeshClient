@@ -84,7 +84,8 @@ namespace NEL.MESH.Clients.Mailboxes
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshDependencyValidationException.InnerException as Xeption);
+                    meshDependencyValidationException.InnerException as Xeption,
+                    meshDependencyValidationException.InnerException.Data);
             }
             catch (MeshDependencyException meshDependencyException)
             {

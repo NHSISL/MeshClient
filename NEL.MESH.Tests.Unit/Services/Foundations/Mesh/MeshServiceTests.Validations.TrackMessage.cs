@@ -59,8 +59,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             var expectedMeshValidationException =
                 new MeshValidationException(
-                    innerException: invalidMeshArgsException,
-                    data: invalidMeshArgsException.Data);
+                    innerException: invalidMeshArgsException);
 
             // when
             ValueTask<Message> trackMessageTask =

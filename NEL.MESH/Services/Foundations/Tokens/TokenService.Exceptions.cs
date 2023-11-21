@@ -26,7 +26,7 @@ namespace NEL.MESH.Services.Foundations.Tokens
             catch (Exception exception)
             {
                 var failedTokenServiceException =
-                    new FailedTokenServiceException(exception);
+                    new FailedTokenServiceException(innerException: exception, data: exception.Data);
 
                 throw CreateServiceException(failedTokenServiceException);
             }
@@ -35,7 +35,7 @@ namespace NEL.MESH.Services.Foundations.Tokens
         private TokenValidationException CreateValidationException(Xeption exception)
         {
             var tokenValidationException =
-                new TokenValidationException(exception, exception.Data);
+                new TokenValidationException(innerException: exception);
 
             return tokenValidationException;
         }
@@ -43,7 +43,7 @@ namespace NEL.MESH.Services.Foundations.Tokens
         private TokenServiceException CreateServiceException(Xeption exception)
         {
             var tokenServiceException = new
-                TokenServiceException(exception);
+                TokenServiceException(innerException: exception);
 
             return tokenServiceException;
         }

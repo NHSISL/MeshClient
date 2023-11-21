@@ -13,9 +13,9 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageIcon>Mesh.png</PackageIcon>
 		<PackageIconUrl />
-		<Version>1.0.0.4</Version>
-		<AssemblyVersion>1.0.0.4</AssemblyVersion>
-		<FileVersion>1.0.0.4</FileVersion>
+		<Version>1.0.0.5</Version>
+		<AssemblyVersion>1.0.0.5</AssemblyVersion>
+		<FileVersion>1.0.0.5</FileVersion>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageLicenseExpression></PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/TowerHamletsCCG/MeshClient</PackageProjectUrl>

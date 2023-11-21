@@ -35,10 +35,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
                     .Returns(meshConfiguration);
 
             string someMessage = GetRandomString();
-            Exception someException = new Exception(someMessage);
+            Exception someException = new Exception(message: someMessage);
 
             var failedTokenServiceException =
-                new FailedTokenServiceException(someException);
+                new FailedTokenServiceException(innerException: someException, data: someException.Data);
 
             var expectedTokenServiceException =
                 new TokenServiceException(failedTokenServiceException as Xeption);
