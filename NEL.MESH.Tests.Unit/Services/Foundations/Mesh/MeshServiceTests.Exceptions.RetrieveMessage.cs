@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xeptions;
@@ -39,7 +38,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new FailedMeshClientException(httpRequestException);
 
             var expectedMeshDependencyValidationException =
-                new MeshDependencyValidationException(failedMeshClientException.InnerException as Xeption);
+                new MeshDependencyValidationException(
+                    failedMeshClientException.InnerException as Xeption,
+                    failedMeshClientException.InnerException.Data);
 
             // when
             ValueTask<List<string>> getMessagesTask =
