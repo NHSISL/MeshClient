@@ -25,8 +25,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             var expectedMeshValidationException =
                 new MeshValidationException(
-                    innerException: nullMessageException,
-                    data: nullMessageException.Data);
+                    innerException: nullMessageException);
 
             // when
             ValueTask<Message> addMessageTask =
@@ -59,8 +58,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             var expectedMeshValidationException =
                 new MeshValidationException(
-                    innerException: nullHeadersException,
-                    data: nullHeadersException.Data);
+                    innerException: nullHeadersException);
 
             // when
             ValueTask<Message> addMessageTask =
@@ -123,8 +121,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             var expectedMeshValidationException =
                 new MeshValidationException(
-                    innerException: invalidMeshException,
-                    data: invalidMeshException.Data);
+                    innerException: invalidMeshException);
 
             // when
             ValueTask<Message> addMessageTask =
@@ -188,8 +185,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             var expectedMeshValidationException =
                 new MeshValidationException(
-                    innerException: invalidMeshException,
-                    data: invalidMeshException.Data);
+                    innerException: invalidMeshException);
 
             // when
             ValueTask<Message> addMessageTask =
@@ -229,8 +225,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             var expectedMeshValidationException =
                 new MeshValidationException(
-                    innerException: invalidMeshException,
-                    data: invalidMeshException.Data);
+                    innerException: invalidMeshException);
 
             // when
             ValueTask<Message> addMessageTask =

@@ -33,12 +33,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
 
             var failedMeshClientException =
-                new FailedMeshClientException(httpRequestException);
+                new FailedMeshClientException(innerException: httpRequestException);
+
+            failedMeshClientException.AddData("StatusCode", httpRequestException.Message);
 
             var expectedMeshDependencyValidationException =
-                new MeshDependencyValidationException(
-                    failedMeshClientException.InnerException as Xeption,
-                    failedMeshClientException.InnerException.Data);
+                new MeshDependencyValidationException(innerException: failedMeshClientException);
 
             // when
             ValueTask<Message> sendMessageTask =

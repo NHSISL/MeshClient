@@ -65,8 +65,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
 
             var expectedTokenValidationException =
                  new TokenValidationException(
-                     innerException: InvalidTokenArgsException,
-                     data: InvalidTokenArgsException.Data);
+                     innerException: InvalidTokenArgsException);
 
             // when
             ValueTask<string> getTokenTask =

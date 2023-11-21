@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Tokens.Exceptions;
@@ -197,7 +196,8 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             Xeption exception)
         {
             var meshOrchestrationDependencyValidationException =
-                new MeshOrchestrationDependencyValidationException(exception.InnerException as Xeption);
+                new MeshOrchestrationDependencyValidationException(
+                    exception.InnerException as Xeption);
 
             return meshOrchestrationDependencyValidationException;
         }
