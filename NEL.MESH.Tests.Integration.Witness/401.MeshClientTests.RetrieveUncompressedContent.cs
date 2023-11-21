@@ -14,7 +14,7 @@ namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class MeshClientTests
     {
-        [Fact]
+        [Fact(DisplayName = "401 - Retrieve Uncompressed Content")]
         [Trait("Category", "Witness")]
         public async Task ShouldRetrieveStringMessageAsync()
         {

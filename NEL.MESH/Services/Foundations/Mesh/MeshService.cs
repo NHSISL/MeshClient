@@ -188,25 +188,27 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     return firstMessage;
                 }
 
-                var chunks = initialResponse.Content.Headers
-                    .FirstOrDefault(h => h.Key == "Mex-Chunk-Range")
-                        .Value.FirstOrDefault();
-
-                string chunkRange = chunks.Replace("{", string.Empty).Replace("}", string.Empty);
-                string[] parts = chunkRange.Split(":");
-                int totalChunks = int.Parse(parts[1]);
-
-                for (int chunkId = 1; chunkId < totalChunks; chunkId++)
+                if (initialResponse.StatusCode == HttpStatusCode.PartialContent)
                 {
-                    HttpResponseMessage responseMessage =
-                        await this.meshBroker.GetMessageAsync(messageId, (chunkId + 1)
-                            .ToString(), authorizationToken);
 
-                    ValidateResponse(responseMessage);
+                    var chunks = initialResponse.Headers
+                        .FirstOrDefault(h => h.Key == "Mex-Chunk-Range")
+                            .Value.FirstOrDefault();
 
-                    byte[] fileContent = responseMessage.Content.ReadAsByteArrayAsync().Result;
-                    firstMessage.FileContent = firstMessage.FileContent.Concat(fileContent).ToArray();
+                    string chunkRange = chunks.Replace("{", string.Empty).Replace("}", string.Empty);
+                    string[] parts = chunkRange.Split(":");
+                    int totalChunks = int.Parse(parts[1]);
 
+                    for (int chunkId = 1; chunkId < totalChunks; chunkId++)
+                    {
+                        HttpResponseMessage responseMessage =
+                            await this.meshBroker.GetMessageAsync(messageId, chunkId.ToString(), authorizationToken);
+
+                        ValidateResponse(responseMessage);
+
+                        byte[] fileContent = responseMessage.Content.ReadAsByteArrayAsync().Result;
+                        firstMessage.FileContent = firstMessage.FileContent.Concat(fileContent).ToArray();
+                    }
                 }
 
                 return firstMessage;

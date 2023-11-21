@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using Force.DeepCloner;
 using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
 
@@ -45,7 +46,7 @@ namespace NEL.MESH.Services.Foundations.Chunks
             {
                 Message chunk = new Message
                 {
-                    Headers = message.Headers,
+                    Headers = message.Headers.DeepClone(),
                     FileContent = parts[i]
                 };
 

@@ -12,7 +12,7 @@ namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class MeshClientTests
     {
-        [Fact]
+        [Fact(DisplayName = "201 - Sending And Acknowledgment")]
         [Trait("Category", "Witness")]
         public async Task ShouldSendAndAcknowledgeMessageAsync()
         {

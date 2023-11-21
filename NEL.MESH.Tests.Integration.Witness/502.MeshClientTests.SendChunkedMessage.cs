@@ -13,14 +13,14 @@ namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class MeshClientTests
     {
-        [Fact]
+        [Fact(DisplayName = "502 - Sending Chunked Message")]
         [Trait("Category", "Witness")]
         public async Task ShouldSendChunckedMessageAsync()
         {
             // given
             string mexTo = this.meshConfigurations.MailboxId;
             string mexWorkflowId = "WITNESS TEST";
-            int targetSizeInMegabytes = 21; // You can adjust this value as needed
+            int targetSizeInMegabytes = 21;
             string content = GetFileWithXBytes(targetSizeInMegabytes);
             string mexSubject = "WITNESS TEST -  ShouldRetrieveStringMessageAsync";
             string mexLocalId = Guid.NewGuid().ToString();
