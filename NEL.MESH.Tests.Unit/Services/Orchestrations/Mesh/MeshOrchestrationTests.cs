@@ -79,7 +79,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 new TokenValidationException(innerException),
                 new TokenDependencyValidationException(innerException),
                 new MeshValidationException(innerException),
-                new MeshDependencyValidationException(innerException),
+                new MeshDependencyValidationException(innerException, innerException.Data),
             };
         }
 

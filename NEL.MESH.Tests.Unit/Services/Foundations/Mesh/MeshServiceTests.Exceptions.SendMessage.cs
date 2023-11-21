@@ -52,7 +52,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new FailedMeshClientException(httpRequestException);
 
             var expectedMeshDependencyValidationException =
-                new MeshDependencyValidationException(failedMeshClientException.InnerException as Xeption);
+                new MeshDependencyValidationException(
+                    failedMeshClientException.InnerException as Xeption,
+                    failedMeshClientException.InnerException.Data);
 
             // when
             ValueTask<Message> sendMessageTask =

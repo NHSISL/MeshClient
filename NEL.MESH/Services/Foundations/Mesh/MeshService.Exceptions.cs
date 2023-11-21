@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xeptions;
@@ -141,7 +140,8 @@ namespace NEL.MESH.Services.Foundations.Mesh
         {
             var meshDependencyValidationException =
                 new MeshDependencyValidationException(
-                    exception.InnerException as Xeption);
+                    exception.InnerException as Xeption,
+                    exception.InnerException.Data);
 
             return meshDependencyValidationException;
         }
