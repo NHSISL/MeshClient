@@ -146,7 +146,10 @@ namespace NEL.MESH.Brokers.Mesh
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, string chunkNumber, string authorizationToken)
+        public async ValueTask<HttpResponseMessage> GetMessageAsync(
+            string messageId,
+            string chunkNumber,
+            string authorizationToken)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}/{chunkNumber}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);

@@ -3,7 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
@@ -46,6 +49,16 @@ namespace NEL.MESH.Tests.Integration.Witness
                 await this.meshClient.Mailbox.RetrieveMessageAsync(messageId);
 
             // then
+
+            var fileName = retrievedMessage.Headers
+                    .FirstOrDefault(h => h.Key == "mex-filename")
+                        .Value.FirstOrDefault();
+
+            var contentBytes =
+                    Encoding.ASCII.GetBytes(content);
+
+            fileName.Should().BeEquivalentTo(mexFileName);
+            retrievedMessage.FileContent.Should().BeEquivalentTo(contentBytes);
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(retrievedMessage.MessageId);
         }
     }
