@@ -50,43 +50,43 @@ namespace NEL.MESH.Clients.Mailboxes
             string accept = "application/json")
         {
             Message message = new Message();
-            message.Headers.Add("Mex-To", new List<string> { mexTo });
-            message.Headers.Add("Mex-WorkflowID", new List<string> { mexWorkflowId });
+            message.Headers.Add("mex-to", new List<string> { mexTo });
+            message.Headers.Add("mex-workflowid", new List<string> { mexWorkflowId });
             message.FileContent = fileContent;
 
             if (!string.IsNullOrWhiteSpace(mexSubject))
             {
-                message.Headers.Add("Mex-Subject", new List<string> { mexSubject });
+                message.Headers.Add("mex-subject", new List<string> { mexSubject });
             }
 
             if (!string.IsNullOrWhiteSpace(mexLocalId))
             {
-                message.Headers.Add("Mex-LocalID", new List<string> { mexLocalId });
+                message.Headers.Add("mex-localid", new List<string> { mexLocalId });
             }
 
             if (!string.IsNullOrWhiteSpace(mexFileName))
             {
-                message.Headers.Add("Mex-FileName", new List<string> { mexFileName });
+                message.Headers.Add("mex-filename", new List<string> { mexFileName });
             }
 
             if (!string.IsNullOrWhiteSpace(mexContentChecksum))
             {
-                message.Headers.Add("Mex-Content-Checksum", new List<string> { mexContentChecksum });
+                message.Headers.Add("mex-content-checksum", new List<string> { mexContentChecksum });
             }
 
             if (!string.IsNullOrWhiteSpace(contentType))
             {
-                message.Headers.Add("Content-Type", new List<string> { contentType });
+                message.Headers.Add("content-type", new List<string> { contentType });
             }
 
             if (!string.IsNullOrWhiteSpace(contentEncoding))
             {
-                message.Headers.Add("Content-Encoding", new List<string> { contentEncoding });
+                message.Headers.Add("content-encoding", new List<string> { contentEncoding });
             }
 
             if (!string.IsNullOrWhiteSpace(contentEncoding))
             {
-                message.Headers.Add("Accept", new List<string> { accept });
+                message.Headers.Add("accept", new List<string> { accept });
             }
 
             return message;
