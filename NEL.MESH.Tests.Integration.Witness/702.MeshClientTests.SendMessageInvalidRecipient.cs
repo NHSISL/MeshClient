@@ -3,8 +3,11 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
@@ -12,7 +15,7 @@ namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class MeshClientTests
     {
-        [Fact]
+        [Fact(DisplayName = "702 - Send Message - Invalid Recipient")]
         [Trait("Category", "Witness")]
         public async Task ShouldErrorSendMessageInvalidRecipientAsync()
         {
@@ -28,9 +31,14 @@ namespace NEL.MESH.Tests.Integration.Witness
             string contentType = "text/plain";
             string contentEncoding = "";
 
+            List<string> statusCode = new List<string> { "417 - Expectation Failed" };
+            List<string> errorEvent = new List<string> { "SEND" };
+            List<string> errorCode = new List<string> { "12" };
+            List<string> errorDescription = new List<string> { "Unregistered to address" };
+
             // when
-            Message sendMessageResponse =
-                await this.meshClient.Mailbox.SendMessageAsync(
+            ValueTask<Message> sendMessageTask =
+                this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
                     content,
@@ -41,9 +49,33 @@ namespace NEL.MESH.Tests.Integration.Witness
                     contentType,
                     contentEncoding);
 
+            MeshClientValidationException actualMeshClientValidationException =
+                await Assert.ThrowsAsync<MeshClientValidationException>(sendMessageTask.AsTask);
+
             // then
-            sendMessageResponse.MessageId.Should().NotBeNullOrEmpty();
-            await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
+
+            actualMeshClientValidationException.Data.Count.Should().Be(5);
+            actualMeshClientValidationException.Data["StatusCode"].Should().BeEquivalentTo(statusCode);
+            actualMeshClientValidationException.Data["ErrorEvent"].Should().BeEquivalentTo(errorEvent);
+            actualMeshClientValidationException.Data["ErrorCode"].Should().BeEquivalentTo(errorCode);
+            actualMeshClientValidationException.Data["ErrorDescription"].Should().BeEquivalentTo(errorDescription);
+            actualMeshClientValidationException.Data["MessageId"].Should().NotBeNull();
+            var messageId = ((List<string>)actualMeshClientValidationException.Data["MessageId"]).First();
+
+            List<string> messageIds = await this.meshClient.Mailbox.RetrieveMessagesAsync();
+            foreach (var item in messageIds)
+            {
+                var msg = await this.meshClient.Mailbox.RetrieveMessageAsync(item);
+                List<string> linkedId = new List<string>();
+                msg.Headers.TryGetValue("mex-linkedmsgid", out linkedId);
+
+                if (linkedId.FirstOrDefault() == messageId)
+                {
+                    string reportId = msg.Headers["mex-messageid"].FirstOrDefault();
+                    await this.meshClient.Mailbox.AcknowledgeMessageAsync(reportId);
+                    break;
+                }
+            }
         }
     }
 }

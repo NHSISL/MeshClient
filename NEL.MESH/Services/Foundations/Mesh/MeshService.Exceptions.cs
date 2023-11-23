@@ -31,7 +31,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
             catch (HttpRequestException httpRequestException)
                 when ((int)httpRequestException.StatusCode >= 400 && (int)httpRequestException.StatusCode <= 499)
             {
-                var failedMeshClientException = new FailedMeshClientException(httpRequestException);
+                var failedMeshClientException = new FailedMeshClientException(
+                    innerException: httpRequestException,
+                    data: httpRequestException.Data);
+
                 failedMeshClientException.AddData("StatusCode", httpRequestException.Message);
 
                 throw CreateDependencyValidationException(failedMeshClientException);
@@ -39,7 +42,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
             catch (HttpRequestException httpRequestException)
                 when ((int)httpRequestException.StatusCode >= 500 && (int)httpRequestException.StatusCode <= 599)
             {
-                var failedMeshServerException = new FailedMeshServerException(httpRequestException);
+                var failedMeshServerException = new FailedMeshServerException(
+                    innerException: httpRequestException,
+                    data: httpRequestException.Data);
+
                 failedMeshServerException.AddData("StatusCode", httpRequestException.Message);
 
                 throw CreateDependencyException(failedMeshServerException);
@@ -47,7 +53,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
             catch (Exception exception)
             {
                 var failedMeshServiceException =
-                    new FailedMeshServiceException(exception);
+                    new FailedMeshServiceException(innerException: exception);
 
                 throw CreateServiceException(failedMeshServiceException);
             }
@@ -78,7 +84,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
             catch (HttpRequestException httpRequestException)
                 when ((int)httpRequestException.StatusCode >= 400 && (int)httpRequestException.StatusCode <= 499)
             {
-                var failedMeshClientException = new FailedMeshClientException(httpRequestException);
+                var failedMeshClientException = new FailedMeshClientException(
+                    innerException: httpRequestException,
+                    data: httpRequestException.Data);
+
                 failedMeshClientException.AddData("StatusCode", httpRequestException.Message);
 
                 throw CreateDependencyValidationException(failedMeshClientException);
@@ -86,7 +95,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
             catch (HttpRequestException httpRequestException)
                 when ((int)httpRequestException.StatusCode >= 500 && (int)httpRequestException.StatusCode <= 599)
             {
-                var failedMeshServerException = new FailedMeshServerException(httpRequestException);
+                var failedMeshServerException = new FailedMeshServerException(
+                    innerException: httpRequestException,
+                    data: httpRequestException.Data);
+
                 failedMeshServerException.AddData("StatusCode", httpRequestException.Message);
 
                 throw CreateDependencyException(failedMeshServerException);

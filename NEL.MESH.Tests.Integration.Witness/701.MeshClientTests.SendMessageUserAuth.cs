@@ -12,7 +12,7 @@ namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class MeshClientTests
     {
-        [Fact]
+        [Fact(DisplayName = "701 - User Authentication Disabled Mailbox")]
         [Trait("Category", "Witness")]
         public async Task ShouldErrorSendMessageUserAuthAsync()
         {

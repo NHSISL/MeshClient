@@ -10,7 +10,7 @@ namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class MeshClientTests
     {
-        [Fact]
+        [Fact(DisplayName = "705 - Download Message - Gone Message, Message already Downloaded")]
         [Trait("Category", "Witness")]
         public async Task ShouldNotRetirveGoneMessageAsync()
         {

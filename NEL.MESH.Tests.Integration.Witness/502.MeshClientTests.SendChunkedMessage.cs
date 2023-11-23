@@ -3,9 +3,10 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
@@ -19,28 +20,15 @@ namespace NEL.MESH.Tests.Integration.Witness
         {
             // given
             string mexTo = this.meshConfigurations.MailboxId;
-            string mexWorkflowId = "WITNESS TEST";
-            int targetSizeInMegabytes = 21;
+            string mexWorkflowId = "WITNESS TEST - CHUNKING";
+            int targetSizeInMegabytes = 2; //Over 1 will result in Chunking.
             string content = GetFileWithXBytes(targetSizeInMegabytes);
-            string mexSubject = "WITNESS TEST -  ShouldRetrieveStringMessageAsync";
+            string mexSubject = "WITNESS TEST -  ShouldRetrieveChunckedMessageAsync";
             string mexLocalId = Guid.NewGuid().ToString();
-            string mexFileName = $"ShouldRetrieveStringMessageAsync.csv";
+            string mexFileName = $"ShouldRetrieveChunckedMessageAsync.csv";
             string mexContentChecksum = Guid.NewGuid().ToString();
             string contentType = "text/plain";
             string contentEncoding = "";
-
-            Message randomMessage = ComposeMessage.CreateStringMessage(
-                mexTo,
-                mexWorkflowId,
-                content,
-                mexSubject,
-                mexLocalId,
-                mexFileName,
-                mexContentChecksum,
-                contentType,
-                contentEncoding);
-
-            Message expectedMessage = randomMessage;
 
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(
@@ -54,15 +42,24 @@ namespace NEL.MESH.Tests.Integration.Witness
                     contentType,
                     contentEncoding);
 
+            string messageId = sendMessageResponse.MessageId;
+
             // when
             Message retrievedMessage =
-                await this.meshClient.Mailbox.RetrieveMessageAsync(sendMessageResponse.MessageId);
+                await this.meshClient.Mailbox.RetrieveMessageAsync(messageId);
 
             // then
-            // output Chuncked filed
-            retrievedMessage.MessageId.Should().BeEquivalentTo(sendMessageResponse.MessageId);
-            retrievedMessage.FileContent.Should().BeEquivalentTo(expectedMessage.FileContent);
-            await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
+
+            var fileName = retrievedMessage.Headers
+                    .FirstOrDefault(h => h.Key == "mex-filename")
+                        .Value.FirstOrDefault();
+
+            var contentBytes =
+                    Encoding.ASCII.GetBytes(content);
+
+            fileName.Should().BeEquivalentTo(mexFileName);
+            retrievedMessage.FileContent.Should().BeEquivalentTo(contentBytes);
+            await this.meshClient.Mailbox.AcknowledgeMessageAsync(retrievedMessage.MessageId);
         }
     }
 }

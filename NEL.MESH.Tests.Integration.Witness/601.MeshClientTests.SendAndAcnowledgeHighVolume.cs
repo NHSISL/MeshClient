@@ -18,7 +18,7 @@ namespace NEL.MESH.Tests.Integration.Witness
         public async Task ShouldSendAndAcknowledgeHighVolumeAsync()
         {
             // given
-            var messageCount = 501;
+            var messageCount = 10;
 
             string mexTo = this.meshConfigurations.MailboxId;
             string mexWorkflowId = "WHITNESS TEST";

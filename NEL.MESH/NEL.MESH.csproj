@@ -30,6 +30,7 @@
 		<InternalsVisibleTo Include="NEL.MESH.Tests.Unit" />
 		<InternalsVisibleTo Include="NEL.MESH.Tests.Acceptance" />
 		<InternalsVisibleTo Include="NEL.MESH.Tests.Integration" />
+		<InternalsVisibleTo Include="NEL.MESH.Tests.Integration.Witness"/>
 		<InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
 	</ItemGroup>
 

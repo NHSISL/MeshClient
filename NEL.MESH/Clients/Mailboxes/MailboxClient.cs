@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Models.Foundations.Mesh.Exceptions;
+using NEL.MESH.Models.Orchestrations.Mesh.Exceptions;
 using NEL.MESH.Services.Orchestrations.Mesh;
 using Xeptions;
 
@@ -25,25 +25,25 @@ namespace NEL.MESH.Clients.Mailboxes
             {
                 return await meshOrchestrationService.HandshakeAsync();
             }
-            catch (MeshValidationException meshValidationException)
+            catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshValidationException.InnerException as Xeption);
+                    meshOrchestrationValidationException.InnerException as Xeption);
             }
-            catch (MeshDependencyValidationException meshDependencyValidationException)
+            catch (MeshOrchestrationDependencyValidationException meshOrchestrationDependencyValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshDependencyValidationException.InnerException as Xeption);
+                    meshOrchestrationDependencyValidationException.InnerException as Xeption);
             }
-            catch (MeshDependencyException meshDependencyException)
+            catch (MeshOrchestrationDependencyException meshOrchestrationDependencyException)
             {
                 throw new MeshClientDependencyException(
-                    meshDependencyException.InnerException as Xeption);
+                    meshOrchestrationDependencyException.InnerException as Xeption);
             }
-            catch (MeshServiceException meshServiceException)
+            catch (MeshOrchestrationServiceException meshOrchestrationServiceException)
             {
                 throw new MeshClientServiceException(
-                    meshServiceException.InnerException as Xeption);
+                    meshOrchestrationServiceException.InnerException as Xeption);
             }
         }
 
@@ -75,27 +75,27 @@ namespace NEL.MESH.Clients.Mailboxes
 
                 return await meshOrchestrationService.SendMessageAsync(message);
             }
-            catch (MeshValidationException meshValidationException)
+            catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshValidationException.InnerException as Xeption,
-                    meshValidationException.InnerException.Data);
+                    meshOrchestrationValidationException.InnerException as Xeption,
+                    meshOrchestrationValidationException.InnerException.Data);
             }
-            catch (MeshDependencyValidationException meshDependencyValidationException)
+            catch (MeshOrchestrationDependencyValidationException meshOrchestrationDependencyValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshDependencyValidationException.InnerException as Xeption,
-                    meshDependencyValidationException.InnerException.Data);
+                    meshOrchestrationDependencyValidationException.InnerException as Xeption,
+                    meshOrchestrationDependencyValidationException.InnerException.Data);
             }
-            catch (MeshDependencyException meshDependencyException)
+            catch (MeshOrchestrationDependencyException meshOrchestrationDependencyException)
             {
                 throw new MeshClientDependencyException(
-                    meshDependencyException.InnerException as Xeption);
+                    meshOrchestrationDependencyException.InnerException as Xeption);
             }
-            catch (MeshServiceException meshServiceException)
+            catch (MeshOrchestrationServiceException meshOrchestrationServiceException)
             {
                 throw new MeshClientServiceException(
-                    meshServiceException.InnerException as Xeption);
+                    meshOrchestrationServiceException.InnerException as Xeption);
             }
         }
 
@@ -127,25 +127,27 @@ namespace NEL.MESH.Clients.Mailboxes
 
                 return await meshOrchestrationService.SendMessageAsync(message);
             }
-            catch (MeshValidationException meshValidationException)
+            catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshValidationException.InnerException as Xeption);
+                    meshOrchestrationValidationException.InnerException as Xeption,
+                    meshOrchestrationValidationException.InnerException.Data);
             }
-            catch (MeshDependencyValidationException meshDependencyValidationException)
+            catch (MeshOrchestrationDependencyValidationException meshOrchestrationDependencyValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshDependencyValidationException.InnerException as Xeption);
+                    meshOrchestrationDependencyValidationException.InnerException as Xeption,
+                    meshOrchestrationDependencyValidationException.InnerException.Data);
             }
-            catch (MeshDependencyException meshDependencyException)
+            catch (MeshOrchestrationDependencyException meshOrchestrationDependencyException)
             {
                 throw new MeshClientDependencyException(
-                    meshDependencyException.InnerException as Xeption);
+                    meshOrchestrationDependencyException.InnerException as Xeption);
             }
-            catch (MeshServiceException meshServiceException)
+            catch (MeshOrchestrationServiceException meshOrchestrationServiceException)
             {
                 throw new MeshClientServiceException(
-                    meshServiceException.InnerException as Xeption);
+                    meshOrchestrationServiceException.InnerException as Xeption);
             }
         }
 
@@ -155,25 +157,27 @@ namespace NEL.MESH.Clients.Mailboxes
             {
                 return await meshOrchestrationService.TrackMessageAsync(messageId);
             }
-            catch (MeshValidationException meshValidationException)
+            catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshValidationException.InnerException as Xeption);
+                    meshOrchestrationValidationException.InnerException as Xeption,
+                    meshOrchestrationValidationException.InnerException.Data);
             }
-            catch (MeshDependencyValidationException meshDependencyValidationException)
+            catch (MeshOrchestrationDependencyValidationException meshOrchestrationDependencyValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshDependencyValidationException.InnerException as Xeption);
+                    meshOrchestrationDependencyValidationException.InnerException as Xeption,
+                    meshOrchestrationDependencyValidationException.InnerException.Data);
             }
-            catch (MeshDependencyException meshDependencyException)
+            catch (MeshOrchestrationDependencyException meshOrchestrationDependencyException)
             {
                 throw new MeshClientDependencyException(
-                    meshDependencyException.InnerException as Xeption);
+                    meshOrchestrationDependencyException.InnerException as Xeption);
             }
-            catch (MeshServiceException meshServiceException)
+            catch (MeshOrchestrationServiceException meshOrchestrationServiceException)
             {
                 throw new MeshClientServiceException(
-                    meshServiceException.InnerException as Xeption);
+                    meshOrchestrationServiceException.InnerException as Xeption);
             }
         }
 
@@ -183,25 +187,27 @@ namespace NEL.MESH.Clients.Mailboxes
             {
                 return await meshOrchestrationService.RetrieveMessagesAsync();
             }
-            catch (MeshValidationException meshValidationException)
+            catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshValidationException.InnerException as Xeption);
+                    meshOrchestrationValidationException.InnerException as Xeption,
+                    meshOrchestrationValidationException.InnerException.Data);
             }
-            catch (MeshDependencyValidationException meshDependencyValidationException)
+            catch (MeshOrchestrationDependencyValidationException meshOrchestrationDependencyValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshDependencyValidationException.InnerException as Xeption);
+                    meshOrchestrationDependencyValidationException.InnerException as Xeption,
+                    meshOrchestrationDependencyValidationException.InnerException.Data);
             }
-            catch (MeshDependencyException meshDependencyException)
+            catch (MeshOrchestrationDependencyException meshOrchestrationDependencyException)
             {
                 throw new MeshClientDependencyException(
-                    meshDependencyException.InnerException as Xeption);
+                    meshOrchestrationDependencyException.InnerException as Xeption);
             }
-            catch (MeshServiceException meshServiceException)
+            catch (MeshOrchestrationServiceException meshOrchestrationServiceException)
             {
                 throw new MeshClientServiceException(
-                    meshServiceException.InnerException as Xeption);
+                    meshOrchestrationServiceException.InnerException as Xeption);
             }
         }
 
@@ -211,25 +217,27 @@ namespace NEL.MESH.Clients.Mailboxes
             {
                 return await meshOrchestrationService.RetrieveMessageAsync(messageId);
             }
-            catch (MeshValidationException meshValidationException)
+            catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshValidationException.InnerException as Xeption);
+                    meshOrchestrationValidationException.InnerException as Xeption,
+                    meshOrchestrationValidationException.InnerException.Data);
             }
-            catch (MeshDependencyValidationException meshDependencyValidationException)
+            catch (MeshOrchestrationDependencyValidationException meshOrchestrationDependencyValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshDependencyValidationException.InnerException as Xeption);
+                    meshOrchestrationDependencyValidationException.InnerException as Xeption,
+                    meshOrchestrationDependencyValidationException.InnerException.Data);
             }
-            catch (MeshDependencyException meshDependencyException)
+            catch (MeshOrchestrationDependencyException meshOrchestrationDependencyException)
             {
                 throw new MeshClientDependencyException(
-                    meshDependencyException.InnerException as Xeption);
+                    meshOrchestrationDependencyException.InnerException as Xeption);
             }
-            catch (MeshServiceException meshServiceException)
+            catch (MeshOrchestrationServiceException meshOrchestrationServiceException)
             {
                 throw new MeshClientServiceException(
-                    meshServiceException.InnerException as Xeption);
+                    meshOrchestrationServiceException.InnerException as Xeption);
             }
         }
 
@@ -239,25 +247,27 @@ namespace NEL.MESH.Clients.Mailboxes
             {
                 return await meshOrchestrationService.AcknowledgeMessageAsync(messageId);
             }
-            catch (MeshValidationException meshValidationException)
+            catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshValidationException.InnerException as Xeption);
+                    meshOrchestrationValidationException.InnerException as Xeption,
+                    meshOrchestrationValidationException.InnerException.Data);
             }
-            catch (MeshDependencyValidationException meshDependencyValidationException)
+            catch (MeshOrchestrationDependencyValidationException meshOrchestrationDependencyValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshDependencyValidationException.InnerException as Xeption);
+                    meshOrchestrationDependencyValidationException.InnerException as Xeption,
+                    meshOrchestrationDependencyValidationException.InnerException.Data);
             }
-            catch (MeshDependencyException meshDependencyException)
+            catch (MeshOrchestrationDependencyException meshOrchestrationDependencyException)
             {
                 throw new MeshClientDependencyException(
-                    meshDependencyException.InnerException as Xeption);
+                    meshOrchestrationDependencyException.InnerException as Xeption);
             }
-            catch (MeshServiceException meshServiceException)
+            catch (MeshOrchestrationServiceException meshOrchestrationServiceException)
             {
                 throw new MeshClientServiceException(
-                    meshServiceException.InnerException as Xeption);
+                    meshOrchestrationServiceException.InnerException as Xeption);
             }
         }
     }

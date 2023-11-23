@@ -100,7 +100,9 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 }
 
                 ValidateResponse(responseMessage);
-                string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+
+                string responseMessageBody =
+                    responseMessage.Content.ReadAsStringAsync().Result;
 
                 Message outputMessage = new Message
                 {
