@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -23,6 +24,10 @@ namespace NEL.MESH.Tests.Integration.Witness
             config.Password = "3k2JZOTyQboi";
             var client = new MeshClient(meshConfigurations: config);
 
+            string status = "ERROR";
+            string statusDescription = "Message not collected by recipient after 5 days";
+            string messageType = "REPORT";
+
             string invalidMessageId = "20231122161608316585_56338A";
             //string invalidMessageId = "20231117125902185257_995DE8";
 
@@ -31,7 +36,13 @@ namespace NEL.MESH.Tests.Integration.Witness
                     await client.Mailbox.RetrieveMessageAsync(invalidMessageId);
 
             // then
-            retrievedMessage.MessageId.Should().BeEquivalentTo(invalidMessageId);
+            string actualStatus = retrievedMessage.Headers["mex-statussuccess"].FirstOrDefault();
+            string actualStatusDescription = retrievedMessage.Headers["mex-statusdescription"].FirstOrDefault();
+            string actualMessageType = retrievedMessage.Headers["mex-messagetype"].FirstOrDefault();
+
+            actualStatus.Should().BeEquivalentTo(status);
+            actualStatusDescription.Should().BeEquivalentTo(statusDescription);
+            actualMessageType.Should().BeEquivalentTo(messageType);
         }
     }
 }

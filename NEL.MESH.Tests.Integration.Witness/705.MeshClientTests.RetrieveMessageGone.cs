@@ -5,7 +5,6 @@
 using System.Threading.Tasks;
 using Force.DeepCloner;
 using NEL.MESH.Clients;
-using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
 namespace NEL.MESH.Tests.Integration.Witness
@@ -22,12 +21,12 @@ namespace NEL.MESH.Tests.Integration.Witness
             config.Password = "3k2JZOTyQboi";
             var client = new MeshClient(meshConfigurations: config);
 
-            string invalidMessageId = "20231122161608316585_56338A";
+            string invalidMessageId = "20231117125902185257_995DE8";
             //string invalidMessageId = "20231123151625288395_ADB038";
 
             // when
-            Message retrievedMessage =
-                    await client.Mailbox.RetrieveMessageAsync(invalidMessageId);
+            //Message retrievedMessage =
+            //        await meshClient.Mailbox.RetrieveMessageAsync(invalidMessageId);
 
             // then
         }

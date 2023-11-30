@@ -61,5 +61,24 @@ namespace NEL.MESH.Tests.Integration.Witness
             retrievedMessage.FileContent.Should().BeEquivalentTo(contentBytes);
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(retrievedMessage.MessageId);
         }
+
+        [Fact(DisplayName = "501 - Retrieving Chunked Messages")]
+        [Trait("Category", "Witness")]
+        public async Task ShouldRetrieveChunckedMD5MessageAsync()
+        {
+            // given
+            var expectedcheck = "634af5ebb487856f31f37018601b19de";
+
+            // when
+            Message retrievedMessage =
+                await this.meshClient.Mailbox.RetrieveMessageAsync("20231124101605283253_EC7D79");
+
+            // then
+            string md5Checksum = GetMD5Checksum(retrievedMessage.FileContent);
+            md5Checksum.Should().BeEquivalentTo(expectedcheck);
+
+            //retrievedMessage.FileContent.Should().BeEquivalentTo(contentBytes);
+            await this.meshClient.Mailbox.AcknowledgeMessageAsync(retrievedMessage.MessageId);
+        }
     }
 }

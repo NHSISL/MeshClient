@@ -118,7 +118,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             message.Headers.Add("mex-from", new List<string> { GetRandomString() });
             message.Headers.Add("mex-to", new List<string> { GetRandomString() });
             message.Headers.Add("mex-workflowid", new List<string> { GetRandomString() });
-            message.Headers.Add("mex-chunk-range", new List<string> { GetRandomString() });
+            message.Headers.Add("mex-chunk-range", new List<string> { "1:1" });
             message.Headers.Add("mex-subject", new List<string> { GetRandomString() });
             message.Headers.Add("mex-localid", new List<string> { GetRandomString() });
             message.Headers.Add("mex-filename", new List<string> { GetRandomString() });

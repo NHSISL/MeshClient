@@ -92,21 +92,25 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
 
                 var chunks = outputMessage.Headers
                     .FirstOrDefault(h => h.Key == "mex-chunk-range")
-                        .Value.FirstOrDefault();
+                    .Value?
+                    .FirstOrDefault();
 
-                string chunkRange = chunks.Replace("{", string.Empty).Replace("}", string.Empty);
-                string[] parts = chunkRange.Split(":");
-                int totalChunks = int.Parse(parts[1]);
-
-                for (int chunkId = 2; chunkId <= totalChunks; chunkId++)
+                if (chunks != null)
                 {
-                    token = await this.tokenService.GenerateTokenAsync();
+                    string chunkRange = chunks.Replace("{", string.Empty).Replace("}", string.Empty);
+                    string[] parts = chunkRange.Split(":");
+                    int totalChunks = int.Parse(parts[1]);
 
-                    Message responseMessage =
-                        await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token, chunkId);
+                    for (int chunkId = 2; chunkId <= totalChunks; chunkId++)
+                    {
+                        token = await this.tokenService.GenerateTokenAsync();
 
-                    byte[] fileContent = responseMessage.FileContent;
-                    outputMessage.FileContent = outputMessage.FileContent.Concat(fileContent).ToArray();
+                        Message responseMessage =
+                            await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token, chunkId);
+
+                        byte[] fileContent = responseMessage.FileContent;
+                        outputMessage.FileContent = outputMessage.FileContent.Concat(fileContent).ToArray();
+                    }
                 }
 
                 return outputMessage;

@@ -4,16 +4,80 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using FluentAssertions;
-using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
 namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class MeshClientTests
     {
-        [Fact(DisplayName = "601 - High Volume Messages")]
+        [Theory(DisplayName = "601 - High Volume Messages")]
+        [InlineData(600)]
+        [Trait("Category", "Witness")]
+        public async Task ShouldSenddAndAcknowledgeHighVolumeAsync(int value)
+        {
+            // given
+            var messageCount = value;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            string mexTo = this.meshConfigurations.MailboxId;
+            string mexWorkflowId = "WHITNESS TEST";
+            string mexSubject = "WHITNESS TEST - ShouldSendMessageAsync";
+            string mexFileName = $"ShouldSendMessageAsync.csv";
+            string mexContentChecksum = Guid.NewGuid().ToString();
+            string contentType = "text/plain";
+            string contentEncoding = "";
+
+            // when
+            for (int i = 0; i < messageCount; i++)
+            {
+                string content = GetRandomString();
+                string mexLocalId = Guid.NewGuid().ToString();
+
+                Models.Foundations.Mesh.Message sendMessageResponse = await this.meshClient.Mailbox.SendMessageAsync(
+                    mexTo,
+                    mexWorkflowId,
+                    content,
+                    mexSubject,
+                    mexLocalId,
+                    mexFileName,
+                    mexContentChecksum,
+                    contentType,
+                    contentEncoding);
+            }
+
+            stopwatch.Stop();
+            output.WriteLine($"Total Time taken to send:{stopwatch.ElapsedMilliseconds} milliseconds");
+            output.WriteLine($"Time taken per message to send:{stopwatch.ElapsedMilliseconds / messageCount} milliseconds");
+            output.WriteLine("");
+
+            // then
+
+            List<string> messageIds;
+            Stopwatch readStopwatch = new Stopwatch();
+            readStopwatch.Start();
+
+            while ((messageIds = await this.meshClient.Mailbox.RetrieveMessagesAsync()).Count > 0)
+            {
+                output.WriteLine($"Total messages:{messageIds.Count}");
+
+                foreach (var item in messageIds)
+                {
+                    await this.meshClient.Mailbox.RetrieveMessageAsync(item);
+                    await this.meshClient.Mailbox.AcknowledgeMessageAsync(item);
+                }
+
+                messageIds = await this.meshClient.Mailbox.RetrieveMessagesAsync();
+                output.WriteLine($"Total messages (second Attempt:{messageIds.Count}");
+            }
+
+            readStopwatch.Stop();
+            output.WriteLine($"Total Time taken to read:{readStopwatch.ElapsedMilliseconds} milliseconds");
+            output.WriteLine($"Time taken per message to read:{readStopwatch.ElapsedMilliseconds / messageCount} milliseconds");
+        }
+
         [Trait("Category", "Witness")]
         public async Task ShouldSendAndAcknowledgeHighVolumeAsync()
         {
@@ -37,7 +101,7 @@ namespace NEL.MESH.Tests.Integration.Witness
                 string mexLocalId = Guid.NewGuid().ToString();
 
                 // when
-                Message sendMessageResponse = await this.meshClient.Mailbox.SendMessageAsync(
+                Models.Foundations.Mesh.Message sendMessageResponse = await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
                     content,
@@ -60,7 +124,6 @@ namespace NEL.MESH.Tests.Integration.Witness
             {
                 await this.meshClient.Mailbox.AcknowledgeMessageAsync(messageId);
             }
-
         }
     }
 }

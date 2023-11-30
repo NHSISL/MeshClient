@@ -30,10 +30,13 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         inner: null,
                         statusCode: response.StatusCode);
 
-                httpRequestException.Data.Add("MessageId", new List<string> { error.MessageId });
-                httpRequestException.Data.Add("ErrorEvent", new List<string> { error.ErrorEvent });
-                httpRequestException.Data.Add("ErrorCode", new List<string> { error.ErrorCode });
-                httpRequestException.Data.Add("ErrorDescription", new List<string> { error.ErrorDescription });
+                if (error != null)
+                {
+                    httpRequestException.Data.Add("MessageId", new List<string> { error.MessageId });
+                    httpRequestException.Data.Add("ErrorEvent", new List<string> { error.ErrorEvent });
+                    httpRequestException.Data.Add("ErrorCode", new List<string> { error.ErrorCode });
+                    httpRequestException.Data.Add("ErrorDescription", new List<string> { error.ErrorDescription });
+                }
 
                 throw httpRequestException;
             }
@@ -53,10 +56,13 @@ namespace NEL.MESH.Services.Foundations.Mesh
                        inner: null,
                        statusCode: response.StatusCode);
 
-                httpRequestException.Data.Add("MessageId", new List<string> { error.MessageId });
-                httpRequestException.Data.Add("ErrorEvent", new List<string> { error.ErrorEvent });
-                httpRequestException.Data.Add("ErrorCode", new List<string> { error.ErrorCode });
-                httpRequestException.Data.Add("ErrorDescription", new List<string> { error.ErrorDescription });
+                if (error != null)
+                {
+                    httpRequestException.Data.Add("MessageId", new List<string> { error.MessageId });
+                    httpRequestException.Data.Add("ErrorEvent", new List<string> { error.ErrorEvent });
+                    httpRequestException.Data.Add("ErrorCode", new List<string> { error.ErrorCode });
+                    httpRequestException.Data.Add("ErrorDescription", new List<string> { error.ErrorDescription });
+                }
 
                 throw httpRequestException;
             }

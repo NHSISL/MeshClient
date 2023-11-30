@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +13,8 @@ using NEL.MESH.Clients;
 using NEL.MESH.Models.Configurations;
 using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
+using Xunit.Abstractions;
+
 
 namespace NEL.MESH.Tests.Integration.Witness
 {
@@ -19,9 +22,13 @@ namespace NEL.MESH.Tests.Integration.Witness
     {
         private readonly MeshClient meshClient;
         private readonly MeshConfiguration meshConfigurations;
+        private readonly ITestOutputHelper output;
 
-        public MeshClientTests()
+        public MeshClientTests(ITestOutputHelper output)
         {
+            this.output = output;
+
+
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
@@ -73,6 +80,23 @@ namespace NEL.MESH.Tests.Integration.Witness
             }
 
             return certificates;
+        }
+
+        static string GetMD5Checksum(byte[] data)
+        {
+            using (MD5 md5 = MD5.Create())
+            {
+                byte[] hashBytes = md5.ComputeHash(data);
+
+                // Convert the byte array to a hexadecimal string
+                StringBuilder sb = new StringBuilder();
+                foreach (byte b in hashBytes)
+                {
+                    sb.Append(b.ToString("x2"));
+                }
+
+                return sb.ToString();
+            }
         }
 
         private static X509Certificate2 GetCertificate(string value)
