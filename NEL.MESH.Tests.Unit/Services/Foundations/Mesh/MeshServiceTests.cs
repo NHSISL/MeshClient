@@ -237,12 +237,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
                 string chunkRangeValue = $"{i + 1}:{chunks}";
 
-                if (httpResponseMessage.Content.Headers.Contains("mex-chunk-range"))
+                if (httpResponseMessage.Headers.Contains("mex-chunk-range"))
                 {
-                    httpResponseMessage.Content.Headers.Remove("mex-chunk-range");
+                    httpResponseMessage.Headers.Remove("mex-chunk-range");
                 }
 
-                httpResponseMessage.Content.Headers.Add("mex-chunk-range", chunkRangeValue);
+                httpResponseMessage.Headers.Add("mex-chunk-range", chunkRangeValue);
                 messages.Add(httpResponseMessage);
             }
 

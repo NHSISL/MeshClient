@@ -5,7 +5,7 @@
 using ADotNet.Clients;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks;
-using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks.SetupDotNetTaskV1s;
+using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks.SetupDotNetTaskV3s;
 
 namespace NEL.MESH.Infrastructure.Services
 {
@@ -35,43 +35,45 @@ namespace NEL.MESH.Infrastructure.Services
                     }
                 },
 
-                Jobs = new Jobs
+                Jobs = new Dictionary<string, Job>
                 {
-                    Build = new BuildJob
                     {
-                        RunsOn = BuildMachines.WindowsLatest,
-
-                        Steps = new List<GithubTask>
+                        "build",
+                        new Job
                         {
-                            new CheckoutTaskV2
-                            {
-                                Name = "Check Out"
-                            },
+                            RunsOn = BuildMachines.WindowsLatest,
 
-                            new SetupDotNetTaskV1
+                            Steps = new List<GithubTask>
                             {
-                                Name = "Setup Dot Net Version",
-
-                                TargetDotNetVersion = new TargetDotNetVersion
+                                new CheckoutTaskV3
                                 {
-                                    DotNetVersion = "7.0.201",
-                                    IncludePrerelease = false
+                                    Name = "Check Out"
+                                },
+
+                                new SetupDotNetTaskV3
+                                {
+                                    Name = "Setup Dot Net Version",
+
+                                    With = new TargetDotNetVersionV3
+                                    {
+                                        DotNetVersion = "7.0.201"
+                                    }
+                                },
+
+                                new RestoreTask
+                                {
+                                    Name = "Restore"
+                                },
+
+                                new DotNetBuildTask
+                                {
+                                    Name = "Build"
+                                },
+
+                                new TestTask
+                                {
+                                    Name = "Test"
                                 }
-                            },
-
-                            new RestoreTask
-                            {
-                                Name = "Restore"
-                            },
-
-                            new DotNetBuildTask
-                            {
-                                Name = "Build"
-                            },
-
-                            new TestTask
-                            {
-                                Name = "Test"
                             }
                         }
                     }
