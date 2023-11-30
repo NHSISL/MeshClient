@@ -2,13 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Text.Json;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
 using Force.DeepCloner;
 using Microsoft.Extensions.Configuration;
 using NEL.MESH.Clients;
@@ -486,6 +482,8 @@ namespace NEL.MESH.UI
 
         private async void btnGetMessages_Click(object sender, EventArgs e)
         {
+            txtHeaders.Text = string.Empty;
+            txtContent.Text = string.Empty;
             await GetMessages();
         }
 
