@@ -17,7 +17,7 @@
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.0" />
 		<PackageReference Include="CleanMoq" Version="42.42.42" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.8" />
-		<PackageReference Include="WireMock.Net" Version="1.5.25" />
+		<PackageReference Include="WireMock.Net" Version="1.5.34" />
 		<PackageReference Include="Xeption" Version="2.5.0" />
 		<PackageReference Include="xunit" Version="2.4.2" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
