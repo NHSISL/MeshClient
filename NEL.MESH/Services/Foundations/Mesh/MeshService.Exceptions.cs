@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xeptions;
@@ -33,6 +32,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 when ((int)httpRequestException.StatusCode >= 400 && (int)httpRequestException.StatusCode <= 499)
             {
                 var failedMeshClientException = new FailedMeshClientException(httpRequestException);
+                failedMeshClientException.AddData("StatusCode", httpRequestException.Message);
 
                 throw CreateDependencyValidationException(failedMeshClientException);
             }
@@ -40,6 +40,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 when ((int)httpRequestException.StatusCode >= 500 && (int)httpRequestException.StatusCode <= 599)
             {
                 var failedMeshServerException = new FailedMeshServerException(httpRequestException);
+                failedMeshServerException.AddData("StatusCode", httpRequestException.Message);
 
                 throw CreateDependencyException(failedMeshServerException);
             }
@@ -78,6 +79,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 when ((int)httpRequestException.StatusCode >= 400 && (int)httpRequestException.StatusCode <= 499)
             {
                 var failedMeshClientException = new FailedMeshClientException(httpRequestException);
+                failedMeshClientException.AddData("StatusCode", httpRequestException.Message);
 
                 throw CreateDependencyValidationException(failedMeshClientException);
             }
@@ -85,6 +87,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 when ((int)httpRequestException.StatusCode >= 500 && (int)httpRequestException.StatusCode <= 599)
             {
                 var failedMeshServerException = new FailedMeshServerException(httpRequestException);
+                failedMeshServerException.AddData("StatusCode", httpRequestException.Message);
 
                 throw CreateDependencyException(failedMeshServerException);
             }
@@ -107,6 +110,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 when ((int)httpRequestException.StatusCode >= 400 && (int)httpRequestException.StatusCode <= 499)
             {
                 var failedMeshClientException = new FailedMeshClientException(httpRequestException);
+                failedMeshClientException.AddData("StatusCode", httpRequestException.Message);
 
                 throw CreateDependencyValidationException(failedMeshClientException);
             }
@@ -114,6 +118,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 when ((int)httpRequestException.StatusCode >= 500 && (int)httpRequestException.StatusCode <= 599)
             {
                 var failedMeshServerException = new FailedMeshServerException(httpRequestException);
+                failedMeshServerException.AddData("StatusCode", httpRequestException.Message);
 
                 throw CreateDependencyException(failedMeshServerException);
             }
@@ -132,7 +137,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
         private MeshValidationException CreateValidationException(Xeption exception)
         {
-            var meshValidationException = new MeshValidationException(exception);
+            var meshValidationException = new MeshValidationException(innerException: exception);
 
             return meshValidationException;
         }
@@ -140,8 +145,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
         private MeshDependencyValidationException CreateDependencyValidationException(Xeption exception)
         {
             var meshDependencyValidationException =
-                new MeshDependencyValidationException(
-                    exception.InnerException as Xeption);
+                new MeshDependencyValidationException(innerException: exception);
 
             return meshDependencyValidationException;
         }
