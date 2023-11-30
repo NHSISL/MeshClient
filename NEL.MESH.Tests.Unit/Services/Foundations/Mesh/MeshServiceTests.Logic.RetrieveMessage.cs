@@ -110,7 +110,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 { "mex-clientversion", new List<string>() },
                 { "mex-osversion", new List<string>() },
                 { "mex-osarchitecture", new List<string>() },
-                { "mex-javaversion", new List<string>() }
+                { "mex-javaversion", new List<string>() },
             };
 
             List<HttpResponseMessage> responseMessages =

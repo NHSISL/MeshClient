@@ -13,6 +13,7 @@
 
 # Local Configuration Files
 local.settings.json
+local.appsettings.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
