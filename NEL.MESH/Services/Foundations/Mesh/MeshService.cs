@@ -188,7 +188,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     return firstMessage;
                 }
 
-                var chunks = initialResponse.Content.Headers
+                var chunks = initialResponse.Headers
                     .FirstOrDefault(h => h.Key == "mex-chunk-range")
                         .Value.FirstOrDefault();
 

@@ -108,7 +108,7 @@ namespace NEL.MESH.Brokers.Mesh
             request.Headers.Add("mex-filename", mexFileName);
             request.Headers.Add("mex-content-checksum", mexContentChecksum);
             request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            request.Headers.Add("content-encoding", contentEncoding);
+            request.Content.Headers.Add("content-encoding", contentEncoding);
             request.Headers.Add("accept", accept);
 
             var response = await this.httpClient.SendAsync(request);
