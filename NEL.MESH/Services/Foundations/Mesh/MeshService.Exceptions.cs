@@ -137,8 +137,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
         private MeshValidationException CreateValidationException(Xeption exception)
         {
-            var meshValidationException = new MeshValidationException(
-                innerException: exception);
+            var meshValidationException = new MeshValidationException(innerException: exception);
 
             return meshValidationException;
         }
@@ -146,8 +145,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
         private MeshDependencyValidationException CreateDependencyValidationException(Xeption exception)
         {
             var meshDependencyValidationException =
-                new MeshDependencyValidationException(
-                    innerException: exception);
+                new MeshDependencyValidationException(innerException: exception);
 
             return meshDependencyValidationException;
         }

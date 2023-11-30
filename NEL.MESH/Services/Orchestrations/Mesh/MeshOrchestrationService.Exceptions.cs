@@ -196,8 +196,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             Xeption exception)
         {
             var meshOrchestrationDependencyValidationException =
-                new MeshOrchestrationDependencyValidationException(
-                    exception.InnerException as Xeption);
+                new MeshOrchestrationDependencyValidationException(exception.InnerException as Xeption);
 
             return meshOrchestrationDependencyValidationException;
         }
