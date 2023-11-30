@@ -74,13 +74,13 @@ namespace NEL.MESH.Services.Foundations.Chunks
 
         private static void SetMexChunkRange(Message message, int item, int itemCount)
         {
-            if (message.Headers.ContainsKey("Mex-Chunk-Range"))
+            if (message.Headers.ContainsKey("mex-chunk-range"))
             {
-                message.Headers["Mex-Chunk-Range"] = new List<string> { $"{item}:{itemCount}" };
+                message.Headers["mex-chunk-range"] = new List<string> { $"{item}:{itemCount}" };
             }
             else
             {
-                message.Headers.Add("Mex-Chunk-Range", new List<string> { $"{item}:{itemCount}" });
+                message.Headers.Add("mex-chunk-range", new List<string> { $"{item}:{itemCount}" });
             }
         }
     }

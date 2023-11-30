@@ -28,7 +28,7 @@ namespace NEL.MESH.Brokers.Mesh
         {
             string path = $"/messageexchange/{this.MeshConfiguration.MailboxId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
-            request.Headers.Add("Authorization", authorizationToken);
+            request.Headers.Add("authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
 
             return response;
@@ -56,18 +56,18 @@ namespace NEL.MESH.Brokers.Mesh
                 Content = new ByteArrayContent(fileContents)
             };
 
-            request.Headers.Add("Authorization", authorizationToken);
-            request.Headers.Add("Mex-From", mexFrom);
-            request.Headers.Add("Mex-To", mexTo);
-            request.Headers.Add("Mex-WorkflowID", mexWorkflowId);
-            request.Headers.Add("Mex-Chunk-Range", mexChunkRange);
-            request.Headers.Add("Mex-Subject", mexSubject);
-            request.Headers.Add("Mex-LocalID", mexLocalId);
-            request.Headers.Add("Mex-FileName", mexFileName);
-            request.Headers.Add("Mex-Content-Checksum", mexContentChecksum);
+            request.Headers.Add("authorization", authorizationToken);
+            request.Headers.Add("mex-from", mexFrom);
+            request.Headers.Add("mex-to", mexTo);
+            request.Headers.Add("mex-workflowid", mexWorkflowId);
+            request.Headers.Add("mex-chunk-range", mexChunkRange);
+            request.Headers.Add("mex-subject", mexSubject);
+            request.Headers.Add("mex-localid", mexLocalId);
+            request.Headers.Add("mex-filename", mexFileName);
+            request.Headers.Add("mex-content-checksum", mexContentChecksum);
             request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            request.Content.Headers.Add("Content-Encoding", contentEncoding);
-            request.Headers.Add("Accept", accept);
+            request.Content.Headers.Add("content-encoding", contentEncoding);
+            request.Headers.Add("accept", accept);
 
             var response = await this.httpClient.SendAsync(request);
 
@@ -98,18 +98,18 @@ namespace NEL.MESH.Brokers.Mesh
                 Content = new ByteArrayContent(fileContents)
             };
 
-            request.Headers.Add("Authorization", authorizationToken);
-            request.Headers.Add("Mex-From", mexFrom);
-            request.Headers.Add("Mex-To", mexTo);
-            request.Headers.Add("Mex-WorkflowID", mexWorkflowId);
-            request.Headers.Add("Mex-Chunk-Range", mexChunkRange);
-            request.Headers.Add("Mex-Subject", mexSubject);
-            request.Headers.Add("Mex-LocalID", mexLocalId);
-            request.Headers.Add("Mex-FileName", mexFileName);
-            request.Headers.Add("Mex-Content-Checksum", mexContentChecksum);
+            request.Headers.Add("authorization", authorizationToken);
+            request.Headers.Add("mex-from", mexFrom);
+            request.Headers.Add("mex-to", mexTo);
+            request.Headers.Add("mex-workflowid", mexWorkflowId);
+            request.Headers.Add("mex-chunk-range", mexChunkRange);
+            request.Headers.Add("mex-subject", mexSubject);
+            request.Headers.Add("mex-localid", mexLocalId);
+            request.Headers.Add("mex-filename", mexFileName);
+            request.Headers.Add("mex-content-checksum", mexContentChecksum);
             request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            request.Headers.Add("Content-Encoding", contentEncoding);
-            request.Headers.Add("Accept", accept);
+            request.Headers.Add("content-encoding", contentEncoding);
+            request.Headers.Add("accept", accept);
 
             var response = await this.httpClient.SendAsync(request);
 
@@ -120,7 +120,7 @@ namespace NEL.MESH.Brokers.Mesh
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox/tracking?messageID={messageId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
-            request.Headers.Add("Authorization", authorizationToken);
+            request.Headers.Add("authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
 
             return response;
@@ -130,7 +130,7 @@ namespace NEL.MESH.Brokers.Mesh
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
-            request.Headers.Add("Authorization", authorizationToken);
+            request.Headers.Add("authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
 
             return response;
@@ -140,7 +140,7 @@ namespace NEL.MESH.Brokers.Mesh
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
-            request.Headers.Add("Authorization", authorizationToken);
+            request.Headers.Add("authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
 
             return response;
@@ -150,7 +150,7 @@ namespace NEL.MESH.Brokers.Mesh
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}/{chunkNumber}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
-            request.Headers.Add("Authorization", authorizationToken);
+            request.Headers.Add("authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
 
             return response;
@@ -160,7 +160,7 @@ namespace NEL.MESH.Brokers.Mesh
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}/status/acknowledged";
             var request = new HttpRequestMessage(HttpMethod.Put, path);
-            request.Headers.Add("Authorization", authorizationToken);
+            request.Headers.Add("authorization", authorizationToken);
             var response = await this.httpClient.SendAsync(request);
 
             return response;
@@ -176,15 +176,15 @@ namespace NEL.MESH.Brokers.Mesh
             };
 
             httpClient.DefaultRequestHeaders.Add(
-                name: "Mex-ClientVersion",
+                name: "mex-clientversion",
                 value: this.MeshConfiguration.MexClientVersion);
 
             httpClient.DefaultRequestHeaders.Add(
-                name: "Mex-OSName",
+                name: "mex-osname",
                 value: this.MeshConfiguration.MexOSName);
 
             httpClient.DefaultRequestHeaders.Add(
-                name: "Mex-OSVersion",
+                name: "mex-osversion",
                 value: this.MeshConfiguration.MexOSVersion);
 
             return httpClient;
