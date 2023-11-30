@@ -24,7 +24,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             Message someMessage = CreateRandomSendMessage();
             var expectedMeshOrchestrationDependencyValidationException =
             new MeshOrchestrationDependencyValidationException(
-                dependancyValidationException.InnerException as Xeption);
+                innerException: dependancyValidationException.InnerException as Xeption);
 
             this.chunkServiceMock.Setup(service =>
                 service.SplitMessageIntoChunks(It.IsAny<Message>()))

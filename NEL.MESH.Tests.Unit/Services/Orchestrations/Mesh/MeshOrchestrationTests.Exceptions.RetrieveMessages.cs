@@ -23,7 +23,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // given
             var expectedMeshOrchestrationDependencyValidationException =
             new MeshOrchestrationDependencyValidationException(
-                dependancyValidationException.InnerException as Xeption);
+                innerException: dependancyValidationException.InnerException as Xeption);
 
             this.tokenServiceMock.Setup(service =>
               service.GenerateTokenAsync())

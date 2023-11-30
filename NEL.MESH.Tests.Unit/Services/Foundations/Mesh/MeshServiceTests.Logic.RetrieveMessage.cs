@@ -26,27 +26,26 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             Dictionary<string, List<string>> contentHeaders = new Dictionary<string, List<string>>
             {
-                { "Content-Type", new List<string>{ "text/plain" } },
-                { "Content-Length", new List<string>() },
-                { "Last-Modified", new List<string>() },
+                { "content-type", new List<string>{ "text/plain" } },
+                { "content-length", new List<string>() }
             };
 
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>
             {
-                { "Content-Encoding", new List<string>() },
-                { "Mex-FileName", new List<string>() },
-                { "Mex-From", new List<string>() },
-                { "Mex-To", new List<string>() },
-                { "Mex-WorkflowID", new List<string>() },
-                { "Mex-Chunk-Range", new List<string>{"{1:1}"} },
-                { "Mex-LocalID", new List<string>() },
-                { "Mex-Subject", new List<string>() },
-                { "Mex-Content-Checksum", new List<string>() },
+                { "content-encoding", new List<string>() },
+                { "mex-filename", new List<string>() },
+                { "mex-from", new List<string>() },
+                { "mex-to", new List<string>() },
+                { "mex-workflowid", new List<string>() },
+                { "mex-chunk-range", new List<string>{"{1:1}"} },
+                { "mex-localid", new List<string>() },
+                { "mex-subject", new List<string>() },
+                { "mex-content-checksum", new List<string>() },
                 { "Mex-Content-Encrypted", new List<string>() },
-                { "Mex-ClientVersion", new List<string>() },
-                { "Mex-OSVersion", new List<string>() },
-                { "Mex-OSArchitecture", new List<string>() },
-                { "Mex-JavaVersion", new List<string>() }
+                { "mex-clientversion", new List<string>() },
+                { "mex-osversion", new List<string>() },
+                { "mex-osarchitecture", new List<string>() },
+                { "mex-javaversion", new List<string>() }
             };
 
             HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForRetrieveMessage(
@@ -92,26 +91,26 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             Dictionary<string, List<string>> contentHeaders = new Dictionary<string, List<string>>
             {
-                { "Content-Type", new List<string>{ "text/plain" } },
-                { "Content-Length", new List<string>() },
+                { "content-type", new List<string>{ "text/plain" } },
+                { "content-length", new List<string>() },
                 { "Last-Modified", new List<string>() },
             };
 
             Dictionary<string, List<string>> headers = new Dictionary<string, List<string>>
             {
-                { "Content-Encoding", new List<string>() },
-                { "Mex-FileName", new List<string>() },
-                { "Mex-From", new List<string>() },
-                { "Mex-To", new List<string>() },
-                { "Mex-WorkflowID", new List<string>() },
-                { "Mex-LocalID", new List<string>() },
-                { "Mex-Subject", new List<string>() },
-                { "Mex-Content-Checksum", new List<string>() },
+                { "content-encoding", new List<string>() },
+                { "mex-filename", new List<string>() },
+                { "mex-from", new List<string>() },
+                { "mex-to", new List<string>() },
+                { "mex-workflowid", new List<string>() },
+                { "mex-localid", new List<string>() },
+                { "mex-subject", new List<string>() },
+                { "mex-content-checksum", new List<string>() },
                 { "Mex-Content-Encrypted", new List<string>() },
-                { "Mex-ClientVersion", new List<string>() },
-                { "Mex-OSVersion", new List<string>() },
-                { "Mex-OSArchitecture", new List<string>() },
-                { "Mex-JavaVersion", new List<string>() }
+                { "mex-clientversion", new List<string>() },
+                { "mex-osversion", new List<string>() },
+                { "mex-osarchitecture", new List<string>() },
+                { "mex-javaversion", new List<string>() }
             };
 
             List<HttpResponseMessage> responseMessages =

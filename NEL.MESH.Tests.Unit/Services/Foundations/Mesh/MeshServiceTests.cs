@@ -234,12 +234,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
                 string chunkRangeValue = $"{i + 1}:{chunks}";
 
-                if (httpResponseMessage.Content.Headers.Contains("Mex-Chunk-Range"))
+                if (httpResponseMessage.Content.Headers.Contains("mex-chunk-range"))
                 {
-                    httpResponseMessage.Content.Headers.Remove("Mex-Chunk-Range");
+                    httpResponseMessage.Content.Headers.Remove("mex-chunk-range");
                 }
 
-                httpResponseMessage.Content.Headers.Add("Mex-Chunk-Range", chunkRangeValue);
+                httpResponseMessage.Content.Headers.Add("mex-chunk-range", chunkRangeValue);
                 messages.Add(httpResponseMessage);
             }
 
@@ -260,14 +260,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             foreach (var item in contentHeaders)
             {
-                responseMessage.Content.Headers.Add(item.Key, item.Value);
+                responseMessage.Content.Headers.Add(item.Key.ToLower(), item.Value);
             }
 
             if (headers != null)
             {
                 foreach (var item in headers)
                 {
-                    responseMessage.Content.Headers.Add(item.Key, item.Value);
+                    responseMessage.Content.Headers.Add(item.Key.ToLower(), item.Value);
                 }
             }
 
@@ -280,8 +280,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     HttpStatusCode statusCode = HttpStatusCode.OK)
         {
 
-            string contentType = message.Headers.ContainsKey("Content-Type")
-                ? message.Headers["Content-Type"].FirstOrDefault()
+            string contentType = message.Headers.ContainsKey("content-type")
+                ? message.Headers["content-type"].FirstOrDefault()
                 : "text/plain";
 
             if (string.IsNullOrEmpty(contentType))
@@ -300,14 +300,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             {
                 foreach (var item in headers)
                 {
-                    if (item.Key != "Content-Type" && item.Key != "Content-Encoding")
+                    if (item.Key.ToLower() != "content-type" && item.Key.ToLower() != "content-encoding")
                     {
-                        responseMessage.Headers.Add(item.Key, item.Value);
+                        responseMessage.Headers.Add(item.Key.ToLower(), item.Value);
                     }
 
-                    if (item.Key == "Content-Encoding")
+                    if (item.Key.ToLower() == "content-encoding")
                     {
-                        responseMessage.Content.Headers.Add(item.Key, item.Value);
+                        responseMessage.Content.Headers.Add(item.Key.ToLower(), item.Value);
                     }
                 }
             }
@@ -348,7 +348,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             foreach (var item in headers)
             {
-                message.Headers.Add(item.Key, item.Value);
+                message.Headers.Add(item.Key.ToLower(), item.Value);
             }
 
             return message;
@@ -512,12 +512,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             foreach (var header in headers)
             {
-                dictionary.Add(header.Key, header.Value.ToList());
+                dictionary.Add(header.Key.ToLower(), header.Value.ToList());
             }
 
             foreach (var contentHeader in contentHeaders)
             {
-                dictionary.Add(contentHeader.Key, contentHeader.Value.ToList());
+                dictionary.Add(contentHeader.Key.ToLower(), contentHeader.Value.ToList());
             }
 
             return dictionary;
@@ -528,31 +528,31 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             string contentType = "text/plain")
         {
             var message = CreateMessageFiller().Create();
-            message.Headers.Add("Mex-From",
+            message.Headers.Add("mex-from",
                 new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 100) });
 
-            message.Headers.Add("Mex-To",
+            message.Headers.Add("mex-to",
                 new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 100) });
 
-            message.Headers.Add("Mex-WorkflowID",
+            message.Headers.Add("mex-workflowid",
                 new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 300) });
 
-            message.Headers.Add("Mex-Chunk-Range", new List<string> { chunkSize });
+            message.Headers.Add("mex-chunk-range", new List<string> { chunkSize });
 
-            message.Headers.Add("Mex-Subject",
+            message.Headers.Add("mex-subject",
                 new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 500) });
 
-            message.Headers.Add("Mex-LocalID",
+            message.Headers.Add("mex-localid",
                 new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 300) });
 
-            message.Headers.Add("Mex-FileName",
+            message.Headers.Add("mex-filename",
                 new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 300) });
 
-            message.Headers.Add("Mex-Content-Checksum",
+            message.Headers.Add("mex-content-checksum",
                 new List<string> { GetRandomString(wordMinLength: 2, wordMaxLength: 100) });
 
-            message.Headers.Add("Content-Type", new List<string> { contentType });
-            message.Headers.Add("Content-Encoding", new List<string> { GetRandomString() });
+            message.Headers.Add("content-type", new List<string> { contentType });
+            message.Headers.Add("content-encoding", new List<string> { GetRandomString() });
 
             return message;
         }
@@ -562,31 +562,31 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             string contentType = "text/plain")
         {
             var message = CreateMessageFiller().Create();
-            message.Headers.Add("Mex-From",
+            message.Headers.Add("mex-from",
                 new List<string> { GetRandomString(wordMinLength: 101, wordMaxLength: 101) });
 
-            message.Headers.Add("Mex-To",
+            message.Headers.Add("mex-to",
                 new List<string> { GetRandomString(wordMinLength: 101, wordMaxLength: 101) });
 
-            message.Headers.Add("Mex-WorkflowID",
+            message.Headers.Add("mex-workflowid",
                 new List<string> { GetRandomString(wordMinLength: 301, wordMaxLength: 301) });
 
-            message.Headers.Add("Mex-Chunk-Range", new List<string> { "100000000000:100000000000" });
+            message.Headers.Add("mex-chunk-range", new List<string> { "100000000000:100000000000" });
 
-            message.Headers.Add("Mex-Subject",
+            message.Headers.Add("mex-subject",
                 new List<string> { GetRandomString(wordMinLength: 501, wordMaxLength: 501) });
 
-            message.Headers.Add("Mex-LocalID",
+            message.Headers.Add("mex-localid",
                 new List<string> { GetRandomString(wordMinLength: 301, wordMaxLength: 301) });
 
-            message.Headers.Add("Mex-FileName",
+            message.Headers.Add("mex-filename",
                 new List<string> { GetRandomString(wordMinLength: 301, wordMaxLength: 301) });
 
-            message.Headers.Add("Mex-Content-Checksum",
+            message.Headers.Add("mex-content-checksum",
                 new List<string> { GetRandomString(wordMinLength: 101, wordMaxLength: 101) });
 
-            message.Headers.Add("Content-Type", new List<string> { contentType });
-            message.Headers.Add("Content-Encoding", new List<string> { GetRandomString() });
+            message.Headers.Add("content-type", new List<string> { contentType });
+            message.Headers.Add("content-encoding", new List<string> { GetRandomString() });
 
             return message;
         }

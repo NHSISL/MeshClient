@@ -105,17 +105,17 @@ namespace NEL.MESH.Tests.Integration
             string content)
         {
             var message = CreateMessageFiller(content).Create();
-            message.Headers.Add("Mex-From", new List<string> { mexFrom });
-            message.Headers.Add("Mex-To", new List<string> { mexTo });
-            message.Headers.Add("Mex-WorkflowID", new List<string> { mexWorkflowId });
-            message.Headers.Add("Mex-LocalID", new List<string> { mexLocalId });
-            message.Headers.Add("Mex-Subject", new List<string> { mexSubject });
-            message.Headers.Add("Mex-FileName", new List<string> { mexFileName });
-            message.Headers.Add("Mex-Content-Checksum", new List<string> { mexContentChecksum });
+            message.Headers.Add("mex-from", new List<string> { mexFrom });
+            message.Headers.Add("mex-to", new List<string> { mexTo });
+            message.Headers.Add("mex-workflowid", new List<string> { mexWorkflowId });
+            message.Headers.Add("mex-localid", new List<string> { mexLocalId });
+            message.Headers.Add("mex-subject", new List<string> { mexSubject });
+            message.Headers.Add("mex-filename", new List<string> { mexFileName });
+            message.Headers.Add("mex-content-checksum", new List<string> { mexContentChecksum });
             message.Headers.Add("Mex-Content-Encrypted", new List<string> { mexContentEncrypted });
             message.Headers.Add("Mex-Encoding", new List<string> { mexEncoding });
-            message.Headers.Add("Mex-Chunk-Range", new List<string> { mexChunkRange });
-            message.Headers.Add("Content-Type", new List<string> { contentType });
+            message.Headers.Add("mex-chunk-range", new List<string> { mexChunkRange });
+            message.Headers.Add("content-type", new List<string> { contentType });
 
             return message;
         }
