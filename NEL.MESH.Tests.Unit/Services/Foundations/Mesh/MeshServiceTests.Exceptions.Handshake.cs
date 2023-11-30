@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xeptions;
 using Xunit;
@@ -32,10 +31,12 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
 
             var failedMeshClientException =
-                new FailedMeshClientException(httpRequestException);
+                new FailedMeshClientException(innerException: httpRequestException);
+
+            failedMeshClientException.AddData("StatusCode", httpRequestException.Message);
 
             var expectedMeshDependencyValidationException =
-                new MeshDependencyValidationException(failedMeshClientException.InnerException as Xeption);
+                new MeshDependencyValidationException(innerException: failedMeshClientException);
 
             // when
             ValueTask<bool> handshakeTask =
