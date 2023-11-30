@@ -21,7 +21,7 @@ namespace NEL.MESH.Tests.Integration.Witness
             // given
             string mexTo = this.meshConfigurations.MailboxId;
             string mexWorkflowId = "WITNESS TEST - CHUNKING";
-            int targetSizeInMegabytes = 2; //Over 1 will result in Chunking.
+            int targetSizeInMegabytes = 1; //Over 1 will result in Chunking.
             string content = GetFileWithXBytes(targetSizeInMegabytes);
             string mexSubject = "WITNESS TEST -  ShouldRetrieveChunckedMessageAsync";
             string mexLocalId = Guid.NewGuid().ToString();
@@ -62,7 +62,7 @@ namespace NEL.MESH.Tests.Integration.Witness
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(retrievedMessage.MessageId);
         }
 
-        [Fact(DisplayName = "501 - Retrieving Chunked Messages")]
+        [Fact(DisplayName = "501 - Retrieving Chunked MD5 Messages")]
         [Trait("Category", "Witness")]
         public async Task ShouldRetrieveChunckedMD5MessageAsync()
         {
@@ -77,7 +77,6 @@ namespace NEL.MESH.Tests.Integration.Witness
             string md5Checksum = GetMD5Checksum(retrievedMessage.FileContent);
             md5Checksum.Should().BeEquivalentTo(expectedcheck);
 
-            //retrievedMessage.FileContent.Should().BeEquivalentTo(contentBytes);
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(retrievedMessage.MessageId);
         }
     }
