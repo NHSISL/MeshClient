@@ -108,8 +108,8 @@ namespace NEL.MESH.Brokers.Mesh
             request.Headers.Add("mex-filename", mexFileName);
             request.Headers.Add("mex-content-checksum", mexContentChecksum);
             request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            request.Content.Headers.Add("content-encoding", contentEncoding);
-            request.Headers.Add("accept", accept);
+            request.Content.Headers.Add("Content-Encoding", contentEncoding);
+            request.Headers.Add("Accept", accept);
 
             var response = await this.httpClient.SendAsync(request);
 
@@ -146,7 +146,10 @@ namespace NEL.MESH.Brokers.Mesh
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, string chunkNumber, string authorizationToken)
+        public async ValueTask<HttpResponseMessage> GetMessageAsync(
+            string messageId,
+            string chunkNumber,
+            string authorizationToken)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}/{chunkNumber}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);

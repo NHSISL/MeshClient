@@ -8,6 +8,8 @@ using System.Linq;
 using System.Net.Http;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
+using NEL.MESH.Models.Foundations.Mesh.ExternalModels;
+using Newtonsoft.Json;
 using Xeptions;
 
 namespace NEL.MESH.Services.Foundations.Mesh
@@ -18,6 +20,8 @@ namespace NEL.MESH.Services.Foundations.Mesh
         {
             if (response.IsSuccessStatusCode == false)
             {
+                string body = response.Content.ReadAsStringAsync().Result;
+                SendMessageErrorResponse error = JsonConvert.DeserializeObject<SendMessageErrorResponse>(body);
                 string message = $"{(int)response.StatusCode} - {response.ReasonPhrase}";
 
                 var httpRequestException =
@@ -25,6 +29,14 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         message: message,
                         inner: null,
                         statusCode: response.StatusCode);
+
+                if (error != null)
+                {
+                    httpRequestException.Data.Add("MessageId", new List<string> { error.MessageId });
+                    httpRequestException.Data.Add("ErrorEvent", new List<string> { error.ErrorEvent });
+                    httpRequestException.Data.Add("ErrorCode", new List<string> { error.ErrorCode });
+                    httpRequestException.Data.Add("ErrorDescription", new List<string> { error.ErrorDescription });
+                }
 
                 throw httpRequestException;
             }
@@ -34,6 +46,8 @@ namespace NEL.MESH.Services.Foundations.Mesh
         {
             if (response.IsSuccessStatusCode == false)
             {
+                string body = response.Content.ReadAsStringAsync().Result;
+                SendMessageErrorResponse error = JsonConvert.DeserializeObject<SendMessageErrorResponse>(body);
                 string message = $"{(int)response.StatusCode} - {response.ReasonPhrase}";
 
                 var httpRequestException =
@@ -41,6 +55,14 @@ namespace NEL.MESH.Services.Foundations.Mesh
                        message: message,
                        inner: null,
                        statusCode: response.StatusCode);
+
+                if (error != null)
+                {
+                    httpRequestException.Data.Add("MessageId", new List<string> { error.MessageId });
+                    httpRequestException.Data.Add("ErrorEvent", new List<string> { error.ErrorEvent });
+                    httpRequestException.Data.Add("ErrorCode", new List<string> { error.ErrorCode });
+                    httpRequestException.Data.Add("ErrorDescription", new List<string> { error.ErrorDescription });
+                }
 
                 throw httpRequestException;
             }

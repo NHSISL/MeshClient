@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Collections;
 using Xeptions;
 
 namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
@@ -11,5 +12,8 @@ namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
     {
         public FailedMeshServerException(Exception innerException)
             : base(message: "Mesh server error occurred, contact support.", innerException) { }
+
+        public FailedMeshServerException(Exception innerException, IDictionary data)
+            : base(message: "Mesh server error occurred, contact support.", innerException, data) { }
     }
 }

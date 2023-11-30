@@ -29,7 +29,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     .ReturnsAsync(randomToken);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageAsync(inputMessageId, randomToken))
+                service.RetrieveMessageAsync(inputMessageId, randomToken, 1))
                     .ReturnsAsync(outputMessage);
 
             // when
@@ -44,7 +44,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     Times.Once);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageAsync(inputMessageId, randomToken),
+                service.RetrieveMessageAsync(inputMessageId, randomToken, 1),
                     Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();

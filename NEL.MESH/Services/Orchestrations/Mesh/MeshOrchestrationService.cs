@@ -88,7 +88,30 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 ValidateToken(token);
 
                 Message outputMessage =
-                    await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token);
+                    await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token, 1);
+
+                var chunks = outputMessage.Headers
+                    .FirstOrDefault(h => h.Key == "mex-chunk-range")
+                    .Value?
+                    .FirstOrDefault();
+
+                if (chunks != null)
+                {
+                    string chunkRange = chunks.Replace("{", string.Empty).Replace("}", string.Empty);
+                    string[] parts = chunkRange.Split(":");
+                    int totalChunks = int.Parse(parts[1]);
+
+                    for (int chunkId = 2; chunkId <= totalChunks; chunkId++)
+                    {
+                        token = await this.tokenService.GenerateTokenAsync();
+
+                        Message responseMessage =
+                            await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token, chunkId);
+
+                        byte[] fileContent = responseMessage.FileContent;
+                        outputMessage.FileContent = outputMessage.FileContent.Concat(fileContent).ToArray();
+                    }
+                }
 
                 return outputMessage;
             });
