@@ -13,7 +13,7 @@ namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class MeshClientTests
     {
-        [Fact(DisplayName = "704 - Download Message - Message Does Not Exist")]
+        [WitnessTestsFact(DisplayName = "704 - Download Message - Message Does Not Exist")]
         [Trait("Category", "Witness")]
         public async Task ShouldRetrieveStringMessageDoesNotExistAsync()
         {

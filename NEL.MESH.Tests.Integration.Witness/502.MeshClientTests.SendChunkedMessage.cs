@@ -14,7 +14,7 @@ namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class MeshClientTests
     {
-        [Fact(DisplayName = "502 - Sending Chunked Message")]
+        [WitnessTestsFact(DisplayName = "502 - Sending Chunked Message")]
         [Trait("Category", "Witness")]
         public async Task ShouldSendChunckedMessageAsync()
         {
