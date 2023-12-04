@@ -19,7 +19,5 @@ namespace NEL.MESH.Tests.Integration.Witness
 
             this.configuration = configurationBuilder.Build();
         }
-
-
     }
 }
