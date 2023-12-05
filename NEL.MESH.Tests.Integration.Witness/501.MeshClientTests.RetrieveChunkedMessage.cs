@@ -14,7 +14,7 @@ namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class MeshClientTests
     {
-        [Fact(DisplayName = "501 - Retrieving Chunked Messages")]
+        [WitnessTestsFact(DisplayName = "501 - Retrieving Chunked Messages")]
         [Trait("Category", "Witness")]
         public async Task ShouldRetrieveChunckedMessageAsync()
         {
@@ -62,7 +62,7 @@ namespace NEL.MESH.Tests.Integration.Witness
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(retrievedMessage.MessageId);
         }
 
-        [Fact(DisplayName = "501 - Retrieving Chunked MD5 Messages")]
+        [WitnessTestsFact(DisplayName = "501 - Retrieving Chunked MD5 Messages")]
         [Trait("Category", "Witness")]
         public async Task ShouldRetrieveChunckedMD5MessageAsync()
         {
