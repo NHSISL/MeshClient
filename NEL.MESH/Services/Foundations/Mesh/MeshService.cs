@@ -175,6 +175,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         authorizationToken: authorizationToken);
                 }
 
+                ValidateNullResponse(initialResponse);
                 ValidateReceivedResponse(initialResponse);
 
                 byte[] fileBody = initialResponse.Content.ReadAsByteArrayAsync().Result;

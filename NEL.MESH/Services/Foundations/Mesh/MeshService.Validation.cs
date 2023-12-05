@@ -42,6 +42,14 @@ namespace NEL.MESH.Services.Foundations.Mesh
             }
         }
 
+        private static void ValidateNullResponse(HttpResponseMessage response)
+        {
+            if (response is null)
+            {
+                throw new NullHttpResponseMessageException();
+            }
+        }
+
         private static void ValidateReceivedResponse(HttpResponseMessage response)
         {
             if (response.IsSuccessStatusCode == false)
