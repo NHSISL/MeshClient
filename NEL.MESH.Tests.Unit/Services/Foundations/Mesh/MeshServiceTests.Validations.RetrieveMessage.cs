@@ -68,5 +68,46 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnGetMessageWithChunksIfResponseNullAsync()
+        {
+            // given
+            string invalidAuthorizationToken = GetRandomString();
+            int chunks = GetRandomNumber();
+            Message randomMessage = CreateRandomMessage();
+            Message inputMessage = randomMessage;
+
+            HttpResponseMessage responseMessage = null;
+
+            this.meshBrokerMock.Setup(broker =>
+              broker.GetMessageAsync(inputMessage.MessageId, chunks.ToString(), invalidAuthorizationToken))
+                  .ReturnsAsync(responseMessage);
+
+            var nullHttpResponseMessageException =
+                new NullHttpResponseMessageException();
+
+            var expectedMeshValidationException =
+                 new MeshValidationException(
+                     innerException: nullHttpResponseMessageException);
+
+            // when
+            ValueTask<Message> getMessageTask =
+                this.meshService.RetrieveMessageAsync(inputMessage.MessageId, invalidAuthorizationToken, chunks);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(() =>
+                    getMessageTask.AsTask());
+
+            // then
+            actualMeshValidationException.Should()
+                .BeEquivalentTo(expectedMeshValidationException);
+
+            this.meshBrokerMock.Verify(broker =>
+                broker.GetMessageAsync(inputMessage.MessageId, chunks.ToString(), invalidAuthorizationToken),
+                    Times.Once);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
