@@ -150,8 +150,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
-        private static int GetRandomChunkNumber(int chunkParts) =>
-           new IntRange(min: 0, max: chunkParts).GetValue();
+        private static int GetRandomChunkNumber(int min, int max) =>
+            new IntRange(min, max).GetValue();
 
         private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
         {

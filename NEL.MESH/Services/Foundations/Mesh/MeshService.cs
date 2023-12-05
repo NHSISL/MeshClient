@@ -160,7 +160,6 @@ namespace NEL.MESH.Services.Foundations.Mesh
             TryCatch(async () =>
             {
                 ValidateRetrieveMessageArguments(messageId, authorizationToken);
-
                 HttpResponseMessage initialResponse;
 
                 if (chunkPart == 1)
