@@ -30,7 +30,7 @@
 		<InternalsVisibleTo Include="NEL.MESH.Tests.Unit" />
 		<InternalsVisibleTo Include="NEL.MESH.Tests.Acceptance" />
 		<InternalsVisibleTo Include="NEL.MESH.Tests.Integration" />
-		<InternalsVisibleTo Include="NEL.MESH.Tests.Integration.Witness"/>
+		<InternalsVisibleTo Include="NEL.MESH.Tests.Integration.Witness" />
 		<InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
 	</ItemGroup>
 
@@ -46,8 +46,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Xeption" Version="2.6.0" />
 	</ItemGroup>
