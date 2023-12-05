@@ -77,7 +77,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             int chunks = GetRandomNumber();
             Message randomMessage = CreateRandomMessage();
             Message inputMessage = randomMessage;
-
             HttpResponseMessage responseMessage = null;
 
             this.meshBrokerMock.Setup(broker =>
