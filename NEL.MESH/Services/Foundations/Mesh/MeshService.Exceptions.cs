@@ -81,6 +81,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 throw CreateValidationException(invalidMeshException);
             }
+            catch (NullHttpResponseMessageException nullHttpResponseMessageException)
+            {
+                throw CreateValidationException(nullHttpResponseMessageException);
+            }
             catch (HttpRequestException httpRequestException)
                 when ((int)httpRequestException.StatusCode >= 400 && (int)httpRequestException.StatusCode <= 499)
             {
