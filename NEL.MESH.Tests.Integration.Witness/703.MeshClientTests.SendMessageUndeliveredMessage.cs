@@ -9,7 +9,7 @@ namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class MeshClientTests
     {
-        [Fact(DisplayName = "703 - Send Message - Undelivered Message DEAD LETTER")]
+        [WitnessTestsFact(DisplayName = "703 - Send Message - Undelivered Message DEAD LETTER")]
         [Trait("Category", "Witness")]
         public async Task ShouldErrorSendMessageUndeliveredMessageAsync()
         {

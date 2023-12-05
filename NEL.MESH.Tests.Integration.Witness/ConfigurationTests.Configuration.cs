@@ -6,13 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using Xunit;
 
 namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class ConfigurationTests
     {
-        [Fact]
+        [WitnessTestsFact]
         public void ShouldGetConfigurationSettings()
         {
             // given
