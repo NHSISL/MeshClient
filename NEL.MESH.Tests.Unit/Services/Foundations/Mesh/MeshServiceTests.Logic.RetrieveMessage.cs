@@ -83,11 +83,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             int chunks = GetRandomNumber();
             Message inputMessage = randomMessage;
 
-            if (chunks > randomMessage.FileContent.Length)
-            {
-                chunks = randomMessage.FileContent.Length;
-            }
-
             Dictionary<string, List<string>> contentHeaders = new Dictionary<string, List<string>>
             {
                 { "content-type", new List<string>{ "text/plain" } },
@@ -147,7 +142,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
 
-
         [Fact]
         public async Task ShouldRetrieveChunkPartMessagesAsync()
         {
@@ -155,13 +149,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             string authorizationToken = GetRandomString();
             Message randomMessage = CreateRandomSendMessage();
             int chunks = GetRandomNumber();
-            int chunkPartToRetrieve = GetRandomChunkNumber(chunks);
+            int chunkPartToRetrieve = GetRandomChunkNumber(min: 2, max: chunks);
             Message inputMessage = randomMessage;
-
-            if (chunks > randomMessage.FileContent.Length)
-            {
-                chunks = randomMessage.FileContent.Length;
-            }
 
             Dictionary<string, List<string>> contentHeaders = new Dictionary<string, List<string>>
             {
@@ -196,18 +185,18 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     HttpStatusCode.PartialContent);
 
             Message expectedMessage = new Message();
+            var responseMessage = responseMessages[chunkPartToRetrieve - 1];
 
             this.meshBrokerMock.Setup(broker =>
                 broker.GetMessageAsync(
                     inputMessage.MessageId,
-                    It.Is(SameStringAs((chunkPartToRetrieve).ToString())),
+                    It.Is(SameStringAs(chunkPartToRetrieve.ToString())),
                     authorizationToken))
-                        .ReturnsAsync(responseMessages[chunkPartToRetrieve]);
+                        .ReturnsAsync(responseMessage);
 
             expectedMessage.FileContent =
-                GetMessageFromHttpResponseMessageForReceive(responseMessages[chunkPartToRetrieve],
-                    inputMessage.MessageId)
-                        .FileContent;
+                GetMessageFromHttpResponseMessageForReceive(responseMessage, inputMessage.MessageId)
+                    .FileContent;
 
             // when
             var actualMessage = await this.meshService
@@ -217,8 +206,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMessage.FileContent.Should().BeEquivalentTo(expectedMessage.FileContent);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.GetMessageAsync(inputMessage.MessageId,
-                    It.Is(SameStringAs((chunkPartToRetrieve).ToString())), authorizationToken),
+                broker.GetMessageAsync(
+                    inputMessage.MessageId,
+                    It.Is(SameStringAs(chunkPartToRetrieve.ToString())),
+                    authorizationToken),
                         Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
