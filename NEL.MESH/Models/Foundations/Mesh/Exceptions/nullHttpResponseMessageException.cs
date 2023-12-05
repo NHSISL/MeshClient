@@ -9,6 +9,6 @@ namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
     public class NullHttpResponseMessageException : Xeption
     {
         public NullHttpResponseMessageException()
-            : base(message: "Http Response Message is null.") { }
+            : base(message: "HTTP Response Message is null.") { }
     }
 }
