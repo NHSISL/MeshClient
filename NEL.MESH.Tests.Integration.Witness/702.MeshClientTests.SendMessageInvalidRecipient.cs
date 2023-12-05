@@ -15,7 +15,7 @@ namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class MeshClientTests
     {
-        [Fact(DisplayName = "702 - Send Message - Invalid Recipient")]
+        [WitnessTestsFact(DisplayName = "702 - Send Message - Invalid Recipient")]
         [Trait("Category", "Witness")]
         public async Task ShouldErrorSendMessageInvalidRecipientAsync()
         {

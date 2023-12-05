@@ -13,7 +13,7 @@ namespace NEL.MESH.Tests.Integration.Witness
 {
     public partial class MeshClientTests
     {
-        [Theory(DisplayName = "601 - High Volume Messages")]
+        [WitnessTestsTheory(DisplayName = "601 - High Volume Messages")]
         [InlineData(1)]
         [Trait("Category", "Witness")]
         public async Task ShouldSenddAndAcknowledgeHighVolumeAsync(int value)
