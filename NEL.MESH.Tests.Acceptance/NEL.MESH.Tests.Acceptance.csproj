@@ -19,7 +19,7 @@
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.8" />
 		<PackageReference Include="WireMock.Net" Version="1.5.41" />
 		<PackageReference Include="Xeption" Version="2.6.0" />
-		<PackageReference Include="xunit" Version="2.6.2" />
+		<PackageReference Include="xunit" Version="2.6.5" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.5.4">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
