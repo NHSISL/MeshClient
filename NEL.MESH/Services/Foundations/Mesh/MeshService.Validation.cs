@@ -269,7 +269,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
         private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T));
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
