@@ -23,11 +23,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             string someStringMessage = GetRandomString();
             Exception someException = new Exception(someStringMessage);
 
-            var failedChunkServiceException =
-                new FailedChunkServiceException(someException);
+            var failedChunkServiceException = new FailedChunkServiceException(
+                message: "Chunk service error occurred, contact support.",
+                innerException: someException);
 
             var expectedChunkServiceException =
-                new ChunkServiceException(failedChunkServiceException as Xeption);
+                new ChunkServiceException(
+                    message: "Chunk service error occurred, contact support.",
+                    innerException: failedChunkServiceException as Xeption);
 
             this.meshConfigurationBrokerMock.Setup(broker =>
                 broker.MaxChunkSizeInBytes)

@@ -28,7 +28,9 @@ namespace NEL.MESH.Services.Foundations.Chunks
             catch (Exception exception)
             {
                 var failedChunkServiceException =
-                    new FailedChunkServiceException(exception);
+                    new FailedChunkServiceException(
+                        message: "Chunk service error occurred, contact support.",
+                        innerException: exception);
 
                 throw CreateServiceException(failedChunkServiceException);
             }
