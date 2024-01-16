@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xunit;
 
 namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
@@ -21,7 +20,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             Message nullMessage = null;
 
             var nullMessageException =
-                new NullMessageException(message: "Message is null.");
+                new NullMessageChunkException(message: "Message chunk is null.");
 
             var expectedChunkValidationException =
                 new ChunkValidationException(nullMessageException);
