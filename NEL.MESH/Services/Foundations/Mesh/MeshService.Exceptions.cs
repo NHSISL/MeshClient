@@ -44,6 +44,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 when ((int)httpRequestException.StatusCode >= 500 && (int)httpRequestException.StatusCode <= 599)
             {
                 var failedMeshServerException = new FailedMeshServerException(
+                    message: "Mesh server error occurred, contact support.",
                     innerException: httpRequestException,
                     data: httpRequestException.Data);
 
@@ -102,6 +103,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 when ((int)httpRequestException.StatusCode >= 500 && (int)httpRequestException.StatusCode <= 599)
             {
                 var failedMeshServerException = new FailedMeshServerException(
+                    message: "Mesh server error occurred, contact support.",
                     innerException: httpRequestException,
                     data: httpRequestException.Data);
 
@@ -138,7 +140,9 @@ namespace NEL.MESH.Services.Foundations.Mesh
             catch (HttpRequestException httpRequestException)
                 when ((int)httpRequestException.StatusCode >= 500 && (int)httpRequestException.StatusCode <= 599)
             {
-                var failedMeshServerException = new FailedMeshServerException(httpRequestException);
+                var failedMeshServerException = new FailedMeshServerException(
+                    message: "Mesh server error occurred, contact support.", 
+                    innerException: httpRequestException);
                 failedMeshServerException.AddData("StatusCode", httpRequestException.Message);
 
                 throw CreateDependencyException(failedMeshServerException);
