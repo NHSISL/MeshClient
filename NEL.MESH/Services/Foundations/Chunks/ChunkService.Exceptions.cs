@@ -21,9 +21,9 @@ namespace NEL.MESH.Services.Foundations.Chunks
             {
                 return retruningMessageListFunction();
             }
-            catch (NullMessageException nullMessageException)
+            catch (NullMessageChunkException nullMessageChunkException)
             {
-                throw CreateValidationException(nullMessageException);
+                throw CreateValidationException(nullMessageChunkException);
             }
             catch (Exception exception)
             {

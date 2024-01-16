@@ -4,12 +4,12 @@
 
 using Xeptions;
 
-namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
+namespace NEL.MESH.Models.Foundations.Chunking.Exceptions
 {
-    public class NullHttpResponseMessageException : Xeption
+    internal class NullMessageChunkException : Xeption
     {
-        public NullHttpResponseMessageException(string message)
-            : base(message) 
+        public NullMessageChunkException(string message)
+            : base(message)
         { }
     }
 }

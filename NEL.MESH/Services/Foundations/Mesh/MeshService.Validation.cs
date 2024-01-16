@@ -46,7 +46,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
         {
             if (response is null)
             {
-                throw new NullHttpResponseMessageException();
+                throw new NullHttpResponseMessageException(message: "HTTP Response Message is null.");
             }
         }
 
@@ -79,6 +79,8 @@ namespace NEL.MESH.Services.Foundations.Mesh
         private static void ValidateOnHandshake(string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
+                message: "Invalid MESH argument validation errors occurred, " +
+                    "please correct the errors and try again.",
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
@@ -87,6 +89,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
             ValidateMessageIsNotNull(message);
             ValidateHeadersIsNotNull(message);
             Validate<InvalidMeshException>(
+                message: "Invalid message, please correct errors and try again.",
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"),
                 (Rule: IsInvalid(message.Headers, "mex-from"), Parameter: "mex-from"),
                 (Rule: IsInvalid(message.Headers, "mex-to"), Parameter: "mex-to"),
@@ -105,40 +108,50 @@ namespace NEL.MESH.Services.Foundations.Mesh
         private static void ValidateMexChunkRangeOnMultiPartFile(Message message)
         {
             Validate<InvalidMeshException>(
+                message: "Invalid message, please correct errors and try again.",
                 (Rule: IsInvalid(message.Headers, "mex-chunk-range"), Parameter: "mex-chunk-range"));
         }
 
         public static void ValidateTrackMessageArguments(string messageId, string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
-               (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
-               (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+                message: "Invalid MESH argument validation errors occurred, " +
+                    "please correct the errors and try again.",
+                (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
         public static void ValidateRetrieveMessageArguments(string messageId, string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
-               (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
-               (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+                message: "Invalid MESH argument validation errors occurred, " +
+                    "please correct the errors and try again.",
+                (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
         public static void ValidateRetrieveMessagesArguments(string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
-               (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+                message: "Invalid MESH argument validation errors occurred, " +
+                    "please correct the errors and try again.",
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
         private static void ValidateMessageId(string messageId)
         {
             Validate<InvalidMeshException>(
+                message: "Invalid message, please correct errors and try again.",
                 (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)));
         }
 
         public static void ValidateAcknowledgeMessageArguments(string messageId, string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
-               (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
-               (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+                message: "Invalid MESH argument validation errors occurred, " +
+                    "please correct the errors and try again.",
+                (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
         private static string GetKey(Dictionary<string, List<string>> dictionary, string key)
@@ -155,7 +168,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
         {
             if (message is null)
             {
-                throw new NullMessageException();
+                throw new NullMessageException(message: "Message is null.");
             }
         }
 
@@ -163,7 +176,8 @@ namespace NEL.MESH.Services.Foundations.Mesh
         {
             if (message.Headers is null)
             {
-                throw new NullHeadersException();
+                throw new NullHeadersException(
+                    message: "Message headers dictionary is null.");
             }
         }
 
@@ -252,10 +266,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
             return String.IsNullOrWhiteSpace(value);
         }
 
-        private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T));
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {

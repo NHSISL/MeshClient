@@ -8,7 +8,8 @@ namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
 {
     public class NullHeadersException : Xeption
     {
-        public NullHeadersException()
-            : base(message: "Message headers dictionary is null.") { }
+        public NullHeadersException(string message)
+            : base(message) 
+        { }
     }
 }

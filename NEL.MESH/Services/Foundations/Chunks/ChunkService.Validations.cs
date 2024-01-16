@@ -2,8 +2,8 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 
 namespace NEL.MESH.Services.Foundations.Chunks
 {
@@ -13,7 +13,7 @@ namespace NEL.MESH.Services.Foundations.Chunks
         {
             if (message is null)
             {
-                throw new NullMessageException();
+                throw new NullMessageChunkException(message: "Message chunk is null.");
             }
         }
     }

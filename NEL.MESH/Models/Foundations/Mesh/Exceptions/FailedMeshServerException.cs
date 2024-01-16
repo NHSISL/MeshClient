@@ -10,10 +10,10 @@ namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
 {
     public class FailedMeshServerException : Xeption
     {
-        public FailedMeshServerException(Exception innerException)
-            : base(message: "Mesh server error occurred, contact support.", innerException) { }
+        public FailedMeshServerException(string message, Exception innerException)
+            : base(message, innerException) { }
 
-        public FailedMeshServerException(Exception innerException, IDictionary data)
-            : base(message: "Mesh server error occurred, contact support.", innerException, data) { }
+        public FailedMeshServerException(string message, Exception innerException, IDictionary data)
+            : base(message, innerException, data) { }
     }
 }
