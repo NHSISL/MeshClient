@@ -9,7 +9,7 @@ namespace NEL.MESH.Models.Foundations.Tokens.Exceptions
     internal class TokenDependencyValidationException : Xeption
     {
         public TokenDependencyValidationException(string message, Xeption innerException)
-            : base(message,innerException)
+            : base(message, innerException)
         { }
     }
 }

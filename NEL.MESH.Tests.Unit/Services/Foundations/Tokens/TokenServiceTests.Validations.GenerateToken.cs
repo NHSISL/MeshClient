@@ -50,7 +50,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
 
             var InvalidTokenArgsException = new InvalidTokenArgsException(
                     message: "Invalid token argument validation errors occurred, " +
-                    "please correct the errors and try again.");
+                        "please correct the errors and try again.");
 
             InvalidTokenArgsException.AddData(
                 key: "MailboxId",
