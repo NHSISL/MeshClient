@@ -8,10 +8,8 @@ namespace NEL.MESH.Models.Orchestrations.Mesh.Exceptions
 {
     internal class MeshOrchestrationDependencyException : Xeption
     {
-        public MeshOrchestrationDependencyException(Xeption innerException)
-            : base(
-                message: "Mesh orchestration dependency error occurred, fix the errors and try again.",
-                innerException)
+        public MeshOrchestrationDependencyException(string message, Xeption innerException)
+            : base(message, innerException)
         { }
     }
 }

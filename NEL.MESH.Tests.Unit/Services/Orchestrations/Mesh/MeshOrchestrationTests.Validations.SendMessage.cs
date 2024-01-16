@@ -61,8 +61,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.SplitMessageIntoChunks(inputMessage))
                     .Returns(chunkedInputMessages);
 
-            var invalidTokenException =
-                new InvalidTokenException();
+            var invalidTokenException = new InvalidTokenException(message: "Token is invalid.");
 
             invalidTokenException.AddData(
                 key: "Token",
@@ -112,8 +111,9 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.SplitMessageIntoChunks(inputMessage))
                     .Returns(invalidData);
 
-            var invalidMeshOrchestrationArgsException =
-                new InvalidMeshOrchestrationArgsException();
+            var invalidMeshOrchestrationArgsException = new InvalidMeshOrchestrationArgsException(
+                message: "Invalid mesh orchestration argument validation errors occurred, " +
+                "please correct the errors and try again.");
 
             invalidMeshOrchestrationArgsException.AddData(
                 key: "ChunkedMessages",

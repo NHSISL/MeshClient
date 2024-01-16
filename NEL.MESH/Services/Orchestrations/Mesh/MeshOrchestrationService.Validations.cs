@@ -15,6 +15,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         private void ValidateToken(string token)
         {
             Validate<InvalidTokenException>(
+                message: "Token is invalid.",
                 (Rule: IsInvalid(token), Parameter: "Token"));
         }
 
@@ -29,12 +30,16 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         private static void ValidateChunksOnSendMessage(List<Message> chunkedMessages)
         {
             Validate<InvalidMeshOrchestrationArgsException>(
+                message: "Invalid mesh orchestration argument validation errors occurred, " +
+                "please correct the errors and try again.",
                 (Rule: IsInvalid(chunkedMessages), Parameter: "ChunkedMessages"));
         }
 
         private static void ValidateTrackMessageArgs(string messageId)
         {
             Validate<InvalidMeshOrchestrationArgsException>(
+                message: "Invalid mesh orchestration argument validation errors occurred, " +
+                "please correct the errors and try again.",
                 (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)));
         }
 
@@ -50,10 +55,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             Message = "At least one chunk part required"
         };
 
-        private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
                     where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T));
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {

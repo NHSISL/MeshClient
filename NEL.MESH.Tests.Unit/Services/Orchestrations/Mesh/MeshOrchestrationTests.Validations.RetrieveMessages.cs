@@ -24,9 +24,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             string randomMssageId = GetRandomString();
             string invalidToken = invalidText;
             Message randomMessage = CreateRandomSendMessage();
-
-            var invalidTokenException =
-                new InvalidTokenException();
+            var invalidTokenException = new InvalidTokenException(message: "Token is invalid.");
 
             invalidTokenException.AddData(
                 key: "Token",

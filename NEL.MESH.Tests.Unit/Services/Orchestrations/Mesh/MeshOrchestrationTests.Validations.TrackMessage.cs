@@ -24,8 +24,9 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             string randomToken = GetRandomString();
             Message randomMessage = CreateRandomSendMessage();
 
-            var invalidMeshOrchestrationArgsException =
-                new InvalidMeshOrchestrationArgsException();
+            var invalidMeshOrchestrationArgsException = new InvalidMeshOrchestrationArgsException(
+                message: "Invalid mesh orchestration argument validation errors occurred, " +
+                "please correct the errors and try again.");
 
             invalidMeshOrchestrationArgsException.AddData(
                 key: nameof(Message.MessageId),
@@ -64,9 +65,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             string randomMssageId = GetRandomString();
             string invalidToken = invalidText;
             Message randomMessage = CreateRandomSendMessage();
-
-            var invalidTokenException =
-                new InvalidTokenException();
+            var invalidTokenException = new InvalidTokenException(message: "Token is invalid.");
 
             invalidTokenException.AddData(
                 key: "Token",
