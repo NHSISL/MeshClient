@@ -9,7 +9,7 @@ namespace NEL.MESH.Models.Foundations.Chunking.Exceptions
     internal class NullMessageChunkException : Xeption
     {
         public NullMessageChunkException(string message)
-            : base(message: "Message chunk is null.")
+            : base(message)
         { }
     }
 }
