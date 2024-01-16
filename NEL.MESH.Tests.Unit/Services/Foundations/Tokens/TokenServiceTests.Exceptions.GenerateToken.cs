@@ -37,11 +37,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
             string someMessage = GetRandomString();
             Exception someException = new Exception(message: someMessage);
 
-            var failedTokenServiceException =
-                new FailedTokenServiceException(innerException: someException, data: someException.Data);
+            var failedTokenServiceException = new FailedTokenServiceException(
+                message: "Token service error occurred, contact support.",
+                innerException: someException,
+                data: someException.Data);
 
-            var expectedTokenServiceException =
-                new TokenServiceException(failedTokenServiceException as Xeption);
+            var expectedTokenServiceException = new TokenServiceException(
+                message: "Token service error occurred, contact support.",
+                failedTokenServiceException as Xeption);
 
             this.identifierBrokerMock.Setup(broker =>
                 broker.GetIdentifier())

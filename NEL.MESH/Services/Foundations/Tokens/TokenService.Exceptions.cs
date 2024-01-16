@@ -25,8 +25,10 @@ namespace NEL.MESH.Services.Foundations.Tokens
             }
             catch (Exception exception)
             {
-                var failedTokenServiceException =
-                    new FailedTokenServiceException(innerException: exception, data: exception.Data);
+                var failedTokenServiceException = new FailedTokenServiceException(
+                        message: "Token service error occurred, contact support.",
+                        innerException: exception, 
+                        data: exception.Data);
 
                 throw CreateServiceException(failedTokenServiceException);
             }
@@ -34,16 +36,18 @@ namespace NEL.MESH.Services.Foundations.Tokens
 
         private TokenValidationException CreateValidationException(Xeption exception)
         {
-            var tokenValidationException =
-                new TokenValidationException(innerException: exception);
+            var tokenValidationException = new TokenValidationException(
+                message: "Token validation errors occurred, please try again.",
+                innerException: exception);
 
             return tokenValidationException;
         }
 
         private TokenServiceException CreateServiceException(Xeption exception)
         {
-            var tokenServiceException = new
-                TokenServiceException(innerException: exception);
+            var tokenServiceException = new TokenServiceException(
+                message: "Token service error occurred, contact support.",
+                innerException: exception);
 
             return tokenServiceException;
         }
