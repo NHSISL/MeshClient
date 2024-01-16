@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
+using Xeptions;
 using Xunit;
 
 namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
@@ -23,7 +24,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
                 new NullMessageChunkException(message: "Message chunk is null.");
 
             var expectedChunkValidationException =
-                new ChunkValidationException(nullMessageChunkException);
+                new ChunkValidationException(
+                    message: "Chunk validation errors occurred, please try again.",
+                    innerException: nullMessageChunkException as Xeption);
 
             // when
             Action splitMessageIntoChunksAction = () =>
