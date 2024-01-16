@@ -54,8 +54,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
             }
             catch (Exception exception)
             {
-                var failedMeshServiceException =
-                    new FailedMeshServiceException(
+                var failedMeshServiceException = new FailedMeshServiceException(
                         message: "Mesh service error occurred, contact support.",
                         innerException: exception);
 
@@ -147,6 +146,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 var failedMeshServerException = new FailedMeshServerException(
                     message: "Mesh server error occurred, contact support.", 
                     innerException: httpRequestException);
+
                 failedMeshServerException.AddData("StatusCode", httpRequestException.Message);
 
                 throw CreateDependencyException(failedMeshServerException);

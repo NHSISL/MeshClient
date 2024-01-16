@@ -46,8 +46,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message expectedMessage =
                 GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage);
 
-            var invalidMeshArgsException =
-                new InvalidArgumentsMeshException();
+            var invalidMeshArgsException = new InvalidArgumentsMeshException(
+                    message: "Invalid MESH argument valiation errors occurred, " +
+                    "please correct the errors and try again.");
 
             invalidMeshArgsException.AddData(
                 key: nameof(Message.MessageId),
@@ -57,9 +58,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 key: "Token",
                 values: "Text is required");
 
-            var expectedMeshValidationException =
-                new MeshValidationException(
-                    innerException: invalidMeshArgsException);
+            var expectedMeshValidationException = new MeshValidationException(
+                message: "Message validation errors occurred, please try again.",
+                innerException: invalidMeshArgsException);
 
             // when
             ValueTask<Message> trackMessageTask =

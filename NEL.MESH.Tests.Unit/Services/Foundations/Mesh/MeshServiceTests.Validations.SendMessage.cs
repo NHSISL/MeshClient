@@ -21,10 +21,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message nullMessage = null;
 
             var nullMessageException =
-                new NullMessageException();
+                new NullMessageException(message: "Message headers dictionary is null.");
 
             var expectedMeshValidationException =
                 new MeshValidationException(
+                    message: "Message validation errors occurred, please try again.",
                     innerException: nullMessageException);
 
             // when
@@ -54,10 +55,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             };
 
             var nullHeadersException =
-                new NullHeadersException();
+                new NullHeadersException(message: "Message headers dictionary is null.");
 
             var expectedMeshValidationException =
                 new MeshValidationException(
+                    message: "Message validation errors occurred, please try again.",
                     innerException: nullHeadersException);
 
             // when
@@ -97,7 +99,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             randomMessage.Headers.Add("mex-workflowid", new List<string> { invalidInput });
 
             var invalidMeshException =
-                new InvalidMeshException();
+                new InvalidMeshException(message: "Invalid message, please correct errors and try again.");
 
             invalidMeshException.AddData(
                 key: "Token",
@@ -121,6 +123,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             var expectedMeshValidationException =
                 new MeshValidationException(
+                    message: "Message validation errors occurred, please try again.",
                     innerException: invalidMeshException);
 
             // when
@@ -149,7 +152,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message inputFileMessage = randomFileMessage;
 
             var invalidMeshException =
-               new InvalidMeshException();
+               new InvalidMeshException(message: "Invalid message, please correct errors and try again.");
 
             invalidMeshException.AddData(
                 key: "mex-from",
@@ -185,6 +188,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             var expectedMeshValidationException =
                 new MeshValidationException(
+                    message: "Message validation errors occurred, please try again.",
                     innerException: invalidMeshException);
 
             // when
@@ -217,7 +221,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             randomMessage.MessageId = invalidInput;
 
             var invalidMeshException =
-               new InvalidMeshException();
+               new InvalidMeshException(message: "Invalid message, please correct errors and try again.");
 
             invalidMeshException.AddData(
                 key: nameof(Message.MessageId),
@@ -225,6 +229,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             var expectedMeshValidationException =
                 new MeshValidationException(
+                    message: "Message validation errors occurred, please try again.",
                     innerException: invalidMeshException);
 
             // when

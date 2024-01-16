@@ -21,7 +21,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             Message nullMessage = null;
 
             var nullMessageException =
-                new NullMessageException();
+                new NullMessageException(message: "Message headers dictionary is null.");
 
             var expectedChunkValidationException =
                 new ChunkValidationException(nullMessageException);
