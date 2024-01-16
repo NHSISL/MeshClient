@@ -55,7 +55,9 @@ namespace NEL.MESH.Services.Foundations.Mesh
             catch (Exception exception)
             {
                 var failedMeshServiceException =
-                    new FailedMeshServiceException(innerException: exception);
+                    new FailedMeshServiceException(
+                        message: "Mesh service error occurred, contact support.",
+                        innerException: exception);
 
                 throw CreateServiceException(failedMeshServiceException);
             }
@@ -114,7 +116,9 @@ namespace NEL.MESH.Services.Foundations.Mesh
             catch (Exception exception)
             {
                 var failedMeshServiceException =
-                    new FailedMeshServiceException(exception);
+                    new FailedMeshServiceException(
+                        message: "Mesh service error occurred, contact support.",
+                        innerException: exception);
 
                 throw CreateServiceException(failedMeshServiceException);
             }
@@ -154,7 +158,9 @@ namespace NEL.MESH.Services.Foundations.Mesh
             catch (Exception exception)
             {
                 var failedMeshServiceException =
-                    new FailedMeshServiceException(exception);
+                    new FailedMeshServiceException(
+                        message: "Mesh service error occurred, contact support.",
+                        innerException: exception);
 
                 throw CreateServiceException(failedMeshServiceException);
             }
