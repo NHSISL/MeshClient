@@ -8,10 +8,8 @@ namespace NEL.MESH.Models.Foundations.Tokens.Exceptions
 {
     internal class TokenValidationException : Xeption
     {
-        public TokenValidationException(Xeption innerException)
-            : base(
-                  message: "Token validation errors occurred, please try again.",
-                  innerException)
+        public TokenValidationException(string message, Xeption innerException)
+            : base(message, innerException)
         { }
     }
 }

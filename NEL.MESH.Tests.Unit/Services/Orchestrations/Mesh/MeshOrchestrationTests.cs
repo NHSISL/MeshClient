@@ -77,8 +77,13 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             return new TheoryData<Xeption>
             {
-                new TokenValidationException(innerException),
-                new TokenDependencyValidationException(innerException),
+                new TokenValidationException(
+                    message: "Token validation errors occurred, please try again.",
+                    innerException),
+
+                new TokenDependencyValidationException(
+                    message: "Token dependency error occurred, contact support.",
+                    innerException),
 
                 new MeshValidationException(
                     message: "Message validation errors occurred, please try again.",
@@ -98,8 +103,13 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             return new TheoryData<Xeption>
             {
-                new TokenDependencyException(innerException),
-                new TokenServiceException(innerException),
+                new TokenDependencyException(
+                    message: "Token dependency error occurred, contact support.", 
+                    innerException),
+
+                new TokenServiceException(
+                    message: "Token service error occurred, contact support.",
+                    innerException),
 
                 new MeshDependencyException(
                     message: "Mesh dependency error occurred, contact support.",

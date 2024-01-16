@@ -48,8 +48,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
                 broker.GetIdentifier())
                     .Returns(identifier);
 
-            var InvalidTokenArgsException =
-                new InvalidTokenArgsException();
+            var InvalidTokenArgsException = new InvalidTokenArgsException(
+                    message: "Invalid token argument validation errors occurred, " +
+                        "please correct the errors and try again.");
 
             InvalidTokenArgsException.AddData(
                 key: "MailboxId",
@@ -65,6 +66,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
 
             var expectedTokenValidationException =
                  new TokenValidationException(
+                     message: "Token validation errors occurred, please try again.",
                      innerException: InvalidTokenArgsException);
 
             // when
