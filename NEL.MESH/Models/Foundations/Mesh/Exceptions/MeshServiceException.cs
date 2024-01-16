@@ -8,9 +8,8 @@ namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
 {
     internal class MeshServiceException : Xeption
     {
-        public MeshServiceException(Xeption innerException)
-          : base(message: "Mesh service error occurred, contact support.",
-                innerException)
+        public MeshServiceException(string message, Xeption innerException)
+            : base(message, innerException)
         { }
     }
 }
