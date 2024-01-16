@@ -46,7 +46,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
         {
             if (response is null)
             {
-                throw new NullHttpResponseMessageException();
+                throw new NullHttpResponseMessageException(message: "HTTP Response Message is null.");
             }
         }
 
@@ -155,7 +155,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
         {
             if (message is null)
             {
-                throw new NullMessageException();
+                throw new NullMessageException(message: "Message is null.");
             }
         }
 
@@ -163,7 +163,8 @@ namespace NEL.MESH.Services.Foundations.Mesh
         {
             if (message.Headers is null)
             {
-                throw new NullHeadersException();
+                throw new NullHeadersException(
+                    message: "Message headers dictionary is null.");
             }
         }
 

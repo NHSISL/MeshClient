@@ -13,7 +13,7 @@ namespace NEL.MESH.Services.Foundations.Chunks
         {
             if (message is null)
             {
-                throw new NullMessageException();
+                throw new NullMessageException(message: "Message is null.");
             }
         }
     }

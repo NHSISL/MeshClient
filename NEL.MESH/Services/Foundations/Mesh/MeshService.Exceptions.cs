@@ -168,7 +168,9 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
         private MeshValidationException CreateValidationException(Xeption exception)
         {
-            var meshValidationException = new MeshValidationException(innerException: exception);
+            var meshValidationException = new MeshValidationException(
+                message: "Message validation errors occurred, please try again.",
+                innerException: exception);
 
             return meshValidationException;
         }
@@ -176,7 +178,9 @@ namespace NEL.MESH.Services.Foundations.Mesh
         private MeshDependencyValidationException CreateDependencyValidationException(Xeption exception)
         {
             var meshDependencyValidationException =
-                new MeshDependencyValidationException(innerException: exception);
+                new MeshDependencyValidationException(
+                    message: "Mesh dependency error occurred, contact support.",
+                    innerException: exception);
 
             return meshDependencyValidationException;
         }
@@ -184,15 +188,18 @@ namespace NEL.MESH.Services.Foundations.Mesh
         private MeshDependencyException CreateDependencyException(Xeption exception)
         {
             var meshDependencyException =
-                new MeshDependencyException(exception.InnerException as Xeption);
+                new MeshDependencyException(
+                    message: "Mesh dependency error occurred, contact support.", 
+                    innerException: exception.InnerException as Xeption);
 
             throw meshDependencyException;
         }
 
         private MeshServiceException CreateServiceException(Xeption exception)
         {
-            var meshServiceException = new
-                MeshServiceException(exception);
+            var meshServiceException = new MeshServiceException(
+                message: "Mesh service error occurred, contact support.",
+                innerException: exception);
 
             return meshServiceException;
         }
