@@ -72,7 +72,9 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             catch (Exception exception)
             {
                 var failedMeshOrchestrationServiceException =
-                    new FailedMeshOrchestrationServiceException(exception);
+                    new FailedMeshOrchestrationServiceException(
+                        message: "Failed mesh orchestration service occurred, please contact support", 
+                        innerException: exception);
 
                 throw CreateServiceException(failedMeshOrchestrationServiceException);
             }
@@ -130,8 +132,9 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             }
             catch (Exception exception)
             {
-                var failedMeshOrchestrationServiceException =
-                    new FailedMeshOrchestrationServiceException(exception);
+                var failedMeshOrchestrationServiceException = new FailedMeshOrchestrationServiceException(
+                        message: "Failed mesh orchestration service occurred, please contact support",
+                        innerException: exception);
 
                 throw CreateServiceException(failedMeshOrchestrationServiceException);
             }
@@ -185,8 +188,9 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             }
             catch (Exception exception)
             {
-                var failedMeshOrchestrationServiceException =
-                    new FailedMeshOrchestrationServiceException(exception);
+                var failedMeshOrchestrationServiceException = new FailedMeshOrchestrationServiceException(
+                        message: "Failed mesh orchestration service occurred, please contact support",
+                        innerException: exception);
 
                 throw CreateServiceException(failedMeshOrchestrationServiceException);
             }

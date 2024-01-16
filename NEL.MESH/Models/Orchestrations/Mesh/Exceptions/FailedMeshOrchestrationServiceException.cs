@@ -9,7 +9,8 @@ namespace NEL.MESH.Models.Orchestrations.Mesh.Exceptions
 {
     public class FailedMeshOrchestrationServiceException : Xeption
     {
-        public FailedMeshOrchestrationServiceException(Exception innerException)
-            : base(message: "Failed mesh orchestration service occurred, please contact support", innerException) { }
+        public FailedMeshOrchestrationServiceException(string message, Exception innerException)
+            : base(message, innerException) 
+        { }
     }
 }

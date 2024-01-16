@@ -88,8 +88,9 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             string someErrorMessage = GetRandomString();
             var serviceException = new Exception(someErrorMessage);
 
-            var failedMeshOrchestrationServiceException =
-                new FailedMeshOrchestrationServiceException(serviceException);
+            var failedMeshOrchestrationServiceException = new FailedMeshOrchestrationServiceException(
+                        message: "Failed mesh orchestration service occurred, please contact support",
+                        innerException: serviceException);
 
             var expectedMeshOrchestrationServiceException =
             new MeshOrchestrationServiceException(failedMeshOrchestrationServiceException);
