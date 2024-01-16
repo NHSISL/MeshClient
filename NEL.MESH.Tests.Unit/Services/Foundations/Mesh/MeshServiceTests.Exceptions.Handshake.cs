@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -30,13 +31,15 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             var httpRequestException =
                 new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
 
-            var failedMeshClientException =
-                new FailedMeshClientException(innerException: httpRequestException);
+            var failedMeshClientException = new FailedMeshClientException(
+                    message: "Mesh client error occurred, contact support.",
+                    innerException: httpRequestException);
 
             failedMeshClientException.AddData("StatusCode", httpRequestException.Message);
 
-            var expectedMeshDependencyValidationException =
-                new MeshDependencyValidationException(innerException: failedMeshClientException);
+            var expectedMeshDependencyValidationException = new MeshDependencyValidationException(
+                    message: "Mesh dependency error occurred, contact support.",
+                    innerException: failedMeshClientException);
 
             // when
             ValueTask<bool> handshakeTask =
@@ -71,11 +74,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             var httpRequestException =
                 new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
 
-            var failedMeshServerException =
-                new FailedMeshServerException(httpRequestException);
+            var failedMeshServerException = new FailedMeshServerException(
+                    message: "Mesh server error occurred, contact support.",
+                    innerException: httpRequestException);
 
             var expectedMeshDependencyException =
-                new MeshDependencyException(failedMeshServerException.InnerException as Xeption);
+                new MeshDependencyException(
+                    message: "Mesh dependency error occurred, contact support.",
+                    innerException: failedMeshServerException.InnerException as Xeption);
 
             // when
             ValueTask<bool> handshakeTask =
@@ -111,12 +117,15 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             var httpRequestException =
                 new HttpRequestException($"{(int)response.StatusCode} - {response.ReasonPhrase}");
-
-            var failedMeshServiceException =
-                new FailedMeshServiceException(httpRequestException);
+          
+            var failedMeshServiceException = new FailedMeshServiceException(
+                message: "Mesh service error occurred, contact support.",
+                innerException: httpRequestException);
 
             var expectedMeshServiceException =
-                new MeshServiceException(failedMeshServiceException as Xeption);
+                new MeshServiceException(
+                    message: "Mesh service error occurred, contact support.",
+                    innerException: failedMeshServiceException as Xeption);
 
             // when
             ValueTask<bool> handshakeTask =

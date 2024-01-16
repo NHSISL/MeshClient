@@ -8,7 +8,8 @@ namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
 {
     public class NullMessageException : Xeption
     {
-        public NullMessageException()
-            : base(message: "Message is null.") { }
+        public NullMessageException(string message)
+            : base(message) 
+        { }
     }
 }

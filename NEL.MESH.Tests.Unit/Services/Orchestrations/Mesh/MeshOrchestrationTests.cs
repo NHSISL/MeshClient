@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Moq;
@@ -78,8 +79,14 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             {
                 new TokenValidationException(innerException),
                 new TokenDependencyValidationException(innerException),
-                new MeshValidationException(innerException),
-                new MeshDependencyValidationException(innerException),
+
+                new MeshValidationException(
+                    message: "Message validation errors occurred, please try again.",
+                    innerException),
+
+                new MeshDependencyValidationException(
+                    message: "Mesh dependency error occurred, contact support.",
+                    innerException),
             };
         }
 
@@ -93,8 +100,14 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             {
                 new TokenDependencyException(innerException),
                 new TokenServiceException(innerException),
-                new MeshDependencyException(innerException),
-                new MeshServiceException(innerException),
+
+                new MeshDependencyException(
+                    message: "Mesh dependency error occurred, contact support.",
+                    innerException),
+
+                new MeshServiceException(
+                    message: "Mesh service error occurred, contact support.",
+                    innerException),
             };
         }
 
