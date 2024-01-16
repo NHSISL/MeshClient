@@ -35,15 +35,16 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 broker.GetMessagesAsync(inputMessage.MessageId))
                     .ReturnsAsync(responseMessage);
 
-            var invalidMeshArgsException =
-                new InvalidArgumentsMeshException();
+            var invalidMeshArgsException = new InvalidArgumentsMeshException(
+                    message: "Invalid MESH argument validation errors occurred, " +
+                    "please correct the errors and try again.");
 
             invalidMeshArgsException.AddData(
                 key: "Token",
                 values: "Text is required");
 
-            var expectedMeshValidationException =
-                new MeshValidationException(
+            var expectedMeshValidationException = new MeshValidationException(
+                    message: "Message validation errors occurred, please try again.",
                     innerException: invalidMeshArgsException);
 
             // when
