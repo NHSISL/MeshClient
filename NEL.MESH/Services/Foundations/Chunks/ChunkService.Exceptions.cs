@@ -36,14 +36,18 @@ namespace NEL.MESH.Services.Foundations.Chunks
 
         private ChunkValidationException CreateValidationException(Xeption exception)
         {
-            var chunkValidationException = new ChunkValidationException(exception);
+            var chunkValidationException = new ChunkValidationException(
+                message: "Chunk validation errors occurred, please try again.",
+                innerException: exception);
 
             return chunkValidationException;
         }
 
         private ChunkServiceException CreateServiceException(Xeption exception)
         {
-            var chunkServiceException = new ChunkServiceException(exception);
+            var chunkServiceException = new ChunkServiceException(
+                message: "Chunk service error occurred, contact support.",
+                innerException: exception);
 
             return chunkServiceException;
         }
