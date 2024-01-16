@@ -30,8 +30,9 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 key: "Token",
                 values: "Text is required");
 
-            var expectedMeshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(innerException: invalidTokenException);
+            var expectedMeshOrchestrationValidationException = new MeshOrchestrationValidationException(
+                message: "Mesh orchestration validation errors occurred, please try again.",
+                innerException: invalidTokenException);
 
             this.tokenServiceMock.Setup(service =>
                 service.GenerateTokenAsync())

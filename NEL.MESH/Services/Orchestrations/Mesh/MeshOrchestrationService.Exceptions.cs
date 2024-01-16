@@ -208,7 +208,9 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
 
         private MeshOrchestrationValidationException CreateValidationException(Xeption exception)
         {
-            var meshOrchestrationValidationException = new MeshOrchestrationValidationException(exception);
+            var meshOrchestrationValidationException = new MeshOrchestrationValidationException(
+                message: "Mesh orchestration validation errors occurred, please try again.",
+                innerException: exception);
 
             return meshOrchestrationValidationException;
         }

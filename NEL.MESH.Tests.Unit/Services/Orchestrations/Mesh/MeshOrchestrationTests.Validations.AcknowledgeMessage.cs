@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -33,8 +34,9 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 key: nameof(Message.MessageId),
                 values: "Text is required");
 
-            var expectedMeshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(innerException: invalidMeshOrchestrationArgsException);
+            var expectedMeshOrchestrationValidationException = new MeshOrchestrationValidationException(
+                message: "Mesh orchestration validation errors occurred, please try again.",
+                innerException: invalidMeshOrchestrationArgsException);
 
             // when
             ValueTask<bool> messageTask = this.meshOrchestrationService
@@ -73,8 +75,9 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 key: "Token",
                 values: "Text is required");
 
-            var expectedMeshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(innerException: invalidTokenException);
+            var expectedMeshOrchestrationValidationException = new MeshOrchestrationValidationException(
+                message: "Mesh orchestration validation errors occurred, please try again.",
+                innerException: invalidTokenException);
 
             this.tokenServiceMock.Setup(service =>
                 service.GenerateTokenAsync())

@@ -23,7 +23,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         {
             if (message is null)
             {
-                throw new NullMeshMessageException();
+                throw new NullMeshMessageException(message: "Message is null.");
             }
         }
 
