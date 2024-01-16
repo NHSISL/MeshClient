@@ -21,7 +21,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message nullMessage = null;
 
             var nullMessageException =
-                new NullMessageException(message: "Message headers dictionary is null.");
+                new NullMessageException(message: "Message is null.");
 
             var expectedMeshValidationException =
                 new MeshValidationException(
