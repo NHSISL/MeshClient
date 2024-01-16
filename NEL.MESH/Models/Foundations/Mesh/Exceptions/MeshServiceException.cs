@@ -9,7 +9,7 @@ namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
     internal class MeshServiceException : Xeption
     {
         public MeshServiceException(string message, Xeption innerException)
-          : base(message, innerException)
+            : base(message, innerException)
         { }
     }
 }
