@@ -79,7 +79,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
         private static void ValidateOnHandshake(string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
-                message: "Invalid MESH argument valiation errors occurred, " +
+                message: "Invalid MESH argument validation errors occurred, " +
                     "please correct the errors and try again.",
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
@@ -115,7 +115,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
         public static void ValidateTrackMessageArguments(string messageId, string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
-                message: "Invalid MESH argument valiation errors occurred, " +
+                message: "Invalid MESH argument validation errors occurred, " +
                     "please correct the errors and try again.",
                 (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
@@ -124,7 +124,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
         public static void ValidateRetrieveMessageArguments(string messageId, string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
-                message: "Invalid MESH argument valiation errors occurred, " +
+                message: "Invalid MESH argument validation errors occurred, " +
                     "please correct the errors and try again.",
                 (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
@@ -133,7 +133,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
         public static void ValidateRetrieveMessagesArguments(string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
-                message: "Invalid MESH argument valiation errors occurred, " +
+                message: "Invalid MESH argument validation errors occurred, " +
                     "please correct the errors and try again.",
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
@@ -148,7 +148,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
         public static void ValidateAcknowledgeMessageArguments(string messageId, string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
-                message: "Invalid MESH argument valiation errors occurred, " +
+                message: "Invalid MESH argument validation errors occurred, " +
                     "please correct the errors and try again.",
                 (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));

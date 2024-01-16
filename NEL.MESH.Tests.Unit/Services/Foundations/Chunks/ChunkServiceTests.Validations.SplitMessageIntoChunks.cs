@@ -19,11 +19,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             // given
             Message nullMessage = null;
 
-            var nullMessageException =
+            var nullMessageChunkException =
                 new NullMessageChunkException(message: "Message chunk is null.");
 
             var expectedChunkValidationException =
-                new ChunkValidationException(nullMessageException);
+                new ChunkValidationException(nullMessageChunkException);
 
             // when
             Action splitMessageIntoChunksAction = () =>

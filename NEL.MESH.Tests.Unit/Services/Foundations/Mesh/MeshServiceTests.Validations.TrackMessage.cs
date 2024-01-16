@@ -47,7 +47,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 GetMessageFromTrackingHttpResponseMessage(inputMessageId, responseMessage);
 
             var invalidMeshArgsException = new InvalidArgumentsMeshException(
-                    message: "Invalid MESH argument valiation errors occurred, " +
+                    message: "Invalid MESH argument validation errors occurred, " +
                     "please correct the errors and try again.");
 
             invalidMeshArgsException.AddData(
