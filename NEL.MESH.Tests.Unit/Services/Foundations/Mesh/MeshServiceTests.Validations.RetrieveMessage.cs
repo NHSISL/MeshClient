@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -35,8 +36,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
               broker.GetMessageAsync(inputMessage.MessageId, invalidAuthorizationToken))
                   .ReturnsAsync(responseMessage);
 
-            var invalidMeshArgsException =
-                new InvalidArgumentsMeshException();
+            var invalidMeshArgsException = new InvalidArgumentsMeshException(
+                    message: "Invalid MESH argument validation errors occurred, " +
+                    "please correct the errors and try again.");
 
             invalidMeshArgsException.AddData(
                key: nameof(Message.MessageId),
@@ -48,6 +50,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             var expectedMeshValidationException =
                  new MeshValidationException(
+                     message: "Message validation errors occurred, please try again.",
                      innerException: invalidMeshArgsException);
 
             // when
@@ -84,11 +87,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                   .ReturnsAsync(responseMessage);
 
             var nullHttpResponseMessageException =
-                new NullHttpResponseMessageException();
+                new NullHttpResponseMessageException(message: "HTTP Response Message is null.");
 
-            var expectedMeshValidationException =
-                 new MeshValidationException(
-                     innerException: nullHttpResponseMessageException);
+            var expectedMeshValidationException = new MeshValidationException(
+                message: "Message validation errors occurred, please try again.",
+                innerException: nullHttpResponseMessageException);
 
             // when
             ValueTask<Message> getMessageTask =
