@@ -189,8 +189,8 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             catch (Exception exception)
             {
                 var failedMeshOrchestrationServiceException = new FailedMeshOrchestrationServiceException(
-                        message: "Failed mesh orchestration service occurred, please contact support",
-                        innerException: exception);
+                    message: "Failed mesh orchestration service occurred, please contact support",
+                    innerException: exception);
 
                 throw CreateServiceException(failedMeshOrchestrationServiceException);
             }
@@ -200,8 +200,8 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             Xeption exception)
         {
             var meshOrchestrationDependencyValidationException = new MeshOrchestrationDependencyValidationException(
-                    message: "Mesh orchestration dependency validation error occurred, fix the errors and try again.",
-                    innerException: exception.InnerException as Xeption);
+                message: "Mesh orchestration dependency validation error occurred, fix the errors and try again.",
+                innerException: exception.InnerException as Xeption);
 
             return meshOrchestrationDependencyValidationException;
         }
@@ -218,8 +218,8 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         private MeshOrchestrationDependencyException CreateDependencyException(Xeption exception)
         {
             var meshOrchestrationDependencyException = new MeshOrchestrationDependencyException(
-                    message: "Mesh orchestration dependency error occurred, fix the errors and try again.",
-                    innerException: exception.InnerException as Xeption);
+                message: "Mesh orchestration dependency error occurred, fix the errors and try again.",
+                innerException: exception.InnerException as Xeption);
 
             throw meshOrchestrationDependencyException;
         }
@@ -227,8 +227,8 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         private MeshOrchestrationServiceException CreateServiceException(Xeption exception)
         {
             var meshOrchestrationServiceException = new MeshOrchestrationServiceException(
-                    message: "Mesh orchestration service error occurred, contact support.",
-                    innerException: exception);
+                message: "Mesh orchestration service error occurred, contact support.",
+                innerException: exception);
 
             throw meshOrchestrationServiceException;
         }

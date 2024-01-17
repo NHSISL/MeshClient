@@ -33,8 +33,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 values: "Text is required");
 
             var expectedMeshOrchestrationValidationException = new MeshOrchestrationValidationException(
-                            message: "Mesh orchestration validation errors occurred, please try again.",
-                            innerException: invalidMeshOrchestrationArgsException);
+                message: "Mesh orchestration validation errors occurred, please try again.",
+                innerException: invalidMeshOrchestrationArgsException);
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService

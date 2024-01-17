@@ -95,12 +95,12 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             var serviceException = new Exception(someErrorMessage);
 
             var failedMeshOrchestrationServiceException = new FailedMeshOrchestrationServiceException(
-                        message: "Failed mesh orchestration service occurred, please contact support",
-                        innerException: serviceException);
+                message: "Failed mesh orchestration service occurred, please contact support",
+                innerException: serviceException);
 
             var expectedMeshOrchestrationServiceException = new MeshOrchestrationServiceException(
-                    message: "Mesh orchestration service error occurred, contact support.",
-                    innerException: failedMeshOrchestrationServiceException);
+                message: "Mesh orchestration service error occurred, contact support.",
+                innerException: failedMeshOrchestrationServiceException);
 
             this.chunkServiceMock.Setup(service =>
                 service.SplitMessageIntoChunks(It.IsAny<Message>()))
