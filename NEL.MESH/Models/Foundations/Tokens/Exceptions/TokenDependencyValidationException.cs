@@ -8,10 +8,8 @@ namespace NEL.MESH.Models.Foundations.Tokens.Exceptions
 {
     internal class TokenDependencyValidationException : Xeption
     {
-        public TokenDependencyValidationException(Xeption innerException)
-            : base(
-                  message: "Token dependency error occurred, contact support.",
-                  innerException)
+        public TokenDependencyValidationException(string message, Xeption innerException)
+            : base(message, innerException)
         { }
     }
 }

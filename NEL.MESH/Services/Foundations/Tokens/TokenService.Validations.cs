@@ -14,9 +14,11 @@ namespace NEL.MESH.Services.Foundations.Tokens
         public static void ValidateGenerateTokenArgs(string mailboxId, string password, string key)
         {
             Validate<InvalidTokenArgsException>(
-               (Rule: IsInvalid(mailboxId), Parameter: nameof(MeshConfiguration.MailboxId)),
-               (Rule: IsInvalid(password), Parameter: nameof(MeshConfiguration.Password)),
-               (Rule: IsInvalid(key), Parameter: nameof(MeshConfiguration.Key)));
+                message: "Invalid token argument validation errors occurred, " +
+                    "please correct the errors and try again.",
+                (Rule: IsInvalid(mailboxId), Parameter: nameof(MeshConfiguration.MailboxId)),
+                (Rule: IsInvalid(password), Parameter: nameof(MeshConfiguration.Password)),
+                (Rule: IsInvalid(key), Parameter: nameof(MeshConfiguration.Key)));
         }
 
         private static dynamic IsInvalid(string text) => new
@@ -25,10 +27,10 @@ namespace NEL.MESH.Services.Foundations.Tokens
             Message = "Text is required"
         };
 
-        private static void Validate<T>(params (dynamic Rule, string Parameter)[] validations)
+        private static void Validate<T>(string message, params (dynamic Rule, string Parameter)[] validations)
             where T : Xeption
         {
-            var invalidDataException = (T)Activator.CreateInstance(typeof(T));
+            var invalidDataException = (T)Activator.CreateInstance(typeof(T), message);
 
             foreach ((dynamic rule, string parameter) in validations)
             {
