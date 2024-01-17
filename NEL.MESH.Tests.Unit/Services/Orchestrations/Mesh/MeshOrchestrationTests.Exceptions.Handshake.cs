@@ -17,16 +17,17 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         [Theory]
         [MemberData(nameof(MeshDependencyValidationExceptions))]
         public async Task ShouldThrowDependencyValidationExceptionOnHandshakeIfDependencyValidationErrorOccursAsync(
-            Xeption dependancyValidationException)
+            Xeption dependencyValidationException)
         {
             // given
             var expectedMeshOrchestrationDependencyValidationException =
-            new MeshOrchestrationDependencyValidationException(
-                innerException: dependancyValidationException.InnerException as Xeption);
+                new MeshOrchestrationDependencyValidationException(
+                    message: "Mesh orchestration dependency validation error occurred, fix the errors and try again.",
+                    innerException: dependencyValidationException.InnerException as Xeption);
 
             this.tokenServiceMock.Setup(service =>
                 service.GenerateTokenAsync())
-                    .ThrowsAsync(dependancyValidationException);
+                    .ThrowsAsync(dependencyValidationException);
 
             // when
             ValueTask<bool> handshakeTask = this.meshOrchestrationService.HandshakeAsync();
@@ -50,16 +51,16 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         [Theory]
         [MemberData(nameof(MeshDependencyExceptions))]
         public async Task ShouldThrowDependencyExceptionOnHandshakeIfDependencyErrorOccursAsync(
-            Xeption dependancyException)
+            Xeption dependencyException)
         {
             // given
-            var expectedMeshOrchestrationDependencyException =
-            new MeshOrchestrationDependencyException(
-                dependancyException.InnerException as Xeption);
+            var expectedMeshOrchestrationDependencyException = new MeshOrchestrationDependencyException(
+                message: "Mesh orchestration dependency error occurred, fix the errors and try again.",
+                innerException: dependencyException.InnerException as Xeption);
 
             this.tokenServiceMock.Setup(service =>
                 service.GenerateTokenAsync())
-                    .ThrowsAsync(dependancyException);
+                    .ThrowsAsync(dependencyException);
 
             // when
             ValueTask<bool> handshakeTask = this.meshOrchestrationService.HandshakeAsync();
@@ -87,12 +88,14 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             string someMessage = GetRandomString();
             var serviceException = new Exception(someMessage);
 
-            var failedMeshOrchestrationServiceException =
-                new FailedMeshOrchestrationServiceException(serviceException);
+            var failedMeshOrchestrationServiceException = new FailedMeshOrchestrationServiceException(
+                message: "Failed mesh orchestration service occurred, please contact support",
+                innerException: serviceException);
 
 
-            var expectedMeshOrchestrationServiceException =
-            new MeshOrchestrationServiceException(failedMeshOrchestrationServiceException);
+            var expectedMeshOrchestrationServiceException = new MeshOrchestrationServiceException(
+                message: "Mesh orchestration service error occurred, contact support.",
+                innerException: failedMeshOrchestrationServiceException);
 
             this.tokenServiceMock.Setup(service =>
                 service.GenerateTokenAsync())

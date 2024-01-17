@@ -21,10 +21,11 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             Message nullMessage = null;
 
             var nullMeshMessageException =
-                new NullMeshMessageException();
+                new NullMeshMessageException(message: "Message is null.");
 
-            var expectedMeshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(nullMeshMessageException);
+            var expectedMeshOrchestrationValidationException = new MeshOrchestrationValidationException(
+                message: "Mesh orchestration validation errors occurred, please try again.",
+                innerException: nullMeshMessageException);
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
@@ -61,15 +62,15 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.SplitMessageIntoChunks(inputMessage))
                     .Returns(chunkedInputMessages);
 
-            var invalidTokenException =
-                new InvalidTokenException();
+            var invalidTokenException = new InvalidTokenException(message: "Token is invalid.");
 
             invalidTokenException.AddData(
                 key: "Token",
                 values: "Text is required");
 
-            var expectedMeshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(innerException: invalidTokenException);
+            var expectedMeshOrchestrationValidationException = new MeshOrchestrationValidationException(
+                message: "Mesh orchestration validation errors occurred, please try again.",
+                innerException: invalidTokenException);
 
             this.tokenServiceMock.Setup(service =>
                 service.GenerateTokenAsync())
@@ -112,15 +113,17 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.SplitMessageIntoChunks(inputMessage))
                     .Returns(invalidData);
 
-            var invalidMeshOrchestrationArgsException =
-                new InvalidMeshOrchestrationArgsException();
+            var invalidMeshOrchestrationArgsException = new InvalidMeshOrchestrationArgsException(
+                message: "Invalid mesh orchestration argument validation errors occurred, " +
+                "please correct the errors and try again.");
 
             invalidMeshOrchestrationArgsException.AddData(
                 key: "ChunkedMessages",
                 values: "At least one chunk part required");
 
-            var expectedMeshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(innerException: invalidMeshOrchestrationArgsException);
+            var expectedMeshOrchestrationValidationException = new MeshOrchestrationValidationException(
+                message: "Mesh orchestration validation errors occurred, please try again.",
+                innerException: invalidMeshOrchestrationArgsException);
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService

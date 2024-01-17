@@ -72,7 +72,9 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             catch (Exception exception)
             {
                 var failedMeshOrchestrationServiceException =
-                    new FailedMeshOrchestrationServiceException(exception);
+                    new FailedMeshOrchestrationServiceException(
+                        message: "Failed mesh orchestration service occurred, please contact support", 
+                        innerException: exception);
 
                 throw CreateServiceException(failedMeshOrchestrationServiceException);
             }
@@ -130,8 +132,9 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             }
             catch (Exception exception)
             {
-                var failedMeshOrchestrationServiceException =
-                    new FailedMeshOrchestrationServiceException(exception);
+                var failedMeshOrchestrationServiceException = new FailedMeshOrchestrationServiceException(
+                        message: "Failed mesh orchestration service occurred, please contact support",
+                        innerException: exception);
 
                 throw CreateServiceException(failedMeshOrchestrationServiceException);
             }
@@ -185,8 +188,9 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             }
             catch (Exception exception)
             {
-                var failedMeshOrchestrationServiceException =
-                    new FailedMeshOrchestrationServiceException(exception);
+                var failedMeshOrchestrationServiceException = new FailedMeshOrchestrationServiceException(
+                    message: "Failed mesh orchestration service occurred, please contact support",
+                    innerException: exception);
 
                 throw CreateServiceException(failedMeshOrchestrationServiceException);
             }
@@ -195,31 +199,36 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
         private MeshOrchestrationDependencyValidationException CreateAndLogDependencyValidationException(
             Xeption exception)
         {
-            var meshOrchestrationDependencyValidationException =
-                new MeshOrchestrationDependencyValidationException(exception.InnerException as Xeption);
+            var meshOrchestrationDependencyValidationException = new MeshOrchestrationDependencyValidationException(
+                message: "Mesh orchestration dependency validation error occurred, fix the errors and try again.",
+                innerException: exception.InnerException as Xeption);
 
             return meshOrchestrationDependencyValidationException;
         }
 
         private MeshOrchestrationValidationException CreateValidationException(Xeption exception)
         {
-            var meshOrchestrationValidationException = new MeshOrchestrationValidationException(exception);
+            var meshOrchestrationValidationException = new MeshOrchestrationValidationException(
+                message: "Mesh orchestration validation errors occurred, please try again.",
+                innerException: exception);
 
             return meshOrchestrationValidationException;
         }
 
         private MeshOrchestrationDependencyException CreateDependencyException(Xeption exception)
         {
-            var meshOrchestrationDependencyException =
-                new MeshOrchestrationDependencyException(exception.InnerException as Xeption);
+            var meshOrchestrationDependencyException = new MeshOrchestrationDependencyException(
+                message: "Mesh orchestration dependency error occurred, fix the errors and try again.",
+                innerException: exception.InnerException as Xeption);
 
             throw meshOrchestrationDependencyException;
         }
 
         private MeshOrchestrationServiceException CreateServiceException(Xeption exception)
         {
-            var meshOrchestrationServiceException =
-                new MeshOrchestrationServiceException(exception);
+            var meshOrchestrationServiceException = new MeshOrchestrationServiceException(
+                message: "Mesh orchestration service error occurred, contact support.",
+                innerException: exception);
 
             throw meshOrchestrationServiceException;
         }

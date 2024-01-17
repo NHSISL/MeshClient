@@ -24,15 +24,17 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             string randomToken = GetRandomString();
             Message randomMessage = CreateRandomSendMessage();
 
-            var invalidMeshOrchestrationArgsException =
-                new InvalidMeshOrchestrationArgsException();
+            var invalidMeshOrchestrationArgsException = new InvalidMeshOrchestrationArgsException(
+                message: "Invalid mesh orchestration argument validation errors occurred, " +
+                "please correct the errors and try again.");
 
             invalidMeshOrchestrationArgsException.AddData(
                 key: nameof(Message.MessageId),
                 values: "Text is required");
 
-            var expectedMeshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(innerException: invalidMeshOrchestrationArgsException);
+            var expectedMeshOrchestrationValidationException = new MeshOrchestrationValidationException(
+                message: "Mesh orchestration validation errors occurred, please try again.",
+                innerException: invalidMeshOrchestrationArgsException);
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
@@ -64,16 +66,15 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             string randomMssageId = GetRandomString();
             string invalidToken = invalidText;
             Message randomMessage = CreateRandomSendMessage();
-
-            var invalidTokenException =
-                new InvalidTokenException();
+            var invalidTokenException = new InvalidTokenException(message: "Token is invalid.");
 
             invalidTokenException.AddData(
                 key: "Token",
                 values: "Text is required");
 
-            var expectedMeshOrchestrationValidationException =
-                new MeshOrchestrationValidationException(innerException: invalidTokenException);
+            var expectedMeshOrchestrationValidationException = new MeshOrchestrationValidationException(
+                message: "Mesh orchestration validation errors occurred, please try again.",
+                innerException: invalidTokenException);
 
             this.tokenServiceMock.Setup(service =>
                 service.GenerateTokenAsync())
