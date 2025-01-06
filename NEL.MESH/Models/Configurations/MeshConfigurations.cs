@@ -13,7 +13,7 @@ namespace NEL.MESH.Models.Configurations
         public string Key { get; set; }
         public string Url { get; set; }
         public X509Certificate2 RootCertificate { get; set; }
-        public X509Certificate2Collection IntermediateCertificates { get; set; }
+        public X509Certificate2Collection TlsIntermediateCertificates { get; set; }
         public X509Certificate2 ClientCertificate { get; set; }
         public string MexClientVersion { get; set; }
         public string MexOSName { get; set; }
