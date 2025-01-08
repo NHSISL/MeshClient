@@ -88,13 +88,44 @@ namespace NEL.MESH.Infrastructure.Services
 
                                 new TestTask
                                 {
-                                    Name = "Test"
+                                    Name = "Unit Tests",
+                                    Run =
+                                        """
+                                        # Run tests for projects matching the specified pattern
+                                        for proj in $(ls **/*.Tests.Unit.csproj); do
+                                          dotnet test "$proj" --no-build --verbosity normal
+                                        done
+                                        """
+                                },
+
+                                new TestTask
+                                {
+                                    Name = "Acceptance Tests",
+                                    Run =
+                                        """
+                                        # Run tests for projects matching the specified pattern
+                                        for proj in $(ls **/*.Tests.Acceptance.csproj); do
+                                          dotnet test "$proj" --no-build --verbosity normal
+                                        done
+                                        """
+                                },
+
+                                new TestTask
+                                {
+                                    Name = "Integration Tests",
+                                    Run =
+                                        """
+                                        # Run tests for projects matching the specified pattern
+                                        for proj in $(ls **/*.Tests.Integration.csproj); do
+                                          dotnet test "$proj" --no-build --verbosity normal
+                                        done
+                                        """
                                 }
                             }
                         }
                     },
                     {
-    "add_tag",
+                        "add_tag",
                         new TagJob(
                             runsOn: BuildMachines.UbuntuLatest,
                             dependsOn: "build",
@@ -106,7 +137,7 @@ namespace NEL.MESH.Infrastructure.Services
                         }
                     },
                     {
-    "publish",
+                        "publish",
                         new PublishJobV2(
                             runsOn: BuildMachines.UbuntuLatest,
                             dependsOn: "add_tag",
