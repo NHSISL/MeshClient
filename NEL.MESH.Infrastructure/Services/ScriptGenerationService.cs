@@ -89,37 +89,19 @@ namespace NEL.MESH.Infrastructure.Services
                                 new TestTask
                                 {
                                     Name = "Unit Tests",
-                                    Run =
-                                        """
-                                        # Run tests for projects matching the specified pattern
-                                        for proj in $(ls **/*.Tests.Unit.csproj); do
-                                          dotnet test "$proj" --no-build --verbosity normal
-                                        done
-                                        """
+                                    Run = "dotnet test NEL.Mesh.Tests.Unit/NEL.Mesh.Tests.Unit.csproj --no-build --verbosity normal"
                                 },
 
                                 new TestTask
                                 {
                                     Name = "Acceptance Tests",
-                                    Run =
-                                        """
-                                        # Run tests for projects matching the specified pattern
-                                        for proj in $(ls **/*.Tests.Acceptance.csproj); do
-                                          dotnet test "$proj" --no-build --verbosity normal
-                                        done
-                                        """
+                                    Run = "dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --no-build --verbosity normal"
                                 },
 
                                 new TestTask
                                 {
                                     Name = "Integration Tests",
-                                    Run =
-                                        """
-                                        # Run tests for projects matching the specified pattern
-                                        for proj in $(ls **/*.Tests.Integration.csproj); do
-                                          dotnet test "$proj" --no-build --verbosity normal
-                                        done
-                                        """
+                                    Run = "dotnet test NEL.MESH.Tests.Integration/NEL.MESH.Tests.Integration.csproj --no-build --verbosity normal"
                                 }
                             }
                         }
