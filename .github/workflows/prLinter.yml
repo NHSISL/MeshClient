@@ -11,7 +11,7 @@ on:
     - main
 jobs:
   label:
-    name: Label
+    name: Add Label(s)
     runs-on: ubuntu-latest
     steps:
     - name: Apply Label

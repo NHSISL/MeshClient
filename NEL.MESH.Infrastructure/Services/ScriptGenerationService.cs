@@ -136,7 +136,7 @@ namespace NEL.MESH.Infrastructure.Services
                         "label",
                         new LabelJobV2(runsOn: BuildMachines.UbuntuLatest)
                         {
-                            Name = "Label",
+                            Name = "Add Label(s)",
                         }
                     },
                     {
