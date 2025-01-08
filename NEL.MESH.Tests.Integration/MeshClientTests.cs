@@ -25,6 +25,7 @@ namespace NEL.MESH.Tests.Integration
                 .AddEnvironmentVariables("NEL_MESH_CLIENT_INTEGRATION_");
 
             IConfiguration configuration = configurationBuilder.Build();
+            var url = configuration["MeshConfiguration:Url"];
             bool RunAcceptanceTests = configuration.GetSection("RunAcceptanceTests").Get<bool>();
             bool RunIntegrationTests = configuration.GetSection("RunIntegrationTests").Get<bool>();
             var mailboxId = configuration["MeshConfiguration:MailboxId"];
@@ -33,7 +34,6 @@ namespace NEL.MESH.Tests.Integration
             var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"];
             var password = configuration["MeshConfiguration:Password"];
             var sharedKey = configuration["MeshConfiguration:SharedKey"];
-            var url = configuration["MeshConfiguration:Url"];
             var maxChunkSizeInMegabytes = int.Parse(configuration["MeshConfiguration:MaxChunkSizeInMegabytes"]);
             var clientSigningCertificate = configuration["MeshConfiguration:ClientSigningCertificate"];
             var clientSigningCertificatePassword = configuration["MeshConfiguration:ClientSigningCertificatePassword"];
@@ -41,9 +41,14 @@ namespace NEL.MESH.Tests.Integration
             var tlsRootCertificates = configuration.GetSection("MeshConfiguration:TlsRootCertificates")
                 .Get<List<string>>();
 
-            var tlsIntermediateCertificates =
+            List<string> tlsIntermediateCertificates =
                 configuration.GetSection("MeshConfiguration:TlsIntermediateCertificates")
                     .Get<List<string>>();
+
+            if (tlsIntermediateCertificates == null)
+            {
+                tlsIntermediateCertificates = new List<string>();
+            }
 
             this.meshConfigurations = new MeshConfiguration
             {
@@ -66,16 +71,16 @@ namespace NEL.MESH.Tests.Integration
             this.meshClient = new MeshClient(meshConfigurations: this.meshConfigurations);
         }
 
-        private static X509Certificate2Collection GetCertificates(params string[] intermediateCertificates)
+        private static X509Certificate2Collection GetCertificates(params string[] certificates)
         {
-            var certificates = new X509Certificate2Collection();
+            var certificateCollection = new X509Certificate2Collection();
 
-            foreach (string item in intermediateCertificates)
+            foreach (string item in certificates)
             {
-                certificates.Add(GetPemOrDerCertificate(item));
+                certificateCollection.Add(GetPemOrDerCertificate(item));
             }
 
-            return certificates;
+            return certificateCollection;
         }
 
         private static X509Certificate2 GetPemOrDerCertificate(string value)
