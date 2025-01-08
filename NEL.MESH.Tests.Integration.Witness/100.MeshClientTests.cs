@@ -42,7 +42,7 @@ namespace NEL.MESH.Tests.Integration.Witness
             var mexOSName = configuration["MeshConfiguration:MexOSName"];
             var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"];
             var password = configuration["MeshConfiguration:Password"];
-            var key = configuration["MeshConfiguration:Key"];
+            var sharedKey = configuration["MeshConfiguration:SharedKey"];
             var url = configuration["MeshConfiguration:Url"];
             var maxChunkSizeInMegabytes = int.Parse(configuration["MeshConfiguration:MaxChunkSizeInMegabytes"]);
             var clientSigningCertificate = configuration["MeshConfiguration:ClientSigningCertificate"];
@@ -61,7 +61,7 @@ namespace NEL.MESH.Tests.Integration.Witness
                 MexOSName = mexOSName,
                 MexOSVersion = mexOSVersion,
                 Password = password,
-                SharedKey = key,
+                SharedKey = sharedKey,
                 TlsRootCertificates = GetCertificates(tlsRootCertificates.ToArray()),
                 TlsIntermediateCertificates = GetCertificates(tlsIntermediateCertificates.ToArray()),
                 ClientSigningCertificate = GetCertificate(clientSigningCertificate),

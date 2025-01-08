@@ -33,6 +33,23 @@ namespace NEL.MESH.Infrastructure.Services
                     }
                 },
 
+                EnvironmentVariables = new Dictionary<string, string>
+                {
+                    { "IS_RELEASE_CANDIDATE", EnvironmentVariables.IsGitHubReleaseCandidate() },
+                    { "NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID", "${ { secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID } }"},
+                    { "NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__PASSWORD", "${ { secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__PASSWORD } }"},
+                    { "NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__SHAREDKEY", "${ { secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__SHAREDKEY } }"},
+                    { "NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__TLSROOTCERTIFICATES__0", "${ { secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__TLSROOTCERTIFICATES__0 } }"},
+                    { "NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__TLSINTERMEDIATECERTIFICATES__0", "${ { secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__TLSINTERMEDIATECERTIFICATES__0 } }"},
+                    { "NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__CLIENTSIGNINGCERTIFICATE", "${ { secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__CLIENTSIGNINGCERTIFICATE } }"},
+                    { "NEL_MESH_CLIENT_INTEGRATION_MESHCONFIGURATION__MAILBOXID", "${ { secrets.NEL_MESH_CLIENT_INTEGRATION_MESHCONFIGURATION__MAILBOXID } }"},
+                    { "NEL_MESH_CLIENT_INTEGRATION_MESHCONFIGURATION__PASSWORD", "${ { secrets.NEL_MESH_CLIENT_INTEGRATION_MESHCONFIGURATION__PASSWORD } }"},
+                    { "NEL_MESH_CLIENT_INTEGRATION_MESHCONFIGURATION__SHAREDKEY", "${ { secrets.NEL_MESH_CLIENT_INTEGRATION_MESHCONFIGURATION__SHAREDKEY } }"},
+                    { "NEL_MESH_CLIENT_INTEGRATION_MESHCONFIGURATION__TLSROOTCERTIFICATES__0", "${ { secrets.NEL_MESH_CLIENT_INTEGRATION_MESHCONFIGURATION__TLSROOTCERTIFICATES__0 } }"},
+                    { "NEL_MESH_CLIENT_INTEGRATION_MESHCONFIGURATION__TLSINTERMEDIATECERTIFICATES__0", "${ { secrets.NEL_MESH_CLIENT_INTEGRATION_MESHCONFIGURATION__TLSINTERMEDIATECERTIFICATES__0 } }"},
+                    { "NEL_MESH_CLIENT_INTEGRATION_MESHCONFIGURATION__CLIENTSIGNINGCERTIFICATE", "${ { secrets.NEL_MESH_CLIENT_INTEGRATION_MESHCONFIGURATION__CLIENTSIGNINGCERTIFICATE } }" },
+                },
+
                 Jobs = new Dictionary<string, Job>
                 {
                     {
@@ -56,7 +73,7 @@ namespace NEL.MESH.Infrastructure.Services
                                     With = new TargetDotNetVersionV3
                                     {
                                         DotNetVersion = dotNetVersion
-                                    }
+}
                                 },
 
                                 new RestoreTask
@@ -77,7 +94,7 @@ namespace NEL.MESH.Infrastructure.Services
                         }
                     },
                     {
-                        "add_tag",
+    "add_tag",
                         new TagJob(
                             runsOn: BuildMachines.UbuntuLatest,
                             dependsOn: "build",
@@ -89,7 +106,7 @@ namespace NEL.MESH.Infrastructure.Services
                         }
                     },
                     {
-                        "publish",
+    "publish",
                         new PublishJobV2(
                             runsOn: BuildMachines.UbuntuLatest,
                             dependsOn: "add_tag",

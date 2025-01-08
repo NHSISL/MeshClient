@@ -17,7 +17,7 @@ namespace NEL.MESH.Tests.Integration.Witness
             // given
             var mailboxId = this.configuration["MeshConfiguration:MailboxId"];
             var password = this.configuration["MeshConfiguration:Password"];
-            var key = this.configuration["MeshConfiguration:Key"];
+            var sharedKey = this.configuration["MeshConfiguration:SharedKey"];
             var clientSigningCertificate = this.configuration["MeshConfiguration:ClientSigningCertificate"];
 
             var tlsRootCertificates = this.configuration.GetSection("MeshConfiguration:TlsRootCertificates")
@@ -30,7 +30,7 @@ namespace NEL.MESH.Tests.Integration.Witness
             // then
             mailboxId.Should().NotBeNullOrEmpty();
             password.Should().NotBeNullOrEmpty();
-            key.Should().NotBeNullOrEmpty();
+            sharedKey.Should().NotBeNullOrEmpty();
             tlsRootCertificates.Count.Should().Be(1);
             tlsIntermediateCertificates.Count().Should().BeGreaterThan(0);
             clientSigningCertificate.Should().NotBeNullOrEmpty();
