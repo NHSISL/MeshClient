@@ -76,16 +76,16 @@ namespace NEL.MESH.Tests.Acceptance
             this.meshClient = new MeshClient(meshConfigurations: this.meshConfigurations);
         }
 
-        private static X509Certificate2Collection GetCertificates(params string[] intermediateCertificates)
+        private static X509Certificate2Collection GetCertificates(params string[] certificates)
         {
-            var certificates = new X509Certificate2Collection();
+            var certificateCollection = new X509Certificate2Collection();
 
-            foreach (string item in intermediateCertificates)
+            foreach (string item in certificates)
             {
-                certificates.Add(GetPemOrDerCertificate(item));
+                certificateCollection.Add(GetPemOrDerCertificate(item));
             }
 
-            return certificates;
+            return certificateCollection;
         }
 
         private static X509Certificate2 GetPemOrDerCertificate(string value)
