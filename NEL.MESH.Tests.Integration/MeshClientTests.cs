@@ -5,11 +5,9 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using NEL.MESH.Clients;
 using NEL.MESH.Models.Configurations;
-using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
 
 namespace NEL.MESH.Tests.Integration
@@ -23,7 +21,7 @@ namespace NEL.MESH.Tests.Integration
         {
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables("NEL_MESH_CLIENT_INTEGRATION_");
 
             IConfiguration configuration = configurationBuilder.Build();
@@ -35,13 +33,16 @@ namespace NEL.MESH.Tests.Integration
             var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"];
             var password = configuration["MeshConfiguration:Password"];
             var key = configuration["MeshConfiguration:Key"];
-            var clientCert = configuration["MeshConfiguration:ClientCertificate"];
-            var rootCert = configuration["MeshConfiguration:RootCertificate"];
             var url = configuration["MeshConfiguration:Url"];
             var maxChunkSizeInMegabytes = int.Parse(configuration["MeshConfiguration:MaxChunkSizeInMegabytes"]);
+            var clientSigningCertificate = configuration["MeshConfiguration:ClientSigningCertificate"];
+            var clientSigningCertificatePassword = configuration["MeshConfiguration:ClientSigningCertificatePassword"];
 
-            var intermediateCertificates =
-                configuration.GetSection("MeshConfiguration:IntermediateCertificates")
+            var tlsRootCertificates = configuration.GetSection("MeshConfiguration:TlsRootCertificates")
+                .Get<List<string>>();
+
+            var tlsIntermediateCertificates =
+                configuration.GetSection("MeshConfiguration:TlsIntermediateCertificates")
                     .Get<List<string>>();
 
             this.meshConfigurations = new MeshConfiguration
@@ -51,10 +52,13 @@ namespace NEL.MESH.Tests.Integration
                 MexOSName = mexOSName,
                 MexOSVersion = mexOSVersion,
                 Password = password,
-                Key = key,
-                RootCertificate = GetCertificate(rootCert),
-                IntermediateCertificates = GetCertificates(intermediateCertificates.ToArray()),
-                ClientCertificate = GetCertificate(clientCert),
+                SharedKey = key,
+                TlsRootCertificates = GetCertificates(tlsRootCertificates.ToArray()),
+                TlsIntermediateCertificates = GetCertificates(tlsIntermediateCertificates.ToArray()),
+
+                ClientSigningCertificate =
+                    GetPkcs12Certificate(clientSigningCertificate, clientSigningCertificatePassword),
+
                 Url = url,
                 MaxChunkSizeInMegabytes = maxChunkSizeInMegabytes
             };
@@ -68,17 +72,26 @@ namespace NEL.MESH.Tests.Integration
 
             foreach (string item in intermediateCertificates)
             {
-                certificates.Add(GetCertificate(item));
+                certificates.Add(GetPemOrDerCertificate(item));
             }
 
             return certificates;
         }
 
-        private static X509Certificate2 GetCertificate(string value)
+        private static X509Certificate2 GetPemOrDerCertificate(string value)
         {
             byte[] certBytes = Convert.FromBase64String(value);
+            var certificate = X509CertificateLoader.LoadCertificate(certBytes);
 
-            return new X509Certificate2(certBytes);
+            return certificate;
+        }
+
+        private static X509Certificate2 GetPkcs12Certificate(string value, string password = "")
+        {
+            byte[] certBytes = Convert.FromBase64String(value);
+            var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
+
+            return certificate;
         }
 
         private static string GetRandomString(int wordMinLength = 2, int wordMaxLength = 100) =>
@@ -86,50 +99,5 @@ namespace NEL.MESH.Tests.Integration
                 wordCount: 1,
                 wordMinLength: 1,
                 wordMaxLength: wordMaxLength < wordMinLength ? wordMinLength : wordMaxLength).GetValue();
-
-        private static int GetRandomNumber() =>
-            new IntRange(min: 2, max: 10).GetValue();
-
-        private static Message CreateRandomSendMessage(
-            string mexFrom,
-            string mexTo,
-            string mexWorkflowId,
-            string mexLocalId,
-            string mexSubject,
-            string mexFileName,
-            string mexContentChecksum,
-            string mexContentEncrypted,
-            string mexEncoding,
-            string mexChunkRange,
-            string contentType,
-            string content)
-        {
-            var message = CreateMessageFiller(content).Create();
-            message.Headers.Add("mex-from", new List<string> { mexFrom });
-            message.Headers.Add("mex-to", new List<string> { mexTo });
-            message.Headers.Add("mex-workflowid", new List<string> { mexWorkflowId });
-            message.Headers.Add("mex-localid", new List<string> { mexLocalId });
-            message.Headers.Add("mex-subject", new List<string> { mexSubject });
-            message.Headers.Add("mex-filename", new List<string> { mexFileName });
-            message.Headers.Add("mex-content-checksum", new List<string> { mexContentChecksum });
-            message.Headers.Add("Mex-Content-Encrypted", new List<string> { mexContentEncrypted });
-            message.Headers.Add("Mex-Encoding", new List<string> { mexEncoding });
-            message.Headers.Add("mex-chunk-range", new List<string> { mexChunkRange });
-            message.Headers.Add("content-type", new List<string> { contentType });
-
-            return message;
-        }
-
-        private static Filler<Message> CreateMessageFiller(string content)
-        {
-            byte[] fileContent = Encoding.UTF8.GetBytes(content);
-            var filler = new Filler<Message>();
-
-            filler.Setup()
-                .OnProperty(message => message.FileContent).Use(fileContent)
-                .OnProperty(message => message.Headers).Use(new Dictionary<string, List<string>>());
-
-            return filler;
-        }
     }
 }

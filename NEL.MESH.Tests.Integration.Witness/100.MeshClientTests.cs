@@ -31,7 +31,7 @@ namespace NEL.MESH.Tests.Integration.Witness
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables("NEL_MESH_CLIENT_INTEGRATION_");
 
             IConfiguration configuration = configurationBuilder.Build();
@@ -43,13 +43,15 @@ namespace NEL.MESH.Tests.Integration.Witness
             var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"];
             var password = configuration["MeshConfiguration:Password"];
             var key = configuration["MeshConfiguration:Key"];
-            var clientCert = configuration["MeshConfiguration:ClientCertificate"];
-            var rootCert = configuration["MeshConfiguration:RootCertificate"];
             var url = configuration["MeshConfiguration:Url"];
             var maxChunkSizeInMegabytes = int.Parse(configuration["MeshConfiguration:MaxChunkSizeInMegabytes"]);
+            var clientSigningCertificate = configuration["MeshConfiguration:ClientSigningCertificate"];
 
-            var intermediateCertificates =
-                configuration.GetSection("MeshConfiguration:IntermediateCertificates")
+            var tlsRootCertificates = configuration.GetSection("MeshConfiguration:TlsRootCertificates")
+                .Get<List<string>>();
+
+            var tlsIntermediateCertificates =
+                configuration.GetSection("MeshConfiguration:TlsIntermediateCertificates")
                     .Get<List<string>>();
 
             this.meshConfigurations = new MeshConfiguration
@@ -59,10 +61,10 @@ namespace NEL.MESH.Tests.Integration.Witness
                 MexOSName = mexOSName,
                 MexOSVersion = mexOSVersion,
                 Password = password,
-                Key = key,
-                RootCertificate = GetCertificate(rootCert),
-                IntermediateCertificates = GetCertificates(intermediateCertificates.ToArray()),
-                ClientCertificate = GetCertificate(clientCert),
+                SharedKey = key,
+                TlsRootCertificates = GetCertificates(tlsRootCertificates.ToArray()),
+                TlsIntermediateCertificates = GetCertificates(tlsIntermediateCertificates.ToArray()),
+                ClientSigningCertificate = GetCertificate(clientSigningCertificate),
                 Url = url,
                 MaxChunkSizeInMegabytes = maxChunkSizeInMegabytes
             };

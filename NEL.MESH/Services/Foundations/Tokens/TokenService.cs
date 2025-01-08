@@ -34,7 +34,7 @@ namespace NEL.MESH.Services.Foundations.Tokens
                 ValidateGenerateTokenArgs(
                     this.meshBroker.MeshConfiguration.MailboxId,
                     this.meshBroker.MeshConfiguration.Password,
-                    this.meshBroker.MeshConfiguration.Key);
+                    this.meshBroker.MeshConfiguration.SharedKey);
 
                 string nonce = this.identifierBroker.GetIdentifier().ToString();
                 string timeStamp = this.dateTimeBroker.GetCurrentDateTimeOffset().ToString("yyyyMMddHHmm");
@@ -47,7 +47,7 @@ namespace NEL.MESH.Services.Foundations.Tokens
                     $":{this.meshBroker.MeshConfiguration.Password}" +
                     $":{timeStamp}";
 
-                string sharedKey = GenerateSha256(stringToHash, this.meshBroker.MeshConfiguration.Key);
+                string sharedKey = GenerateSha256(stringToHash, this.meshBroker.MeshConfiguration.SharedKey);
 
                 string token = await ValueTask
                     .FromResult($"NHSMESH {this.meshBroker.MeshConfiguration.MailboxId}:{nonce}:{nonce_count}:{timeStamp}:{sharedKey}");

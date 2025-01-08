@@ -18,22 +18,23 @@ namespace NEL.MESH.Tests.Integration.Witness
             var mailboxId = this.configuration["MeshConfiguration:MailboxId"];
             var password = this.configuration["MeshConfiguration:Password"];
             var key = this.configuration["MeshConfiguration:Key"];
-            var rootCertificate = this.configuration["MeshConfiguration:RootCertificate"];
+            var clientSigningCertificate = this.configuration["MeshConfiguration:ClientSigningCertificate"];
 
-            var intermediateCertificates =
-                this.configuration.GetSection("MeshConfiguration:IntermediateCertificates")
+            var tlsRootCertificates = this.configuration.GetSection("MeshConfiguration:TlsRootCertificates")
+                .Get<List<string>>();
+
+            var tlsIntermediateCertificates =
+                this.configuration.GetSection("MeshConfiguration:TlsIntermediateCertificates")
                     .Get<List<string>>();
-
-            var clientCertificate = this.configuration["MeshConfiguration:ClientCertificate"];
 
             // then
             mailboxId.Should().NotBeNullOrEmpty();
             password.Should().NotBeNullOrEmpty();
             key.Should().NotBeNullOrEmpty();
-            rootCertificate.Should().NotBeNullOrEmpty();
-            intermediateCertificates.Count().Should().BeGreaterThan(0);
-            clientCertificate.Should().NotBeNullOrEmpty();
-            intermediateCertificates.Count.Should().Be(1);
+            tlsRootCertificates.Count.Should().Be(1);
+            tlsIntermediateCertificates.Count().Should().BeGreaterThan(0);
+            clientSigningCertificate.Should().NotBeNullOrEmpty();
+            tlsIntermediateCertificates.Count.Should().Be(1);
         }
     }
 }

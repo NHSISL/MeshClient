@@ -26,7 +26,7 @@ namespace NEL.MESH.Tests.Acceptance
         {
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables("NEL_MESH_CLIENT_ACCEPTANCE_");
 
             IConfiguration configuration = configurationBuilder.Build();
@@ -39,17 +39,20 @@ namespace NEL.MESH.Tests.Acceptance
             var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"];
             var password = configuration["MeshConfiguration:Password"];
             var key = configuration["MeshConfiguration:Key"];
-            var clientCert = configuration["MeshConfiguration:ClientCertificate"];
-            var rootCert = configuration["MeshConfiguration:RootCertificate"];
             var maxChunkSizeInMegabytes = int.Parse(configuration["MeshConfiguration:MaxChunkSizeInMegabytes"]);
+            var clientSigningCertificate = configuration["MeshConfiguration:ClientSigningCertificate"];
+            var clientSigningCertificatePassword = configuration["MeshConfiguration:ClientSigningCertificatePassword"];
 
-            List<string> intermediateCertificates =
-                configuration.GetSection("MeshConfiguration:IntermediateCertificates")
+            var tlsRootCertificates = configuration.GetSection("MeshConfiguration:TlsRootCertificates")
+                .Get<List<string>>();
+
+            List<string> tlsIntermediateCertificates =
+                configuration.GetSection("MeshConfiguration:TlsIntermediateCertificates")
                     .Get<List<string>>();
 
-            if (intermediateCertificates == null)
+            if (tlsIntermediateCertificates == null)
             {
-                intermediateCertificates = new List<string>();
+                tlsIntermediateCertificates = new List<string>();
             }
 
             this.meshConfigurations = new MeshConfiguration
@@ -59,10 +62,13 @@ namespace NEL.MESH.Tests.Acceptance
                 MexOSName = mexOSName,
                 MexOSVersion = mexOSVersion,
                 Password = password,
-                Key = key,
-                RootCertificate = GetCertificate(rootCert),
-                IntermediateCertificates = GetCertificates(intermediateCertificates.ToArray()),
-                ClientCertificate = GetCertificate(clientCert),
+                SharedKey = key,
+                TlsRootCertificates = GetCertificates(tlsRootCertificates.ToArray()),
+                TlsIntermediateCertificates = GetCertificates(tlsIntermediateCertificates.ToArray()),
+
+                ClientSigningCertificate =
+                    GetPkcs12Certificate(clientSigningCertificate, clientSigningCertificatePassword),
+
                 Url = this.wireMockServer.Url,
                 MaxChunkSizeInMegabytes = maxChunkSizeInMegabytes
             };
@@ -76,17 +82,26 @@ namespace NEL.MESH.Tests.Acceptance
 
             foreach (string item in intermediateCertificates)
             {
-                certificates.Add(GetCertificate(item));
+                certificates.Add(GetPemOrDerCertificate(item));
             }
 
             return certificates;
         }
 
-        private static X509Certificate2 GetCertificate(string value)
+        private static X509Certificate2 GetPemOrDerCertificate(string value)
         {
             byte[] certBytes = Convert.FromBase64String(value);
+            var certificate = X509CertificateLoader.LoadCertificate(certBytes);
 
-            return new X509Certificate2(certBytes);
+            return certificate;
+        }
+
+        private static X509Certificate2 GetPkcs12Certificate(string value, string password = "")
+        {
+            byte[] certBytes = Convert.FromBase64String(value);
+            var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
+
+            return certificate;
         }
 
         private static string GetRandomString(

@@ -137,24 +137,26 @@ namespace NEL.MESH.UI
                 txtHeaders.Text = string.Empty;
                 txtContent.Text = string.Empty;
 
-                var clientCertificate = meshCertificates.First(cert => cert.Environment == mailbox.Environment)
-                    .ClientCertificate;
+                var clientSigningCertificate =
+                    meshCertificates.First(cert => cert.Environment == mailbox.Environment)
+                        .ClientSigningCertificate;
 
-                var intermediateCertificates = meshCertificates.First(cert => cert.Environment == mailbox.Environment)
-                    .IntermediateCertificates;
+                var tlsRootCertificates = meshCertificates.First(cert => cert.Environment == mailbox.Environment)
+                    .TlsRootCertificates;
 
-                var rootCertificate = meshCertificates.First(cert => cert.Environment == mailbox.Environment)
-                    .RootCertificate;
+                var tlsIntermediateCertificates =
+                    meshCertificates.First(cert => cert.Environment == mailbox.Environment)
+                        .TlsIntermediateCertificates;
 
                 var meshConfiguration = new MeshConfiguration
                 {
                     Url = mailbox.Url,
                     MailboxId = mailbox.MailboxId,
                     Password = mailbox.Password,
-                    ClientCertificate = GetCertificate(clientCertificate),
-                    IntermediateCertificates = GetCertificates(intermediateCertificates),
-                    RootCertificate = GetCertificate(rootCertificate),
-                    Key = mailbox.Key,
+                    ClientSigningCertificate = GetCertificate(clientSigningCertificate),
+                    TlsRootCertificates = GetCertificates(tlsRootCertificates),
+                    TlsIntermediateCertificates = GetCertificates(tlsIntermediateCertificates),
+                    SharedKey = mailbox.Key,
                     MaxChunkSizeInMegabytes = meshConfig.ChunkSize,
                     MexClientVersion = meshConfig.MexClientVersion,
                     MexOSName = meshConfig.MexOSName,
@@ -171,7 +173,7 @@ namespace NEL.MESH.UI
             {
                 byte[] certBytes = Convert.FromBase64String(value);
 
-                return new X509Certificate2(certBytes);
+                return X509CertificateLoader.LoadCertificate(certBytes);
             }
 
             return null;
@@ -188,7 +190,7 @@ namespace NEL.MESH.UI
                 foreach (string item in values)
                 {
                     byte[] certBytes = Convert.FromBase64String(item);
-                    certificates.Add(new X509Certificate2(certBytes));
+                    certificates.Add(X509CertificateLoader.LoadCertificate(certBytes));
                 }
             }
 
