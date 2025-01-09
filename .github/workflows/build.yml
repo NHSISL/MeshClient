@@ -12,20 +12,6 @@ on:
     branches:
     - main
 env:
-  IS_RELEASE_CANDIDATE: >-
-    ${{
-      (
-        github.event_name == 'pull_request' && 
-        startsWith(github.event.pull_request.title, 'RELEASES:') && 
-        contains(github.event.pull_request.labels.*.name, 'RELEASES')
-      )
-      ||
-      (
-        github.event_name == 'push' && 
-        startsWith(github.event.head_commit.message, 'RELEASES:') && 
-        startsWith(github.ref_name, 'RELEASE')
-      )
-    }}
   NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID: ${{ secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID }}
   NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__PASSWORD: ${{ secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__PASSWORD }}
   NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__SHAREDKEY: ${{ secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__SHAREDKEY }}

@@ -35,7 +35,6 @@ namespace NEL.MESH.Infrastructure.Services
 
                 EnvironmentVariables = new Dictionary<string, string>
                 {
-                    { "IS_RELEASE_CANDIDATE", EnvironmentVariables.IsGitHubReleaseCandidate() },
                     { "NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID", "${{ secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__MAILBOXID }}"},
                     { "NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__PASSWORD", "${{ secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__PASSWORD }}"},
                     { "NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__SHAREDKEY", "${{ secrets.NEL_MESH_CLIENT_ACCEPTANCE_MESHCONFIGURATION__SHAREDKEY }}"},
