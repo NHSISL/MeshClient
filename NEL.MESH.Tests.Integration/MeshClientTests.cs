@@ -85,6 +85,7 @@ namespace NEL.MESH.Tests.Integration
 
         private static X509Certificate2 GetPemOrDerCertificate(string value)
         {
+            ConsoleWrite(value);
             byte[] certBytes = Convert.FromBase64String(value);
             var certificate = X509CertificateLoader.LoadCertificate(certBytes);
 
@@ -93,10 +94,23 @@ namespace NEL.MESH.Tests.Integration
 
         private static X509Certificate2 GetPkcs12Certificate(string value, string password = "")
         {
+            ConsoleWrite(value);
             byte[] certBytes = Convert.FromBase64String(value);
             var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
 
             return certificate;
+        }
+
+        private static void ConsoleWrite(string item)
+        {
+            if (item.Length > 10)
+            {
+                Console.WriteLine($"Certificate: {item.Substring(0, 5)}...{item.Substring(item.Length - 5)}");
+            }
+            else
+            {
+                Console.WriteLine($"Certificate: {item}");
+            }
         }
 
         private static string GetRandomString(int wordMinLength = 2, int wordMaxLength = 100) =>
