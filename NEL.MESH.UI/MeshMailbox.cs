@@ -148,14 +148,19 @@ namespace NEL.MESH.UI
                     meshCertificates.First(cert => cert.Environment == mailbox.Environment)
                         .TlsIntermediateCertificates;
 
+                var clientSigningCertificatePassword = string.Empty;
+
                 var meshConfiguration = new MeshConfiguration
                 {
                     Url = mailbox.Url,
                     MailboxId = mailbox.MailboxId,
                     Password = mailbox.Password,
-                    ClientSigningCertificate = GetCertificate(clientSigningCertificate),
-                    TlsRootCertificates = GetCertificates(tlsRootCertificates),
-                    TlsIntermediateCertificates = GetCertificates(tlsIntermediateCertificates),
+                    TlsRootCertificates = GetCertificates(tlsRootCertificates.ToArray()),
+                    TlsIntermediateCertificates = GetCertificates(tlsIntermediateCertificates.ToArray()),
+
+                    ClientSigningCertificate =
+                        GetPkcs12Certificate(clientSigningCertificate, clientSigningCertificatePassword),
+
                     SharedKey = mailbox.Key,
                     MaxChunkSizeInMegabytes = meshConfig.ChunkSize,
                     MexClientVersion = meshConfig.MexClientVersion,
@@ -167,34 +172,32 @@ namespace NEL.MESH.UI
             }
         }
 
-        private static X509Certificate2 GetCertificate(string value)
+        private static X509Certificate2Collection GetCertificates(params string[] certificates)
         {
-            if (!string.IsNullOrEmpty(value))
-            {
-                byte[] certBytes = Convert.FromBase64String(value);
+            var certificateCollection = new X509Certificate2Collection();
 
-                return X509CertificateLoader.LoadCertificate(certBytes);
+            foreach (string item in certificates)
+            {
+                certificateCollection.Add(GetPemOrDerCertificate(item));
             }
 
-            return null;
+            return certificateCollection;
         }
 
-        private static X509Certificate2Collection GetCertificates(List<string> values)
+        private static X509Certificate2 GetPemOrDerCertificate(string value)
         {
-            values ??= new List<string>();
+            byte[] certBytes = Convert.FromBase64String(value);
+            var certificate = X509CertificateLoader.LoadCertificate(certBytes);
 
-            var certificates = new X509Certificate2Collection();
+            return certificate;
+        }
 
-            if (values.Any())
-            {
-                foreach (string item in values)
-                {
-                    byte[] certBytes = Convert.FromBase64String(item);
-                    certificates.Add(X509CertificateLoader.LoadCertificate(certBytes));
-                }
-            }
+        private static X509Certificate2 GetPkcs12Certificate(string value, string password = "")
+        {
+            byte[] certBytes = Convert.FromBase64String(value);
+            var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
 
-            return certificates;
+            return certificate;
         }
 
         private void cbApplications_SelectedIndexChanged(object sender, EventArgs e)

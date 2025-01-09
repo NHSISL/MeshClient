@@ -31,6 +31,7 @@ namespace NEL.MESH.Tests.Acceptance
 
             IConfiguration configuration = configurationBuilder.Build();
             this.wireMockServer = WireMockServer.Start();
+            var url = this.wireMockServer.Url;
             bool RunAcceptanceTests = configuration.GetSection("RunAcceptanceTests").Get<bool>();
             bool RunIntegrationTests = configuration.GetSection("RunIntegrationTests").Get<bool>();
             var mailboxId = configuration["MeshConfiguration:MailboxId"];
@@ -69,7 +70,7 @@ namespace NEL.MESH.Tests.Acceptance
                 ClientSigningCertificate =
                     GetPkcs12Certificate(clientSigningCertificate, clientSigningCertificatePassword),
 
-                Url = this.wireMockServer.Url,
+                Url = url,
                 MaxChunkSizeInMegabytes = maxChunkSizeInMegabytes
             };
 

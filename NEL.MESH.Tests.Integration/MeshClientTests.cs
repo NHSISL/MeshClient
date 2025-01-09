@@ -52,6 +52,7 @@ namespace NEL.MESH.Tests.Integration
 
             this.meshConfigurations = new MeshConfiguration
             {
+                Url = url,
                 MailboxId = mailboxId,
                 MexClientVersion = mexClientVersion,
                 MexOSName = mexOSName,
@@ -64,7 +65,6 @@ namespace NEL.MESH.Tests.Integration
                 ClientSigningCertificate =
                     GetPkcs12Certificate(clientSigningCertificate, clientSigningCertificatePassword),
 
-                Url = url,
                 MaxChunkSizeInMegabytes = maxChunkSizeInMegabytes
             };
 
