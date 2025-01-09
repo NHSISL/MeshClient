@@ -379,3 +379,4 @@ local.appsettings.json
 /NEL.MESH.Tests.Integration/appsettings.Development.json
 /NEL.MESH.Tests.Acceptance/appsettings.Development.json
 /NEL.MESH/appsettings.Development.json
+/NEL.MESH.UI/appsettings.Development.json
