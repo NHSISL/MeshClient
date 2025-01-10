@@ -27,6 +27,9 @@ namespace NEL.MESH.Tests.Integration
             IConfiguration configuration = configurationBuilder.Build();
             var url = configuration["MeshConfiguration:Url"];
             var mailboxId = configuration["MeshConfiguration:MailboxId"] ?? "NULL";
+
+            Console.WriteLine($"MailboxId:: {mailboxId}");
+
             var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"];
             var mexOSName = configuration["MeshConfiguration:MexOSName"];
             var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"];
