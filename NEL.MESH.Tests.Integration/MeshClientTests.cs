@@ -66,9 +66,7 @@ namespace NEL.MESH.Tests.Integration
                 MaxChunkSizeInMegabytes = maxChunkSizeInMegabytes
             };
 
-            Console.WriteLine(
-                $"MailboxId: {meshConfigurations.MailboxId.Substring(0, 15)}..." +
-                $"{meshConfigurations.MailboxId.Substring(meshConfigurations.MailboxId.Length - 15)}");
+            Console.WriteLine($"MailboxId: {meshConfigurations.MailboxId}");
 
             Console.WriteLine(
                 $"Password: {meshConfigurations.Password.Substring(0, 2)}" +
