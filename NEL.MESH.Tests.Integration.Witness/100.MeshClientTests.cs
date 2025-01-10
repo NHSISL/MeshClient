@@ -32,7 +32,7 @@ namespace NEL.MESH.Tests.Integration.Witness
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("NEL_MESH_CLIENT_INTEGRATION_");
+                .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
             bool RunAcceptanceTests = configuration.GetSection("RunAcceptanceTests").Get<bool>();

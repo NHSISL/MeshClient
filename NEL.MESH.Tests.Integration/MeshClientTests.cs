@@ -22,7 +22,7 @@ namespace NEL.MESH.Tests.Integration
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("NEL_MESH_CLIENT_INTEGRATION_");
+                .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
             var url = configuration["MeshConfiguration:Url"];
