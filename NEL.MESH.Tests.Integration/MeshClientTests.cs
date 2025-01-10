@@ -87,26 +87,28 @@ namespace NEL.MESH.Tests.Integration
         {
             byte[] certBytes = Convert.FromBase64String(value);
             var certificate = X509CertificateLoader.LoadCertificate(certBytes);
-            ConsoleWrite($"{value}, SUBJECT: {certificate.Subject}, THUMBPRINT: {certificate.Thumbprint}", type);
+            ConsoleWrite(value, type, certificate.Subject, certificate.Thumbprint);
 
             return certificate;
         }
 
         private static X509Certificate2 GetPkcs12Certificate(string value, string password = "", string type = "")
         {
-            ConsoleWrite(value, type);
             byte[] certBytes = Convert.FromBase64String(value);
             var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
-            ConsoleWrite($"{value}, SUBJECT: {certificate.Subject}, THUMBPRINT: {certificate.Thumbprint}", type);
+            ConsoleWrite(value, type, certificate.Subject, certificate.Thumbprint);
 
             return certificate;
         }
 
-        private static void ConsoleWrite(string item, string type = "")
+        private static void ConsoleWrite(string item, string type = "", string subject = "", string thumbprint = "")
         {
             if (item.Length > 30)
             {
-                Console.WriteLine($"{type} Certificate: {item.Substring(0, 15)}...{item.Substring(item.Length - 15)}");
+                Console.WriteLine(
+                    $"{type} Certificate: {item.Substring(0, 15)}...{item.Substring(item.Length - 15)}, " +
+                    $"SUBJECT: {subject} " +
+                    $"THUMBPRINT: {thumbprint}");
             }
             else
             {
