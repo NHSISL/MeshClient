@@ -35,7 +35,6 @@ namespace NEL.MESH.Tests.Integration
                 Console.WriteLine($"MailboxId::: {mailboxId}");
             }
 
-
             var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"];
             var mexOSName = configuration["MeshConfiguration:MexOSName"];
             var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"];
