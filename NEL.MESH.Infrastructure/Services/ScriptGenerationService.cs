@@ -35,7 +35,7 @@ namespace NEL.MESH.Infrastructure.Services
 
                 EnvironmentVariables = new Dictionary<string, string>
                 {
-                    { "MESHCONFIGURATION__MAILBOXID", "${{ secrets.MESHCONFIGURATION__MAILBOXID }}"},
+                    //{ "MESHCONFIGURATION__MAILBOXID", "${{ secrets.MESHCONFIGURATION__MAILBOXID }}"},
                     { "MESHCONFIGURATION__PASSWORD", "${{ secrets.MESHCONFIGURATION__PASSWORD }}"},
                     { "MESHCONFIGURATION__SHAREDKEY", "${{ secrets.MESHCONFIGURATION__SHAREDKEY }}"},
                     { "MESHCONFIGURATION__TLSROOTCERTIFICATES__0", "${{ secrets.MESHCONFIGURATION__TLSROOTCERTIFICATES__0 }}"},
