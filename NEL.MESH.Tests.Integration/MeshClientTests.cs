@@ -27,8 +27,14 @@ namespace NEL.MESH.Tests.Integration
             IConfiguration configuration = configurationBuilder.Build();
             var url = configuration["MeshConfiguration:Url"];
             var mailboxId = configuration["MeshConfiguration:MailboxId"] ?? "NULL";
-
             Console.WriteLine($"MailboxId:: {mailboxId}");
+
+            if (mailboxId == "NULL" || mailboxId != "QMFOT001")
+            {
+                mailboxId = "QMFOT001";
+                Console.WriteLine($"MailboxId::: {mailboxId}");
+            }
+
 
             var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"];
             var mexOSName = configuration["MeshConfiguration:MexOSName"];
