@@ -26,11 +26,10 @@ namespace NEL.MESH.Tests.Integration
 
             IConfiguration configuration = configurationBuilder.Build();
             var url = configuration["MeshConfiguration:Url"];
-            var mailboxId = configuration["MeshConfiguration:MailboxId"];
+            var mailboxId = configuration["MeshConfiguration:MailboxId"] ?? "NULL";
             var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"];
             var mexOSName = configuration["MeshConfiguration:MexOSName"];
             var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"];
-            var password = configuration["MeshConfiguration:Password"];
             var sharedKey = configuration["MeshConfiguration:SharedKey"];
             var maxChunkSizeInMegabytes = int.Parse(configuration["MeshConfiguration:MaxChunkSizeInMegabytes"]);
             var clientSigningCertificate = configuration["MeshConfiguration:ClientSigningCertificate"];
@@ -75,7 +74,7 @@ namespace NEL.MESH.Tests.Integration
 
             Console.WriteLine(
                 $"SharedKey: {meshConfigurations.SharedKey.Substring(0, 2)}" +
-                $"{new string('*', meshConfigurations.Password.Length - 4)}" +
+                $"{new string('*', meshConfigurations.SharedKey.Length - 4)}" +
                 $"{meshConfigurations.SharedKey.Substring(meshConfigurations.SharedKey.Length - 2)}");
 
             this.meshClient = new MeshClient(meshConfigurations: this.meshConfigurations);
