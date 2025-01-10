@@ -85,9 +85,9 @@ namespace NEL.MESH.Tests.Integration
 
         private static X509Certificate2 GetPemOrDerCertificate(string value, string type = "")
         {
-            ConsoleWrite(value, type);
             byte[] certBytes = Convert.FromBase64String(value);
             var certificate = X509CertificateLoader.LoadCertificate(certBytes);
+            ConsoleWrite($"{value}, SUBJECT: {certificate.Subject}, THUMBPRINT: {certificate.Thumbprint}", type);
 
             return certificate;
         }
@@ -97,6 +97,7 @@ namespace NEL.MESH.Tests.Integration
             ConsoleWrite(value, type);
             byte[] certBytes = Convert.FromBase64String(value);
             var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
+            ConsoleWrite($"{value}, SUBJECT: {certificate.Subject}, THUMBPRINT: {certificate.Thumbprint}", type);
 
             return certificate;
         }
