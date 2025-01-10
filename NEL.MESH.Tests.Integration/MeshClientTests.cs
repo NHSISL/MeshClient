@@ -66,6 +66,20 @@ namespace NEL.MESH.Tests.Integration
                 MaxChunkSizeInMegabytes = maxChunkSizeInMegabytes
             };
 
+            Console.WriteLine(
+                $"MailboxId: {meshConfigurations.MailboxId.Substring(0, 15)}..." +
+                $"{meshConfigurations.MailboxId.Substring(meshConfigurations.MailboxId.Length - 15)}");
+
+            Console.WriteLine(
+                $"Password: {meshConfigurations.Password.Substring(0, 2)}" +
+                $"{new string('*', meshConfigurations.Password.Length - 4)}" +
+                $"{meshConfigurations.Password.Substring(meshConfigurations.Password.Length - 2)}");
+
+            Console.WriteLine(
+                $"SharedKey: {meshConfigurations.SharedKey.Substring(0, 2)}" +
+                $"{new string('*', meshConfigurations.Password.Length - 4)}" +
+                $"{meshConfigurations.SharedKey.Substring(meshConfigurations.SharedKey.Length - 2)}");
+
             this.meshClient = new MeshClient(meshConfigurations: this.meshConfigurations);
         }
 
