@@ -59,11 +59,11 @@ namespace NEL.MESH.Tests.Integration
                 MexOSVersion = mexOSVersion,
                 Password = password,
                 SharedKey = sharedKey,
-                TlsRootCertificates = GetCertificates(tlsRootCertificates.ToArray()),
-                TlsIntermediateCertificates = GetCertificates(tlsIntermediateCertificates.ToArray()),
+                TlsRootCertificates = GetCertificates(tlsRootCertificates.ToArray(), "Root"),
+                TlsIntermediateCertificates = GetCertificates(tlsIntermediateCertificates.ToArray(), "Intermediate"),
 
                 ClientSigningCertificate =
-                    GetPkcs12Certificate(clientSigningCertificate, clientSigningCertificatePassword),
+                    GetPkcs12Certificate(clientSigningCertificate, clientSigningCertificatePassword, "Signing"),
 
                 MaxChunkSizeInMegabytes = maxChunkSizeInMegabytes
             };
@@ -71,45 +71,45 @@ namespace NEL.MESH.Tests.Integration
             this.meshClient = new MeshClient(meshConfigurations: this.meshConfigurations);
         }
 
-        private static X509Certificate2Collection GetCertificates(params string[] certificates)
+        private static X509Certificate2Collection GetCertificates(string[] certificates, string type = "")
         {
             var certificateCollection = new X509Certificate2Collection();
 
             foreach (string item in certificates)
             {
-                certificateCollection.Add(GetPemOrDerCertificate(item));
+                certificateCollection.Add(GetPemOrDerCertificate(item, type));
             }
 
             return certificateCollection;
         }
 
-        private static X509Certificate2 GetPemOrDerCertificate(string value)
+        private static X509Certificate2 GetPemOrDerCertificate(string value, string type = "")
         {
-            ConsoleWrite(value);
+            ConsoleWrite(value, type);
             byte[] certBytes = Convert.FromBase64String(value);
             var certificate = X509CertificateLoader.LoadCertificate(certBytes);
 
             return certificate;
         }
 
-        private static X509Certificate2 GetPkcs12Certificate(string value, string password = "")
+        private static X509Certificate2 GetPkcs12Certificate(string value, string password = "", string type = "")
         {
-            ConsoleWrite(value);
+            ConsoleWrite(value, type);
             byte[] certBytes = Convert.FromBase64String(value);
             var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
 
             return certificate;
         }
 
-        private static void ConsoleWrite(string item)
+        private static void ConsoleWrite(string item, string type = "")
         {
-            if (item.Length > 10)
+            if (item.Length > 30)
             {
-                Console.WriteLine($"Certificate: {item.Substring(0, 5)}...{item.Substring(item.Length - 5)}");
+                Console.WriteLine($"{type} Certificate: {item.Substring(0, 15)}...{item.Substring(item.Length - 15)}");
             }
             else
             {
-                Console.WriteLine($"Certificate: {item}");
+                Console.WriteLine($"{type} Certificate: {item}");
             }
         }
 
