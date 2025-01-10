@@ -30,7 +30,8 @@ namespace NEL.MESH.Tests.Integration
             var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"];
             var mexOSName = configuration["MeshConfiguration:MexOSName"];
             var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"];
-            var sharedKey = configuration["MeshConfiguration:SharedKey"];
+            var password = configuration["MeshConfiguration:Password"] ?? "NULL";
+            var sharedKey = configuration["MeshConfiguration:SharedKey"] ?? "NULL";
             var maxChunkSizeInMegabytes = int.Parse(configuration["MeshConfiguration:MaxChunkSizeInMegabytes"]);
             var clientSigningCertificate = configuration["MeshConfiguration:ClientSigningCertificate"];
             var clientSigningCertificatePassword = configuration["MeshConfiguration:ClientSigningCertificatePassword"];
