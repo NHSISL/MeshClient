@@ -30,9 +30,9 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 catch (Exception exception)
                 {
                     throw new HttpRequestException(
-                        message: body,
-                        inner: exception,
-                        statusCode: response.StatusCode);
+                            message: $"Unable to deserialize response: {body}",
+                            inner: exception,
+                            statusCode: response.StatusCode);
                 }
 
                 string message = $"{(int)response.StatusCode} - {response.ReasonPhrase}";
