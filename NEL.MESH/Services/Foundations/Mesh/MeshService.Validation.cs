@@ -2,16 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Models.Foundations.Mesh.Exceptions;
-using NEL.MESH.Models.Foundations.Mesh.ExternalModels;
-using Newtonsoft.Json;
-using Xeptions;
-
 namespace NEL.MESH.Services.Foundations.Mesh
 {
     internal partial class MeshService
@@ -21,7 +11,20 @@ namespace NEL.MESH.Services.Foundations.Mesh
             if (response.IsSuccessStatusCode == false)
             {
                 string body = response.Content.ReadAsStringAsync().Result;
-                SendMessageErrorResponse error = JsonConvert.DeserializeObject<SendMessageErrorResponse>(body);
+                SendMessageErrorResponse error;
+
+                try
+                {
+                    error = JsonConvert.DeserializeObject<SendMessageErrorResponse>(body);
+                }
+                catch (Exception exception)
+                {
+                    throw new HttpRequestException(
+                        message: { body },
+                        inner: exception,
+                        statusCode: response.StatusCode);
+                }
+
                 string message = $"{(int)response.StatusCode} - {response.ReasonPhrase}";
 
                 var httpRequestException =
