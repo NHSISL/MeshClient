@@ -11,6 +11,14 @@ on:
     - closed
     branches:
     - main
+env:
+  MESHCONFIGURATION__URL: ${{ secrets.MESHCONFIGURATION__URL }}
+  MESHCONFIGURATION__MAILBOXID: ${{ secrets.MESHCONFIGURATION__MAILBOXID }}
+  MESHCONFIGURATION__PASSWORD: ${{ secrets.MESHCONFIGURATION__PASSWORD }}
+  MESHCONFIGURATION__SHAREDKEY: ${{ secrets.MESHCONFIGURATION__SHAREDKEY }}
+  MESHCONFIGURATION__TLSROOTCERTIFICATES__0: ${{ secrets.MESHCONFIGURATION__TLSROOTCERTIFICATES__0 }}
+  MESHCONFIGURATION__TLSINTERMEDIATECERTIFICATES__0: ${{ secrets.MESHCONFIGURATION__TLSINTERMEDIATECERTIFICATES__0 }}
+  MESHCONFIGURATION__CLIENTSIGNINGCERTIFICATE: ${{ secrets.MESHCONFIGURATION__CLIENTSIGNINGCERTIFICATE }}
 jobs:
   build:
     name: Build
@@ -26,10 +34,10 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    # - name: Unit Tests
-    #   run: dotnet test NEL.Mesh.Tests.Unit/NEL.Mesh.Tests.Unit.csproj --no-build --verbosity normal
-    # - name: Acceptance Tests
-      # run: dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --no-build --verbosity normal
+    - name: Unit Tests
+      run: dotnet test NEL.Mesh.Tests.Unit/NEL.Mesh.Tests.Unit.csproj --no-build --verbosity normal
+    - name: Acceptance Tests
+      run: dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --no-build --verbosity normal
     - name: Integration Tests
       run: dotnet test NEL.MESH.Tests.Integration/NEL.MESH.Tests.Integration.csproj --no-build --verbosity normal
   add_tag:

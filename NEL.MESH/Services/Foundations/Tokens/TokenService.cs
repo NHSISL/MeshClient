@@ -52,6 +52,8 @@ namespace NEL.MESH.Services.Foundations.Tokens
                 string token = await ValueTask
                     .FromResult($"NHSMESH {this.meshBroker.MeshConfiguration.MailboxId}:{nonce}:{nonce_count}:{timeStamp}:{sharedKey}");
 
+                Console.WriteLine($"Generated token: {token}");
+
                 return token;
             });
 
