@@ -45,8 +45,8 @@ namespace NEL.MESH.Tests.Integration
 
             this.meshConfigurations = new MeshConfiguration
             {
-                Url = url,
-                MailboxId = mailboxId,
+                Url = "https://msg.intspineservices.nhs.uk",
+                MailboxId = "QMFOT001",
                 MexClientVersion = mexClientVersion,
                 MexOSName = mexOSName,
                 MexOSVersion = mexOSVersion,
