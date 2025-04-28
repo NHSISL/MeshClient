@@ -36,12 +36,23 @@ namespace NEL.MESH.Tests.Integration
             var clientSigningCertificate = configuration["MeshConfiguration:ClientSigningCertificate"];
             var clientSigningCertificatePassword = configuration["MeshConfiguration:ClientSigningCertificatePassword"];
 
-            List<string> tlsRootCertificates = configuration.GetSection("MeshConfiguration:TlsRootCertificates")
+            List<string> tlsRootCertificates_1 = configuration.GetSection("MeshConfiguration:TlsRootCertificates1")
                 .Get<List<string>>() ?? [];
 
-            List<string> tlsIntermediateCertificates =
-                configuration.GetSection("MeshConfiguration:TlsIntermediateCertificates")
+            List<string> tlsRootCertificates_2 = configuration.GetSection("MeshConfiguration:TlsRootCertificates2")
+                .Get<List<string>>() ?? [];
+
+            List<string> tlsRootCertificates = [tlsRootCertificates_1[0] + tlsRootCertificates_2[0]];
+
+            List<string> tlsIntermediateCertificates_1 =
+                configuration.GetSection("MeshConfiguration:TlsIntermediateCertificates1")
                     .Get<List<string>>() ?? [];
+
+            List<string> tlsIntermediateCertificates_2 =
+                configuration.GetSection("MeshConfiguration:TlsIntermediateCertificates2")
+                    .Get<List<string>>() ?? [];
+
+            List<string> tlsIntermediateCertificates = [tlsIntermediateCertificates_1[0] + tlsIntermediateCertificates_2[0]];
 
             this.meshConfigurations = new MeshConfiguration
             {
