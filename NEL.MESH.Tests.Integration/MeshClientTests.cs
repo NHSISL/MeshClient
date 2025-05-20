@@ -26,7 +26,7 @@ namespace NEL.MESH.Tests.Integration
 
             IConfiguration configuration = configurationBuilder.Build();
             var url = configuration["MeshConfiguration:Url"] ?? "NULL";
-            var mailboxId = configuration["MeshConfiguration:MailboxId"] ?? "NULL";
+            var mailboxId = configuration["MeshConfiguration:MailboxID"] ?? "NULL";
             var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"] ?? "NULL";
             var mexOSName = configuration["MeshConfiguration:MexOSName"] ?? "NULL";
             var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"] ?? "NULL";
@@ -45,7 +45,7 @@ namespace NEL.MESH.Tests.Integration
             this.meshConfigurations = new MeshConfiguration
             {
                 Url = "https://msg.intspineservices.nhs.uk",
-                MailboxId = "QMFOT001",
+                MailboxId = mailboxId,
                 MexClientVersion = mexClientVersion,
                 MexOSName = mexOSName,
                 MexOSVersion = mexOSVersion,
