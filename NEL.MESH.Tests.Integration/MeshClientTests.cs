@@ -73,6 +73,8 @@ namespace NEL.MESH.Tests.Integration
                 $"{new string('*', meshConfigurations.SharedKey.Length - 4)}" +
                 $"{meshConfigurations.SharedKey.Substring(meshConfigurations.SharedKey.Length - 2)}'");
 
+            Console.WriteLine($"TLSRootCertificates: '{meshConfigurations.TlsRootCertificates[0]}'");
+
             this.meshClient = new MeshClient(meshConfigurations: this.meshConfigurations);
         }
 
