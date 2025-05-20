@@ -29,7 +29,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
             {
                 MailboxId = mailboxId,
                 Password = password,
-                SharedKey = key
+                Key = key
             };
 
             this.meshBrokerMock.Setup(broker =>
@@ -61,7 +61,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
                 values: "Text is required");
 
             InvalidTokenArgsException.AddData(
-                key: nameof(MeshConfiguration.SharedKey),
+                key: nameof(MeshConfiguration.Key),
                 values: "Text is required");
 
             var expectedTokenValidationException =

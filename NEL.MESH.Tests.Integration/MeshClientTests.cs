@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using NEL.MESH.Clients;
 using NEL.MESH.Models.Configurations;
@@ -25,104 +26,58 @@ namespace NEL.MESH.Tests.Integration
                 .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
-            var url = configuration["MeshConfiguration:Url"] ?? "NULL";
-            var mailboxId = configuration["MeshConfiguration:MailboxID"] ?? "NULL";
-            var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"] ?? "NULL";
-            var mexOSName = configuration["MeshConfiguration:MexOSName"] ?? "NULL";
-            var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"] ?? "NULL";
-            var password = configuration["MeshConfiguration:Password"] ?? "NULL";
-            var sharedKey = configuration["MeshConfiguration:SharedKey"] ?? "NULL";
+            bool RunAcceptanceTests = configuration.GetSection("RunAcceptanceTests").Get<bool>();
+            bool RunIntegrationTests = configuration.GetSection("RunIntegrationTests").Get<bool>();
+            var mailboxId = configuration["MeshConfiguration:MailboxId"];
+            var mexClientVersion = configuration["MeshConfiguration:MexClientVersion"];
+            var mexOSName = configuration["MeshConfiguration:MexOSName"];
+            var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"];
+            var password = configuration["MeshConfiguration:Password"];
+            var key = configuration["MeshConfiguration:Key"];
+            var clientCert = configuration["MeshConfiguration:ClientCertificate"];
+            var rootCert = configuration["MeshConfiguration:RootCertificate"];
+            var url = configuration["MeshConfiguration:Url"];
             var maxChunkSizeInMegabytes = int.Parse(configuration["MeshConfiguration:MaxChunkSizeInMegabytes"]);
-            var clientSigningCertificate = configuration["MeshConfiguration:ClientSigningCertificate"];
-            var clientSigningCertificatePassword = configuration["MeshConfiguration:ClientSigningCertificatePassword"];
 
-            List<string> tlsRootCertificates = configuration.GetSection("MeshConfiguration:TlsRootCertificates")
-                    .Get<List<string>>() ?? [];
-
-            List<string> tlsIntermediateCertificates = configuration.GetSection("MeshConfiguration:TlsIntermediateCertificates")
-                    .Get<List<string>>() ?? [];
+            var intermediateCertificates =
+                configuration.GetSection("MeshConfiguration:IntermediateCertificates")
+                    .Get<List<string>>();
 
             this.meshConfigurations = new MeshConfiguration
             {
-                Url = "https://msg.intspineservices.nhs.uk",
                 MailboxId = mailboxId,
                 MexClientVersion = mexClientVersion,
                 MexOSName = mexOSName,
                 MexOSVersion = mexOSVersion,
                 Password = password,
-                SharedKey = sharedKey,
-                TlsRootCertificates = GetCertificates(tlsRootCertificates.ToArray(), "Root"),
-                TlsIntermediateCertificates = GetCertificates(tlsIntermediateCertificates.ToArray(), "Intermediate"),
-
-                ClientSigningCertificate =
-                    GetPkcs12Certificate(clientSigningCertificate, clientSigningCertificatePassword, "Signing"),
-
+                Key = key,
+                RootCertificate = GetCertificate(rootCert),
+                IntermediateCertificates = GetCertificates(intermediateCertificates.ToArray()),
+                ClientCertificate = GetCertificate(clientCert),
+                Url = url,
                 MaxChunkSizeInMegabytes = maxChunkSizeInMegabytes
             };
-
-            Console.WriteLine($"MailboxId: '{meshConfigurations.MailboxId.Substring(0, 2)}" +
-                 $"{meshConfigurations.MailboxId.Substring(meshConfigurations.MailboxId.Length - 2)}'");
-
-            Console.WriteLine($"Url: '{meshConfigurations.Url}'");
-
-            Console.WriteLine(
-                $"Password: '{meshConfigurations.Password.Substring(0, 2)}" +
-                $"{new string('*', meshConfigurations.Password.Length - 4)}" +
-                $"{meshConfigurations.Password.Substring(meshConfigurations.Password.Length - 2)}'");
-
-            Console.WriteLine(
-                $"SharedKey: '{meshConfigurations.SharedKey.Substring(0, 2)}" +
-                $"{new string('*', meshConfigurations.SharedKey.Length - 4)}" +
-                $"{meshConfigurations.SharedKey.Substring(meshConfigurations.SharedKey.Length - 2)}'");
-
-            Console.WriteLine($"TLSRootCertificates: '{meshConfigurations.TlsRootCertificates[0]}'");
 
             this.meshClient = new MeshClient(meshConfigurations: this.meshConfigurations);
         }
 
-        private static X509Certificate2Collection GetCertificates(string[] certificates, string type = "")
+        private static X509Certificate2Collection GetCertificates(params string[] intermediateCertificates)
         {
-            var certificateCollection = new X509Certificate2Collection();
+            var certificates = new X509Certificate2Collection();
 
-            foreach (string item in certificates)
+            foreach (string item in intermediateCertificates)
             {
-                certificateCollection.Add(GetPemOrDerCertificate(item, type));
+                certificates.Add(GetCertificate(item));
             }
 
-            return certificateCollection;
+            return certificates;
         }
 
-        private static X509Certificate2 GetPemOrDerCertificate(string value, string type = "")
+        private static X509Certificate2 GetCertificate(string value)
         {
             byte[] certBytes = Convert.FromBase64String(value);
-            var certificate = X509CertificateLoader.LoadCertificate(certBytes);
-            ConsoleWrite(value, type, certificate.Subject, certificate.Thumbprint);
 
-            return certificate;
-        }
-
-        private static X509Certificate2 GetPkcs12Certificate(string value, string password = "", string type = "")
-        {
-            byte[] certBytes = Convert.FromBase64String(value);
-            var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
-            ConsoleWrite(value, type, certificate.Subject, certificate.Thumbprint);
-
-            return certificate;
-        }
-
-        private static void ConsoleWrite(string item, string type = "", string subject = "", string thumbprint = "")
-        {
-            if (item.Length > 30)
-            {
-                Console.WriteLine(
-                    $"{type} Certificate: {item.Substring(0, 15)}...{item.Substring(item.Length - 15)}, " +
-                    $"SUBJECT: {subject} " +
-                    $"THUMBPRINT: {thumbprint}");
-            }
-            else
-            {
-                Console.WriteLine($"{type} Certificate: {item}");
-            }
+            return new X509Certificate2(certBytes);
         }
 
         private static string GetRandomString(int wordMinLength = 2, int wordMaxLength = 100) =>
@@ -130,5 +85,8 @@ namespace NEL.MESH.Tests.Integration
                 wordCount: 1,
                 wordMinLength: 1,
                 wordMaxLength: wordMaxLength < wordMinLength ? wordMinLength : wordMaxLength).GetValue();
+
+        private static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
     }
 }

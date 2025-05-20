@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using NEL.MESH.Clients;
 using NEL.MESH.Models.Configurations;
 using NEL.MESH.UI.Models;
+using Newtonsoft.Json.Linq;
 
 namespace NEL.MESH.UI
 {
@@ -137,16 +138,15 @@ namespace NEL.MESH.UI
                 txtHeaders.Text = string.Empty;
                 txtContent.Text = string.Empty;
 
-                var clientSigningCertificate =
+                var clientCertificate =
                     meshCertificates.First(cert => cert.Environment == mailbox.Environment)
-                        .ClientSigningCertificate;
+                        .ClientCertificate;
 
-                var tlsRootCertificates = meshCertificates.First(cert => cert.Environment == mailbox.Environment)
-                    .TlsRootCertificates;
+                var rootCertificate = meshCertificates.First(cert => cert.Environment == mailbox.Environment)
+                     .RootCertificate;
 
-                var tlsIntermediateCertificates =
-                    meshCertificates.First(cert => cert.Environment == mailbox.Environment)
-                        .TlsIntermediateCertificates;
+                var intermediateCertificates = meshCertificates.First(cert => cert.Environment == mailbox.Environment)
+                   .IntermediateCertificates;
 
                 var clientSigningCertificatePassword = string.Empty;
 
@@ -155,13 +155,10 @@ namespace NEL.MESH.UI
                     Url = mailbox.Url,
                     MailboxId = mailbox.MailboxId,
                     Password = mailbox.Password,
-                    TlsRootCertificates = GetCertificates(tlsRootCertificates.ToArray()),
-                    TlsIntermediateCertificates = GetCertificates(tlsIntermediateCertificates.ToArray()),
-
-                    ClientSigningCertificate =
-                        GetPkcs12Certificate(clientSigningCertificate, clientSigningCertificatePassword),
-
-                    SharedKey = mailbox.Key,
+                    ClientCertificate = GetCertificate(clientCertificate),
+                    IntermediateCertificates = GetCertificates(intermediateCertificates),
+                    RootCertificate = GetCertificate(rootCertificate),
+                    Key = mailbox.Key,
                     MaxChunkSizeInMegabytes = meshConfig.ChunkSize,
                     MexClientVersion = meshConfig.MexClientVersion,
                     MexOSName = meshConfig.MexOSName,
@@ -172,7 +169,18 @@ namespace NEL.MESH.UI
             }
         }
 
-        private static X509Certificate2Collection GetCertificates(params string[] certificates)
+        private static X509Certificate2 GetCertificate(string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                byte[] certBytes = Convert.FromBase64String(value);
+                return new X509Certificate2(certBytes);
+            }
+
+            return null;
+        }
+
+        private static X509Certificate2Collection GetCertificates(List<string> certificates)
         {
             var certificateCollection = new X509Certificate2Collection();
 

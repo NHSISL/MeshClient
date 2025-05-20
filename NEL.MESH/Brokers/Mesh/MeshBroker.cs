@@ -202,13 +202,48 @@ namespace NEL.MESH.Brokers.Mesh
                 CheckCertificateRevocationList = false,
             };
 
-            if (this.MeshConfiguration.ClientSigningCertificate != null)
+            //if (this.MeshConfiguration.ClientSigningCertificate != null)
+            //{
+            //    handler.ClientCertificates.Add(this.MeshConfiguration.ClientSigningCertificate);
+            //}
+
+            if (this.MeshConfiguration.ClientCertificate != null)
             {
-                handler.ClientCertificates.Add(this.MeshConfiguration.ClientSigningCertificate);
+                handler.ClientCertificates.Add(this.MeshConfiguration.ClientCertificate);
             }
 
-            if (this.MeshConfiguration.TlsRootCertificates != null
-                || this.MeshConfiguration.TlsRootCertificates.Count > 0)
+            //if (this.MeshConfiguration.TlsRootCertificates != null
+            //    || this.MeshConfiguration.TlsRootCertificates.Count > 0)
+            //{
+            //    handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
+            //    {
+            //        if (chain != null)
+            //        {
+            //            chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
+
+            //            // Try Add instead of AddRange to confirm certificates
+            //            chain.ChainPolicy.CustomTrustStore.AddRange(this.MeshConfiguration.TlsRootCertificates);
+
+            //            if (this.MeshConfiguration.TlsIntermediateCertificates != null
+            //                || this.MeshConfiguration.TlsIntermediateCertificates.Count > 0)
+            //            {
+            //                chain.ChainPolicy.ExtraStore.AddRange(this.MeshConfiguration.TlsIntermediateCertificates);
+            //            }
+
+            //            chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+            //            chain.ChainPolicy.VerificationFlags = X509VerificationFlags.IgnoreWrongUsage;
+
+            //            if (cert != null && chain.Build(cert))
+            //            {
+            //                return true;
+            //            };
+            //        }
+
+            //        throw new Exception(chain.ChainStatus.FirstOrDefault().StatusInformation);
+            //    };
+            //}
+
+            if (this.MeshConfiguration.RootCertificate != null)
             {
                 handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
                 {
@@ -217,12 +252,12 @@ namespace NEL.MESH.Brokers.Mesh
                         chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
 
                         // Try Add instead of AddRange to confirm certificates
-                        chain.ChainPolicy.CustomTrustStore.AddRange(this.MeshConfiguration.TlsRootCertificates);
+                        //chain.ChainPolicy.CustomTrustStore.AddRange(this.MeshConfiguration.TlsRootCertificates);
+                        chain.ChainPolicy.CustomTrustStore.Add(this.MeshConfiguration.RootCertificate);
 
-                        if (this.MeshConfiguration.TlsIntermediateCertificates != null
-                            || this.MeshConfiguration.TlsIntermediateCertificates.Count > 0)
+                        if (this.MeshConfiguration.IntermediateCertificates != null)
                         {
-                            chain.ChainPolicy.ExtraStore.AddRange(this.MeshConfiguration.TlsIntermediateCertificates);
+                            chain.ChainPolicy.ExtraStore.AddRange(this.MeshConfiguration.IntermediateCertificates);
                         }
 
                         chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
@@ -231,7 +266,8 @@ namespace NEL.MESH.Brokers.Mesh
                         if (cert != null && chain.Build(cert))
                         {
                             return true;
-                        };
+                        }
+                        ;
                     }
 
                     throw new Exception(chain.ChainStatus.FirstOrDefault().StatusInformation);

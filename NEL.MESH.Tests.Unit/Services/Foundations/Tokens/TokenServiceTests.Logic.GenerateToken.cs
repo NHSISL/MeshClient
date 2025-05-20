@@ -25,7 +25,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
             {
                 MailboxId = mailboxId,
                 Password = password,
-                SharedKey = key
+                Key = key
             };
 
             this.meshBrokerMock.Setup(broker =>
