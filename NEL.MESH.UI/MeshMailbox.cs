@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using NEL.MESH.Clients;
 using NEL.MESH.Models.Configurations;
 using NEL.MESH.UI.Models;
+using Newtonsoft.Json.Linq;
 
 namespace NEL.MESH.UI
 {
@@ -137,14 +138,17 @@ namespace NEL.MESH.UI
                 txtHeaders.Text = string.Empty;
                 txtContent.Text = string.Empty;
 
-                var clientCertificate = meshCertificates.First(cert => cert.Environment == mailbox.Environment)
-                    .ClientCertificate;
-
-                var intermediateCertificates = meshCertificates.First(cert => cert.Environment == mailbox.Environment)
-                    .IntermediateCertificates;
+                var clientCertificate =
+                    meshCertificates.First(cert => cert.Environment == mailbox.Environment)
+                        .ClientCertificate;
 
                 var rootCertificate = meshCertificates.First(cert => cert.Environment == mailbox.Environment)
-                    .RootCertificate;
+                     .RootCertificate;
+
+                var intermediateCertificates = meshCertificates.First(cert => cert.Environment == mailbox.Environment)
+                   .IntermediateCertificates;
+
+                var clientSigningCertificatePassword = string.Empty;
 
                 var meshConfiguration = new MeshConfiguration
                 {
@@ -170,29 +174,38 @@ namespace NEL.MESH.UI
             if (!string.IsNullOrEmpty(value))
             {
                 byte[] certBytes = Convert.FromBase64String(value);
-
                 return new X509Certificate2(certBytes);
             }
 
             return null;
         }
 
-        private static X509Certificate2Collection GetCertificates(List<string> values)
+        private static X509Certificate2Collection GetCertificates(List<string> certificates)
         {
-            values ??= new List<string>();
+            var certificateCollection = new X509Certificate2Collection();
 
-            var certificates = new X509Certificate2Collection();
-
-            if (values.Any())
+            foreach (string item in certificates)
             {
-                foreach (string item in values)
-                {
-                    byte[] certBytes = Convert.FromBase64String(item);
-                    certificates.Add(new X509Certificate2(certBytes));
-                }
+                certificateCollection.Add(GetPemOrDerCertificate(item));
             }
 
-            return certificates;
+            return certificateCollection;
+        }
+
+        private static X509Certificate2 GetPemOrDerCertificate(string value)
+        {
+            byte[] certBytes = Convert.FromBase64String(value);
+            var certificate = X509CertificateLoader.LoadCertificate(certBytes);
+
+            return certificate;
+        }
+
+        private static X509Certificate2 GetPkcs12Certificate(string value, string password = "")
+        {
+            byte[] certBytes = Convert.FromBase64String(value);
+            var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
+
+            return certificate;
         }
 
         private void cbApplications_SelectedIndexChanged(object sender, EventArgs e)

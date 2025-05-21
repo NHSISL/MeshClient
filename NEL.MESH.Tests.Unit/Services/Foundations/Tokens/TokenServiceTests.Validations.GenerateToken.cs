@@ -53,15 +53,15 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Tokens
                         "please correct the errors and try again.");
 
             InvalidTokenArgsException.AddData(
-                key: "MailboxId",
+                key: nameof(MeshConfiguration.MailboxId),
                 values: "Text is required");
 
             InvalidTokenArgsException.AddData(
-                key: "Password",
+                key: nameof(MeshConfiguration.Password),
                 values: "Text is required");
 
             InvalidTokenArgsException.AddData(
-                key: "Key",
+                key: nameof(MeshConfiguration.Key),
                 values: "Text is required");
 
             var expectedTokenValidationException =

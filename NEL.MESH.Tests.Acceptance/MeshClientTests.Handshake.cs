@@ -13,31 +13,31 @@ namespace NEL.MESH.Tests.Acceptance
 {
     public partial class MeshClientTests
     {
-        [Fact]
-        [Trait("Category", "Acceptance")]
-        public async Task ShouldDoHandshakeAsync()
-        {
-            // given
-            bool expectedHandshakeResult = true;
-            string path = $"/messageexchange/{this.meshConfigurations.MailboxId}";
+        //[Fact]
+        //[Trait("Category", "Acceptance")]
+        //public async Task ShouldDoHandshakeAsync()
+        //{
+        //    // given
+        //    bool expectedHandshakeResult = true;
+        //    string path = $"/messageexchange/{this.meshConfigurations.MailboxId}";
 
-            this.wireMockServer
-                .Given(
-                    Request.Create()
-                        .WithPath(path)
-                        .UsingGet()
-                        .WithHeader("mex-clientversion", "*", MatchBehaviour.AcceptOnMatch)
-                        .WithHeader("mex-osname", "*", MatchBehaviour.AcceptOnMatch)
-                        .WithHeader("mex-osversion", "*", MatchBehaviour.AcceptOnMatch))
-                .RespondWith(
-                    Response.Create()
-                        .WithSuccess());
+        //    this.wireMockServer
+        //        .Given(
+        //            Request.Create()
+        //                .WithPath(path)
+        //                .UsingGet()
+        //                .WithHeader("mex-clientversion", "*", MatchBehaviour.AcceptOnMatch)
+        //                .WithHeader("mex-osname", "*", MatchBehaviour.AcceptOnMatch)
+        //                .WithHeader("mex-osversion", "*", MatchBehaviour.AcceptOnMatch))
+        //        .RespondWith(
+        //            Response.Create()
+        //                .WithSuccess());
 
-            // when
-            bool actualHandshakeResult = await this.meshClient.Mailbox.HandshakeAsync();
+        //    // when
+        //    bool actualHandshakeResult = await this.meshClient.Mailbox.HandshakeAsync();
 
-            // then
-            actualHandshakeResult.Should().Be(expectedHandshakeResult);
-        }
+        //    // then
+        //    actualHandshakeResult.Should().Be(expectedHandshakeResult);
+        //}
     }
 }

@@ -9,7 +9,6 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using NEL.MESH.Clients;
 using NEL.MESH.Models.Configurations;
-using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
 
 namespace NEL.MESH.Tests.Integration
@@ -23,8 +22,8 @@ namespace NEL.MESH.Tests.Integration
         {
             var configurationBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables("NEL_MESH_CLIENT_INTEGRATION_");
+                .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
 
             IConfiguration configuration = configurationBuilder.Build();
             bool RunAcceptanceTests = configuration.GetSection("RunAcceptanceTests").Get<bool>();
@@ -89,47 +88,5 @@ namespace NEL.MESH.Tests.Integration
 
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
-
-        private static Message CreateRandomSendMessage(
-            string mexFrom,
-            string mexTo,
-            string mexWorkflowId,
-            string mexLocalId,
-            string mexSubject,
-            string mexFileName,
-            string mexContentChecksum,
-            string mexContentEncrypted,
-            string mexEncoding,
-            string mexChunkRange,
-            string contentType,
-            string content)
-        {
-            var message = CreateMessageFiller(content).Create();
-            message.Headers.Add("mex-from", new List<string> { mexFrom });
-            message.Headers.Add("mex-to", new List<string> { mexTo });
-            message.Headers.Add("mex-workflowid", new List<string> { mexWorkflowId });
-            message.Headers.Add("mex-localid", new List<string> { mexLocalId });
-            message.Headers.Add("mex-subject", new List<string> { mexSubject });
-            message.Headers.Add("mex-filename", new List<string> { mexFileName });
-            message.Headers.Add("mex-content-checksum", new List<string> { mexContentChecksum });
-            message.Headers.Add("Mex-Content-Encrypted", new List<string> { mexContentEncrypted });
-            message.Headers.Add("Mex-Encoding", new List<string> { mexEncoding });
-            message.Headers.Add("mex-chunk-range", new List<string> { mexChunkRange });
-            message.Headers.Add("content-type", new List<string> { contentType });
-
-            return message;
-        }
-
-        private static Filler<Message> CreateMessageFiller(string content)
-        {
-            byte[] fileContent = Encoding.UTF8.GetBytes(content);
-            var filler = new Filler<Message>();
-
-            filler.Setup()
-                .OnProperty(message => message.FileContent).Use(fileContent)
-                .OnProperty(message => message.Headers).Use(new Dictionary<string, List<string>>());
-
-            return filler;
-        }
     }
 }

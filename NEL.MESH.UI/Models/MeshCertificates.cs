@@ -8,7 +8,7 @@ namespace NEL.MESH.UI.Models
     {
         public string Environment { get; set; } = string.Empty;
         public string ClientCertificate { get; set; } = string.Empty;
-        public List<string> IntermediateCertificates { get; set; } = new List<string>();
         public string RootCertificate { get; set; } = string.Empty;
+        public List<string> IntermediateCertificates { get; set; } = new List<string>();
     }
 }

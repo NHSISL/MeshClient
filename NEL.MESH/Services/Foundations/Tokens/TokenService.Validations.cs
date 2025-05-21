@@ -18,6 +18,7 @@ namespace NEL.MESH.Services.Foundations.Tokens
                     "please correct the errors and try again.",
                 (Rule: IsInvalid(mailboxId), Parameter: nameof(MeshConfiguration.MailboxId)),
                 (Rule: IsInvalid(password), Parameter: nameof(MeshConfiguration.Password)),
+                //(Rule: IsInvalid(key), Parameter: nameof(MeshConfiguration.SharedKey)));
                 (Rule: IsInvalid(key), Parameter: nameof(MeshConfiguration.Key)));
         }
 
