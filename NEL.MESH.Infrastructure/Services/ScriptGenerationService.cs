@@ -99,7 +99,7 @@ namespace NEL.MESH.Infrastructure.Services
 
                                 new TestTask
                                 {
-                                    Name = "Run Unit Tests",
+                                    Name = "Run Acceptance Tests",
                                     Run = "dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --no-build --verbosity normal"
                                 },
                             }
