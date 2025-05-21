@@ -11,7 +11,13 @@ namespace NEL.MESH.Infrastructure
         static void Main(string[] args)
         {
             var scriptGenerationService = new ScriptGenerationService();
-            scriptGenerationService.GenerateBuildScript();
+
+            scriptGenerationService.GenerateBuildScript(
+                branchName: "main",
+                projectName: "NEL.MESH",
+                dotNetVersion: "8.0.101");
+
+            scriptGenerationService.GeneratePrLintScript("main");
         }
     }
 }
