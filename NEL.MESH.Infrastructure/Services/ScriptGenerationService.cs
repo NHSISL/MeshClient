@@ -72,7 +72,7 @@ namespace NEL.MESH.Infrastructure.Services
 
                                     With = new TargetDotNetVersionV3
                                     {
-                                        DotNetVersion = "7.0.201"
+                                        DotNetVersion = dotNetVersion
                                     }
                                 },
 
