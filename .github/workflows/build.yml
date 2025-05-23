@@ -35,7 +35,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Unit Tests
-      run: dotnet test NEL.Mesh.Tests.Unit/NEL.Mesh.Tests.Unit.csproj --no-build --verbosity normal
+      run: dotnet test NEL.MESH.Tests.Unit/NEL.MESH.Tests.Unit.csproj --no-build --verbosity normal
     - name: Acceptance Tests
       run: dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --no-build --verbosity normal
   add_tag:
@@ -70,7 +70,7 @@ jobs:
 
         sudo apt-get install xmlstarlet
 
-        version_number=$(xmlstarlet sel -t -v "//Version" -n ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj)
+        version_number=$(xmlstarlet sel -t -v "//Version" -n NEL.MESH/NEL.MESH.csproj)
 
         echo "$version_number"
 
@@ -89,7 +89,7 @@ jobs:
 
         sudo apt-get install xmlstarlet
 
-        package_release_notes=$(xmlstarlet sel -t -v "//PackageReleaseNotes" -n ISL.ReIdentification.Core/ISL.ReIdentification.Core.csproj)
+        package_release_notes=$(xmlstarlet sel -t -v "//PackageReleaseNotes" -n NEL.MESH/NEL.MESH.csproj)
 
         echo "$package_release_notes"
 
