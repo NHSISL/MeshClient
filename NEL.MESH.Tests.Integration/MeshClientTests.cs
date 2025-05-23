@@ -52,74 +52,44 @@ namespace NEL.MESH.Tests.Integration
                 MexOSVersion = mexOSVersion,
                 Password = password,
                 SharedKey = sharedKey,
-                TlsRootCertificates = GetCertificates(tlsRootCertificates.ToArray(), "Root"),
-                TlsIntermediateCertificates = GetCertificates(tlsIntermediateCertificates.ToArray(), "Intermediate"),
+                TlsRootCertificates = GetCertificates(tlsRootCertificates.ToArray()),
+                TlsIntermediateCertificates = GetCertificates(tlsIntermediateCertificates.ToArray()),
 
                 ClientSigningCertificate =
-                    GetPkcs12Certificate(clientSigningCertificate, clientSigningCertificatePassword, "Signing"),
+                    GetPkcs12Certificate(clientSigningCertificate, clientSigningCertificatePassword),
 
                 MaxChunkSizeInMegabytes = maxChunkSizeInMegabytes
             };
 
-            Console.WriteLine($"MailboxId: {meshConfigurations.MailboxId}");
-            Console.WriteLine($"Url: {meshConfigurations.Url}");
-
-            Console.WriteLine(
-                $"Password: {meshConfigurations.Password.Substring(0, 2)}" +
-                $"{new string('*', meshConfigurations.Password.Length - 4)}" +
-                $"{meshConfigurations.Password.Substring(meshConfigurations.Password.Length - 2)}");
-
-            Console.WriteLine(
-                $"SharedKey: {meshConfigurations.SharedKey.Substring(0, 2)}" +
-                $"{new string('*', meshConfigurations.SharedKey.Length - 4)}" +
-                $"{meshConfigurations.SharedKey.Substring(meshConfigurations.SharedKey.Length - 2)}");
-
             this.meshClient = new MeshClient(meshConfigurations: this.meshConfigurations);
         }
 
-        private static X509Certificate2Collection GetCertificates(string[] certificates, string type = "")
+        private static X509Certificate2Collection GetCertificates(string[] certificates)
         {
             var certificateCollection = new X509Certificate2Collection();
 
             foreach (string item in certificates)
             {
-                certificateCollection.Add(GetPemOrDerCertificate(item, type));
+                certificateCollection.Add(GetPemOrDerCertificate(item));
             }
 
             return certificateCollection;
         }
 
-        private static X509Certificate2 GetPemOrDerCertificate(string value, string type = "")
+        private static X509Certificate2 GetPemOrDerCertificate(string value)
         {
             byte[] certBytes = Convert.FromBase64String(value);
             var certificate = X509CertificateLoader.LoadCertificate(certBytes);
-            ConsoleWrite(value, type, certificate.Subject, certificate.Thumbprint);
 
             return certificate;
         }
 
-        private static X509Certificate2 GetPkcs12Certificate(string value, string password = "", string type = "")
+        private static X509Certificate2 GetPkcs12Certificate(string value, string password = "")
         {
             byte[] certBytes = Convert.FromBase64String(value);
             var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
-            ConsoleWrite(value, type, certificate.Subject, certificate.Thumbprint);
 
             return certificate;
-        }
-
-        private static void ConsoleWrite(string item, string type = "", string subject = "", string thumbprint = "")
-        {
-            if (item.Length > 30)
-            {
-                Console.WriteLine(
-                    $"{type} Certificate: {item.Substring(0, 15)}...{item.Substring(item.Length - 15)}, " +
-                    $"SUBJECT: {subject} " +
-                    $"THUMBPRINT: {thumbprint}");
-            }
-            else
-            {
-                Console.WriteLine($"{type} Certificate: {item}");
-            }
         }
 
         private static string GetRandomString(int wordMinLength = 2, int wordMaxLength = 100) =>
