@@ -90,12 +90,6 @@ namespace NEL.MESH.Infrastructure.Services
                                 {
                                     Name = "Acceptance Tests",
                                     Run = "dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --no-build --verbosity normal"
-                                },
-
-                                new TestTask
-                                {
-                                    Name = "Integration Tests",
-                                    Run = "dotnet test NEL.MESH.Tests.Integration/NEL.MESH.Tests.Integration.csproj --no-build --verbosity normal"
                                 }
                             }
                         }

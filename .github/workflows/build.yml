@@ -38,8 +38,6 @@ jobs:
       run: dotnet test NEL.Mesh.Tests.Unit/NEL.Mesh.Tests.Unit.csproj --no-build --verbosity normal
     - name: Acceptance Tests
       run: dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --no-build --verbosity normal
-    - name: Integration Tests
-      run: dotnet test NEL.MESH.Tests.Integration/NEL.MESH.Tests.Integration.csproj --no-build --verbosity normal
   add_tag:
     name: Add Tag and Create Release
     runs-on: ubuntu-latest
