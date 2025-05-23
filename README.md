@@ -74,8 +74,8 @@ This is also called digital on-boarding. You'll need to submit information that 
 | RetrieveMessageById           | Use this endpoint to retrieve a message based on the message identifier obtained from the 'Check Inbox' endpoint. Note: Headers should be treated case insensitively, most http clients will do this for you automatically, but please do not rely on explicit case. /messageexchange/{mailbox_id}/inbox/{message_id},if the file has been chunked the service will stitch back on retrieve. | [Get Message By Id](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/-mailbox_id-/inbox/-message_id-)|
 | AcknowledgeMessageById        | Use this endpoint to acknowledge the successful download of a message.This operation: <ul><li>Closes the message transaction on Spine.</li><li>Removes the message from your mailbox inbox, which means that the message_id does not appear in subsequent calls to the 'Check inbox' endpoint and cannot be downloaded again Note: If you fail to acknowledge a message after five days in the inbox this sends a non-delivery report to the sender's inbox.</li></ul> | [Acknowledge](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#put-/messageexchange/-mailbox_id-/inbox/-message_id-/status/acknowledged)
 
-# Local App Settings
-To run this package you will need to setup a local app settings file with the following configuration items.  Certificates will need to be base64 encoded and the Intermediate can have multiples.
+# Development App Settings
+To run this package you will need to setup an **appsettings.Development.json** file with the following configuration items.  Certificates will need to be base64 encoded and the Intermediate can have multiples.
 
 NOTE: The key value will have to be requested from NHS Digital as the version on their website was out of date at time of documenting
 
@@ -85,15 +85,15 @@ NOTE: The key value will have to be requested from NHS Digital as the version on
   {
     "MailboxId": "",
     "Password": "",
-    "Key": "",
+    "SharedKey": "",
     "Url": "",
     "MexClientVersion": "ApiDocs==0.0.1",
     "MexOSName": "Windows",
     "MexOSVersion": "#11",
-    "RootCertificate": "",
-    "IntermediateCertificates": [""],
-    "ClientCertificate": "",
-    "ClientCertificatePassword": "",
+    "TlsRootCertificates": [""],
+    "TlsIntermediateCertificates": [""],
+    "ClientSigningCertificate": "",
+    "ClientSigningCertificatePassword": "",
     "MaxChunkSizeInMegabytes": ""
   }
 }
