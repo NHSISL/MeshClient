@@ -14,7 +14,7 @@ namespace NEL.MESH.Infrastructure
 
             scriptGenerationService.GenerateBuildScript(
                 branchName: "main",
-                projectName: "ISL.ReIdentification.Core",
+                projectName: "NEL.MESH",
                 dotNetVersion: "9.0.100");
 
             scriptGenerationService.GeneratePrLintScript("main");

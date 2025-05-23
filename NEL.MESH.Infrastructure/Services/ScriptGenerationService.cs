@@ -67,7 +67,7 @@ namespace NEL.MESH.Infrastructure.Services
                                     With = new TargetDotNetVersionV3
                                     {
                                         DotNetVersion = dotNetVersion
-}
+                                    }
                                 },
 
                                 new RestoreTask
@@ -83,13 +83,13 @@ namespace NEL.MESH.Infrastructure.Services
                                 new TestTask
                                 {
                                     Name = "Unit Tests",
-                                    Run = "dotnet test NEL.Mesh.Tests.Unit/NEL.Mesh.Tests.Unit.csproj --no-build --verbosity normal"
+                                    Run = $"dotnet test {projectName}.Tests.Unit/{projectName}.Tests.Unit.csproj --no-build --verbosity normal"
                                 },
 
                                 new TestTask
                                 {
                                     Name = "Acceptance Tests",
-                                    Run = "dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --no-build --verbosity normal"
+                                    Run = $"dotnet test {projectName}.Tests.Acceptance/{projectName}.Tests.Acceptance.csproj --no-build --verbosity normal"
                                 }
                             }
                         }
