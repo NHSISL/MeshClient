@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
 
@@ -99,7 +101,19 @@ namespace NEL.MESH.Clients.Mailboxes
         /// <returns>
         /// A task that represents the asynchronous operation. The task result contains the retrieved message.
         /// </returns>
+        [Obsolete("This method is obsolete. Use RetrieveMessageAsync(string messageId, Stream outputStream) " +
+            "instead to avoid memory issues with large files.")]
         ValueTask<Message> RetrieveMessageAsync(string messageId);
+
+        /// <summary>
+        /// Retrieves the details of a specific message, with the message content written to the provided output stream.
+        /// </summary>
+        /// <param name="messageId">The identifier of the message to retrieve.</param>
+        /// <param name="outputStream">An empty writable stream to which the message content will be written.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains the retrieved message.
+        /// </returns>
+        ValueTask<Message> RetrieveMessageAsync(string messageId, Stream outputStream);
 
         /// <summary>
         /// Acknowledges a specific message, marking it as processed.

@@ -13,7 +13,7 @@ using NEL.MESH.Clients;
 using NEL.MESH.Models.Configurations;
 using NEL.MESH.Models.Foundations.Mesh;
 using Tynamix.ObjectFiller;
-using Xunit.Abstractions;
+using Xunit;
 
 
 namespace NEL.MESH.Tests.Integration.Witness

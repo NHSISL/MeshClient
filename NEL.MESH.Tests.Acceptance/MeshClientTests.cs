@@ -43,6 +43,11 @@ namespace NEL.MESH.Tests.Acceptance
             var tlsRootCertificates = configuration.GetSection("MeshConfiguration:TlsRootCertificates")
                 .Get<List<string>>();
 
+            if (tlsRootCertificates == null)
+            {
+                tlsRootCertificates = new List<string>();
+            }
+
             List<string> tlsIntermediateCertificates =
                 configuration.GetSection("MeshConfiguration:TlsIntermediateCertificates")
                     .Get<List<string>>();

@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using NEL.MESH.Brokers.Mesh;
@@ -80,6 +82,8 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 return outputMessage;
             });
 
+        [Obsolete("This method is obsolete. Use RetrieveMessageAsync(string messageId, Stream outputStream) " +
+            "instead to avoid memory issues with large files.")]
         public ValueTask<Message> RetrieveMessageAsync(string messageId) =>
             TryCatch(async () =>
             {
@@ -115,6 +119,46 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
 
                 return outputMessage;
             });
+
+        public ValueTask<Message> RetrieveMessageAsync(string messageId, Stream outputStream) =>
+            TryCatch(async () =>
+            {
+                ValidateRetrieveMessageArgs(messageId, outputStream);
+                string token = await this.tokenService.GenerateTokenAsync();
+                ValidateToken(token);
+
+                Message outputMessage =
+                    await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token, 1);
+
+                await outputStream.WriteAsync(outputMessage.FileContent);
+                outputMessage.FileContent = null;
+
+                var chunks = outputMessage.Headers
+                    .FirstOrDefault(h => h.Key == "mex-chunk-range")
+                    .Value?
+                    .FirstOrDefault();
+
+                if (chunks != null)
+                {
+                    string chunkRange = chunks.Replace("{", string.Empty).Replace("}", string.Empty);
+                    string[] parts = chunkRange.Split(":");
+                    int totalChunks = int.Parse(parts[1]);
+
+                    for (int chunkId = 2; chunkId <= totalChunks; chunkId++)
+                    {
+                        token = await this.tokenService.GenerateTokenAsync();
+
+                        Message responseMessage =
+                            await this.meshService
+                                .RetrieveMessageAsync(messageId, authorizationToken: token, chunkId);
+
+                        await outputStream.WriteAsync(responseMessage.FileContent);
+                    }
+                }
+
+                return outputMessage;
+            });
+
 
         public ValueTask<List<string>> RetrieveMessagesAsync() =>
             TryCatch(async () =>

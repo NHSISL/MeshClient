@@ -3,14 +3,25 @@
 // ---------------------------------------------------------------
 
 using System;
+using Microsoft.Extensions.Configuration;
 using Xunit;
-using Xunit.Sdk;
 
 namespace NEL.MESH.Tests.Integration.Witness
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    [XunitTestCaseDiscoverer(
-        typeName: "NEL.MESH.Tests.Integration.Witness.ReleaseCandidateTestCaseDiscoverer",
-        assemblyName: "NEL.MESH.Tests.Integration.Witness")]
-    public class ReleaseCandidateFactAttribute : FactAttribute { }
+    public class ReleaseCandidateFactAttribute : FactAttribute
+    {
+        public ReleaseCandidateFactAttribute()
+        {
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
+            if (!configuration.GetValue<bool>("IS_RELEASE_CANDIDATE"))
+            {
+                Skip = "IS_RELEASE_CANDIDATE is not enabled";
+            }
+        }
+    }
 }

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Orchestrations.Mesh.Exceptions;
 using Xeptions;
@@ -43,10 +44,25 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)));
         }
 
+        private static void ValidateRetrieveMessageArgs(string messageId, Stream output)
+        {
+            Validate<InvalidMeshOrchestrationArgsException>(
+                message: "Invalid mesh orchestration argument validation errors occurred, " +
+                "please correct the errors and try again.",
+                (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
+                (Rule: IsInvalidOutputStream(output), Parameter: nameof(output)));
+        }
+
         private static dynamic IsInvalid(string text) => new
         {
             Condition = string.IsNullOrWhiteSpace(text),
             Message = "Text is required"
+        };
+
+        private static dynamic IsInvalidOutputStream(Stream stream) => new
+        {
+            Condition = stream is null || stream.Length != 0,
+            Message = "Stream is required and must be empty"
         };
 
         private static dynamic IsInvalid(List<Message> chunkedMessages) => new

@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -211,11 +213,44 @@ namespace NEL.MESH.Clients.Mailboxes
             }
         }
 
+        [Obsolete("This method is obsolete. Use RetrieveMessageAsync(string messageId, Stream outputStream) " +
+            "instead to avoid memory issues with large files.")]
         public async ValueTask<Message> RetrieveMessageAsync(string messageId)
         {
             try
             {
                 return await meshOrchestrationService.RetrieveMessageAsync(messageId);
+            }
+            catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
+            {
+                throw new MeshClientValidationException(
+                    meshOrchestrationValidationException.InnerException as Xeption,
+                    meshOrchestrationValidationException.InnerException.Data);
+            }
+            catch (MeshOrchestrationDependencyValidationException meshOrchestrationDependencyValidationException)
+            {
+                throw new MeshClientValidationException(
+                    meshOrchestrationDependencyValidationException.InnerException as Xeption,
+                    meshOrchestrationDependencyValidationException.InnerException.Data);
+            }
+            catch (MeshOrchestrationDependencyException meshOrchestrationDependencyException)
+            {
+                throw new MeshClientDependencyException(
+                    meshOrchestrationDependencyException.InnerException as Xeption);
+            }
+            catch (MeshOrchestrationServiceException meshOrchestrationServiceException)
+            {
+                throw new MeshClientServiceException(
+                    meshOrchestrationServiceException.InnerException as Xeption);
+            }
+        }
+
+
+        public async ValueTask<Message> RetrieveMessageAsync(string messageId, Stream outputStream)
+        {
+            try
+            {
+                return await meshOrchestrationService.RetrieveMessageAsync(messageId, outputStream);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
