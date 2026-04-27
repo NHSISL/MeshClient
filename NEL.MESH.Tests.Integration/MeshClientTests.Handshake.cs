@@ -12,7 +12,7 @@ namespace NEL.MESH.Tests.Integration
     {
         [Fact]
         [Trait("Category", "Integration")]
-        public async Task ShouldDoHandshakeAsync()
+        public async Task ShouldPerformHandshakeAsync()
         {
             // given
             bool expectedResult = true;

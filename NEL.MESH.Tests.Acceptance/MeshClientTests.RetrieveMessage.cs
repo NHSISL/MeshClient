@@ -17,7 +17,7 @@ namespace NEL.MESH.Tests.Acceptance
     {
         [Fact]
         [Trait("Category", "Acceptance")]
-        public async Task ShouldGetStringMessageAsync()
+        public async Task ShouldRetrieveStringMessageAsync()
         {
             // given
             string randomMessageId = GetRandomString();
@@ -83,7 +83,7 @@ namespace NEL.MESH.Tests.Acceptance
 
         [Fact]
         [Trait("Category", "Acceptance")]
-        public async Task ShouldGetFileMessageAsync()
+        public async Task ShouldRetrieveFileMessageAsync()
         {
             // given
             string randomMessageId = GetRandomString();

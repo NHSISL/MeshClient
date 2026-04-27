@@ -17,7 +17,7 @@ namespace NEL.MESH.Tests.Acceptance
     {
         [Fact]
         [Trait("Category", "Acceptance")]
-        public async Task ShouldGetMessagesAsync()
+        public async Task ShouldRetrieveMessagesAsync()
         {
             // given
             string path = $"/messageexchange/{this.meshConfigurations.MailboxId}/inbox";
