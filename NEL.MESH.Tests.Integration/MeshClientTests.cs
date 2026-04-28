@@ -33,9 +33,16 @@ namespace NEL.MESH.Tests.Integration
             var mexOSVersion = configuration["MeshConfiguration:MexOSVersion"] ?? "NULL";
             var password = configuration["MeshConfiguration:Password"] ?? "NULL";
             var sharedKey = configuration["MeshConfiguration:SharedKey"] ?? "NULL";
-            var maxChunkSizeInMegabytes = int.Parse(
-                configuration["MeshConfiguration:MaxChunkSizeInMegabytes"] ?? "20");
+            var maxChunkSizeInMegabytesValue =
+                configuration["MeshConfiguration:MaxChunkSizeInMegabytes"];
+            var maxChunkSizeInMegabytes = 20;
 
+            if (!string.IsNullOrWhiteSpace(maxChunkSizeInMegabytesValue)
+                && !int.TryParse(maxChunkSizeInMegabytesValue, out maxChunkSizeInMegabytes))
+            {
+                throw new InvalidOperationException(
+                    "Configuration value 'MeshConfiguration:MaxChunkSizeInMegabytes' must be a valid integer.");
+            }
             var clientSigningCertificate = configuration["MeshConfiguration:ClientSigningCertificate"];
 
             var clientSigningCertificatePassword =
