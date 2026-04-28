@@ -1,0 +1,28 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Acceptance" />
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="Test" />
+  </Configurations>
+  <Folder Name="/Client/">
+    <Project Path="NEL.MESH.Infrastructure/NEL.MESH.Infrastructure.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+    <Project Path="NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj" />
+    <Project Path="NEL.MESH.Tests.Integration/NEL.MESH.Tests.Integration.csproj" />
+    <Project Path="NEL.MESH.Tests.Unit/NEL.Mesh.Tests.Unit.csproj" />
+    <Project Path="NEL.MESH/NEL.MESH.csproj">
+      <BuildType Solution="Acceptance|*" Project="Release" />
+      <BuildType Solution="Test|*" Project="Release" />
+    </Project>
+  </Folder>
+  <Folder Name="/UI/">
+    <Project Path="NEL.MESH.UI/NEL.MESH.UI.csproj">
+      <BuildType Solution="Acceptance|*" Project="Debug" />
+      <BuildType Solution="Test|*" Project="Debug" />
+    </Project>
+  </Folder>
+  <Project Path="NEL.MESH.Tests.Integration.Witness/NEL.MESH.Tests.Integration.Witness.csproj" />
+</Solution>
