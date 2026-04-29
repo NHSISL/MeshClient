@@ -28,6 +28,14 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             }
         }
 
+        private static void ValidateSendMessageStreamArgs(Message message, Stream content)
+        {
+            Validate<InvalidMeshOrchestrationArgsException>(
+                message: "Invalid mesh orchestration argument validation errors occurred, " +
+                "please correct the errors and try again.",
+                (Rule: IsInvalidInputStream(content), Parameter: nameof(content)));
+        }
+
         private static void ValidateChunksOnSendMessage(List<Message> chunkedMessages)
         {
             Validate<InvalidMeshOrchestrationArgsException>(
@@ -59,10 +67,16 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             Message = "Text is required"
         };
 
+        private static dynamic IsInvalidInputStream(Stream stream) => new
+        {
+            Condition = stream is null || !stream.CanRead || !stream.CanSeek,
+            Message = "Stream is required, must be readable and seekable"
+        };
+
         private static dynamic IsInvalidOutputStream(Stream stream) => new
         {
-            Condition = stream is null || stream.Length != 0,
-            Message = "Stream is required and must be empty"
+            Condition = stream is null || !stream.CanSeek || stream.Length != 0,
+            Message = "Stream is required, must be seekable and must be empty"
         };
 
         private static dynamic IsInvalid(List<Message> chunkedMessages) => new

@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -13,15 +12,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
     internal interface IMeshOrchestrationService
     {
         ValueTask<bool> HandshakeAsync();
-        ValueTask<Message> SendMessageAsync(Message message);
+        ValueTask<Message> SendMessageAsync(Message message, Stream content);
         ValueTask<Message> TrackMessageAsync(string messageId);
         ValueTask<List<string>> RetrieveMessagesAsync();
-
-        [Obsolete("This method is obsolete. Use RetrieveMessageAsync(string messageId, Stream outputStream) " +
-            "instead to avoid memory issues with large files.")]
-        ValueTask<Message> RetrieveMessageAsync(string messageId);
-
-        ValueTask<Message> RetrieveMessageAsync(string messageId, Stream outputStream);
+        ValueTask<Message> RetrieveMessageAsync(string messageId, Stream content);
         ValueTask<bool> AcknowledgeMessageAsync(string messageId);
     }
 }

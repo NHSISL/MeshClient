@@ -60,7 +60,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> sendMessageTask =
-                this.meshService.SendMessageAsync(someMessage, authorizationToken);
+                this.meshService.SendMessageAsync(someMessage, fileContent: null, authorizationToken);
 
             MeshDependencyValidationException actualMeshDependencyValidationException =
                 await Assert.ThrowsAsync<MeshDependencyValidationException>(sendMessageTask.AsTask);
@@ -132,7 +132,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> sendMessageTask =
-                this.meshService.SendMessageAsync(someMessage, authorizationToken);
+                this.meshService.SendMessageAsync(someMessage, fileContent: null, authorizationToken);
 
             MeshDependencyException actualMeshDependencyException =
                 await Assert.ThrowsAsync<MeshDependencyException>(sendMessageTask.AsTask);
@@ -203,7 +203,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> sendMessageTask =
-                this.meshService.SendMessageAsync(someMessage, authorizationToken);
+                this.meshService.SendMessageAsync(someMessage, fileContent: null, authorizationToken);
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>(sendMessageTask.AsTask);

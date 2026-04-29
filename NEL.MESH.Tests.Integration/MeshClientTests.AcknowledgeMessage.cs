@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -29,11 +30,13 @@ namespace NEL.MESH.Tests.Integration
             string contentType = "application/octet-stream";
             string contentEncoding = "";
 
+            using MemoryStream sendStream = new MemoryStream(fileContent);
+
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    sendStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,

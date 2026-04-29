@@ -141,7 +141,9 @@ namespace NEL.MESH.Brokers.Mesh
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("authorization", authorizationToken);
-            var response = await this.httpClient.SendAsync(request);
+
+            var response =
+                await this.httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
             return response;
         }
@@ -154,7 +156,9 @@ namespace NEL.MESH.Brokers.Mesh
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}/{chunkNumber}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("authorization", authorizationToken);
-            var response = await this.httpClient.SendAsync(request);
+
+            var response =
+                await this.httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
             return response;
         }

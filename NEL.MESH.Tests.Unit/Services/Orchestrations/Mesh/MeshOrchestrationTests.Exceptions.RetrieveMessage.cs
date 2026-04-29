@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -33,7 +34,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     .ThrowsAsync(dependencyValidationException);
 
             // when
-            ValueTask<Message> sendMessageTask = this.meshOrchestrationService.RetrieveMessageAsync(someMessageId);
+            ValueTask<Message> sendMessageTask = this.meshOrchestrationService
+                .RetrieveMessageAsync(someMessageId, content: new MemoryStream());
 
             MeshOrchestrationDependencyValidationException actualMeshOrchestrationDependencyValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationDependencyValidationException>(sendMessageTask.AsTask);
@@ -68,7 +70,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     .ThrowsAsync(dependencyException);
 
             // when
-            ValueTask<Message> sendMessageTask = this.meshOrchestrationService.RetrieveMessageAsync(someMessageId);
+            ValueTask<Message> sendMessageTask = this.meshOrchestrationService
+                .RetrieveMessageAsync(someMessageId, content: new MemoryStream());
 
             MeshOrchestrationDependencyException actualMeshOrchestrationDependencyException =
                 await Assert.ThrowsAsync<MeshOrchestrationDependencyException>(sendMessageTask.AsTask);
@@ -107,7 +110,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     .ThrowsAsync(serviceException);
 
             // when
-            ValueTask<Message> sendMessageTask = this.meshOrchestrationService.RetrieveMessageAsync(someMessageId);
+            ValueTask<Message> sendMessageTask = this.meshOrchestrationService
+                .RetrieveMessageAsync(someMessageId, content: new MemoryStream());
 
             MeshOrchestrationServiceException actualMeshOrchestrationServiceException =
                 await Assert.ThrowsAsync<MeshOrchestrationServiceException>(sendMessageTask.AsTask);

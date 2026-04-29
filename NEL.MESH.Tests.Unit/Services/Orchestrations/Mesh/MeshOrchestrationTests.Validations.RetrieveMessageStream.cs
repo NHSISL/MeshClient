@@ -39,7 +39,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: invalidMessageId, outputStream: outputStream);
+                .RetrieveMessageAsync(messageId: invalidMessageId, content: outputStream);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
@@ -70,7 +70,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             invalidMeshOrchestrationArgsException.AddData(
                 key: "output",
-                values: "Stream is required and must be empty");
+                values: "Stream is required, must be seekable and must be empty");
 
             var expectedMeshOrchestrationValidationException = new MeshOrchestrationValidationException(
                 message: "Mesh orchestration validation errors occurred, please try again.",
@@ -78,7 +78,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: randomMessageId, outputStream: nullOutputStream);
+                .RetrieveMessageAsync(messageId: randomMessageId, content: nullOutputStream);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
@@ -109,7 +109,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             invalidMeshOrchestrationArgsException.AddData(
                 key: "output",
-                values: "Stream is required and must be empty");
+                values: "Stream is required, must be seekable and must be empty");
 
             var expectedMeshOrchestrationValidationException = new MeshOrchestrationValidationException(
                 message: "Mesh orchestration validation errors occurred, please try again.",
@@ -117,7 +117,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: randomMessageId, outputStream: nonEmptyOutputStream);
+                .RetrieveMessageAsync(messageId: randomMessageId, content: nonEmptyOutputStream);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
@@ -162,7 +162,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: randomMessageId, outputStream: outputStream);
+                .RetrieveMessageAsync(messageId: randomMessageId, content: outputStream);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);

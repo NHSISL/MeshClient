@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,28 +42,32 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 return await this.meshService.HandshakeAsync(authorizationToken: token);
             });
 
-        public ValueTask<Message> SendMessageAsync(Message message) =>
+        public ValueTask<Message> SendMessageAsync(Message message, Stream content) =>
             TryCatch(async () =>
             {
                 ValidateMessageIsNotNull(message);
+                ValidateSendMessageStreamArgs(message, content);
                 SetHeader(message, "mex-from", this.meshConfigurationBroker.MexFrom);
-                List<Message> chunkedMessages = this.chunkService.SplitMessageIntoChunks(message);
-                ValidateChunksOnSendMessage(chunkedMessages);
+
+                IEnumerable<(Message message, byte[] content)> chunkedMessages =
+                    this.chunkService.SplitStreamIntoChunks(message, content);
+
+                List<(Message message, byte[] content)> chunkedMessageList = chunkedMessages.ToList();
+                ValidateChunksOnSendMessage(chunkedMessageList.Select(c => c.message).ToList());
                 Message outputMessage = null;
 
-                foreach (Message chunkedMessage in chunkedMessages)
+                foreach ((Message chunkedMessage, byte[] chunkContent) in chunkedMessageList)
                 {
                     string token = await this.tokenService.GenerateTokenAsync();
                     ValidateToken(token);
                     chunkedMessage.MessageId = outputMessage?.MessageId;
 
                     Message sentMessage = await this.meshService
-                        .SendMessageAsync(chunkedMessage, authorizationToken: token);
+                        .SendMessageAsync(chunkedMessage, chunkContent, authorizationToken: token);
 
-                    if (chunkedMessage == chunkedMessages.First())
+                    if (outputMessage is null)
                     {
                         outputMessage = sentMessage;
-                        outputMessage.FileContent = message.FileContent;
                     }
                 }
 
@@ -82,17 +85,19 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 return outputMessage;
             });
 
-        [Obsolete("This method is obsolete. Use RetrieveMessageAsync(string messageId, Stream outputStream) " +
-            "instead to avoid memory issues with large files.")]
-        public ValueTask<Message> RetrieveMessageAsync(string messageId) =>
+        public ValueTask<Message> RetrieveMessageAsync(string messageId, Stream content) =>
             TryCatch(async () =>
             {
-                ValidateTrackMessageArgs(messageId);
+                ValidateRetrieveMessageArgs(messageId, content);
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
 
                 Message outputMessage =
-                    await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token, 1);
+                    await this.meshService.RetrieveMessageAsync(
+                        messageId,
+                        authorizationToken: token,
+                        outputStream: content,
+                        chunkPart: 1);
 
                 var chunks = outputMessage.Headers
                     .FirstOrDefault(h => h.Key == "mex-chunk-range")
@@ -109,56 +114,16 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                     {
                         token = await this.tokenService.GenerateTokenAsync();
 
-                        Message responseMessage =
-                            await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token, chunkId);
-
-                        byte[] fileContent = responseMessage.FileContent;
-                        outputMessage.FileContent = outputMessage.FileContent.Concat(fileContent).ToArray();
+                        await this.meshService.RetrieveMessageAsync(
+                            messageId,
+                            authorizationToken: token,
+                            outputStream: content,
+                            chunkPart: chunkId);
                     }
                 }
 
                 return outputMessage;
             });
-
-        public ValueTask<Message> RetrieveMessageAsync(string messageId, Stream outputStream) =>
-            TryCatch(async () =>
-            {
-                ValidateRetrieveMessageArgs(messageId, outputStream);
-                string token = await this.tokenService.GenerateTokenAsync();
-                ValidateToken(token);
-
-                Message outputMessage =
-                    await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token, 1);
-
-                await outputStream.WriteAsync(outputMessage.FileContent);
-                outputMessage.FileContent = null;
-
-                var chunks = outputMessage.Headers
-                    .FirstOrDefault(h => h.Key == "mex-chunk-range")
-                    .Value?
-                    .FirstOrDefault();
-
-                if (chunks != null)
-                {
-                    string chunkRange = chunks.Replace("{", string.Empty).Replace("}", string.Empty);
-                    string[] parts = chunkRange.Split(":");
-                    int totalChunks = int.Parse(parts[1]);
-
-                    for (int chunkId = 2; chunkId <= totalChunks; chunkId++)
-                    {
-                        token = await this.tokenService.GenerateTokenAsync();
-
-                        Message responseMessage =
-                            await this.meshService
-                                .RetrieveMessageAsync(messageId, authorizationToken: token, chunkId);
-
-                        await outputStream.WriteAsync(responseMessage.FileContent);
-                    }
-                }
-
-                return outputMessage;
-            });
-
 
         public ValueTask<List<string>> RetrieveMessagesAsync() =>
             TryCatch(async () =>

@@ -114,8 +114,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 (Rule: IsInvalid(message.Headers, "mex-subject", 500), Parameter: "mex-subject"),
                 (Rule: IsInvalid(message.Headers, "mex-localid", 300), Parameter: "mex-localid"),
                 (Rule: IsInvalid(message.Headers, "mex-filename", 300), Parameter: "mex-filename"),
-                (Rule: IsInvalid(message.Headers, "mex-content-checksum", 100), Parameter: "mex-content-checksum"),
-                (Rule: IsInvalid(message.FileContent), Parameter: nameof(Message.FileContent)));
+                (Rule: IsInvalid(message.Headers, "mex-content-checksum", 100), Parameter: "mex-content-checksum"));
         }
 
         private static void ValidateMexChunkRangeOnMultiPartFile(Message message)

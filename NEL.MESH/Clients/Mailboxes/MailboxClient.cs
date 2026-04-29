@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -52,21 +51,20 @@ namespace NEL.MESH.Clients.Mailboxes
         public async ValueTask<Message> SendMessageAsync(
             string mexTo,
             string mexWorkflowId,
-            string content,
+            Stream content,
             string mexSubject = "",
             string mexLocalId = "",
             string mexFileName = "",
             string mexContentChecksum = "",
-            string contentType = "",
+            string contentType = "application/octet-stream",
             string contentEncoding = "",
             string accept = "application/json")
         {
             try
             {
-                Message message = ComposeMessage.CreateStringMessage(
+                Message message = ComposeMessage.CreateMessage(
                     mexTo,
                     mexWorkflowId,
-                    content,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -75,59 +73,7 @@ namespace NEL.MESH.Clients.Mailboxes
                     contentEncoding,
                     accept);
 
-                return await meshOrchestrationService.SendMessageAsync(message);
-            }
-            catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
-            {
-                throw new MeshClientValidationException(
-                    meshOrchestrationValidationException.InnerException as Xeption,
-                    meshOrchestrationValidationException.InnerException.Data);
-            }
-            catch (MeshOrchestrationDependencyValidationException meshOrchestrationDependencyValidationException)
-            {
-                throw new MeshClientValidationException(
-                    meshOrchestrationDependencyValidationException.InnerException as Xeption,
-                    meshOrchestrationDependencyValidationException.InnerException.Data);
-            }
-            catch (MeshOrchestrationDependencyException meshOrchestrationDependencyException)
-            {
-                throw new MeshClientDependencyException(
-                    meshOrchestrationDependencyException.InnerException as Xeption);
-            }
-            catch (MeshOrchestrationServiceException meshOrchestrationServiceException)
-            {
-                throw new MeshClientServiceException(
-                    meshOrchestrationServiceException.InnerException as Xeption);
-            }
-        }
-
-        public async ValueTask<Message> SendMessageAsync(
-            string mexTo,
-            string mexWorkflowId,
-            byte[] fileContent,
-            string mexSubject = "",
-            string mexLocalId = "",
-            string mexFileName = "",
-            string mexContentChecksum = "",
-            string contentType = "",
-            string contentEncoding = "",
-            string accept = "application/json")
-        {
-            try
-            {
-                Message message = ComposeMessage.CreateFileMessage(
-                    mexTo,
-                    mexWorkflowId,
-                    fileContent,
-                    mexSubject,
-                    mexLocalId,
-                    mexFileName,
-                    mexContentChecksum,
-                    contentType,
-                    contentEncoding,
-                    accept);
-
-                return await meshOrchestrationService.SendMessageAsync(message);
+                return await meshOrchestrationService.SendMessageAsync(message, content);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
@@ -212,39 +158,6 @@ namespace NEL.MESH.Clients.Mailboxes
                     meshOrchestrationServiceException.InnerException as Xeption);
             }
         }
-
-        [Obsolete("This method is obsolete. Use RetrieveMessageAsync(string messageId, Stream outputStream) " +
-            "instead to avoid memory issues with large files.")]
-        public async ValueTask<Message> RetrieveMessageAsync(string messageId)
-        {
-            try
-            {
-                return await meshOrchestrationService.RetrieveMessageAsync(messageId);
-            }
-            catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
-            {
-                throw new MeshClientValidationException(
-                    meshOrchestrationValidationException.InnerException as Xeption,
-                    meshOrchestrationValidationException.InnerException.Data);
-            }
-            catch (MeshOrchestrationDependencyValidationException meshOrchestrationDependencyValidationException)
-            {
-                throw new MeshClientValidationException(
-                    meshOrchestrationDependencyValidationException.InnerException as Xeption,
-                    meshOrchestrationDependencyValidationException.InnerException.Data);
-            }
-            catch (MeshOrchestrationDependencyException meshOrchestrationDependencyException)
-            {
-                throw new MeshClientDependencyException(
-                    meshOrchestrationDependencyException.InnerException as Xeption);
-            }
-            catch (MeshOrchestrationServiceException meshOrchestrationServiceException)
-            {
-                throw new MeshClientServiceException(
-                    meshOrchestrationServiceException.InnerException as Xeption);
-            }
-        }
-
 
         public async ValueTask<Message> RetrieveMessageAsync(string messageId, Stream outputStream)
         {

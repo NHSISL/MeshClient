@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -21,36 +22,46 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             string randomToken = GetRandomString();
             string randomMessageId = GetRandomString();
             string inputMessageId = randomMessageId;
-            Message randomMessage = CreateRandomSendMessage();
-            randomMessage.FileContent = new byte[] { 1, 2, 3 };
-            Message serviceMessage = randomMessage.DeepClone();
-            Message expectedMessage = randomMessage.DeepClone();
-            expectedMessage.FileContent = null;
+            byte[] expectedBytes = new byte[] { 1, 2, 3 };
+
+            Message serviceMessage = CreateRandomSendMessage();
+            Message expectedMessage = serviceMessage.DeepClone();
             using MemoryStream outputStream = new MemoryStream();
 
             this.tokenServiceMock.Setup(service =>
                 service.GenerateTokenAsync())
                     .ReturnsAsync(randomToken);
 
-            this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageAsync(inputMessageId, randomToken, 1))
-                    .ReturnsAsync(serviceMessage);
+            this.meshServiceMock
+                .Setup(service =>
+                    service.RetrieveMessageAsync(
+                        inputMessageId,
+                        randomToken,
+                        It.IsAny<Stream>(),
+                        1))
+                .Callback<string, string, Stream, int>((_, _, stream, _) =>
+                    stream.Write(expectedBytes, 0, expectedBytes.Length))
+                .ReturnsAsync(serviceMessage);
 
             // when
             Message actualMessage = await this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: inputMessageId, outputStream: outputStream);
+                .RetrieveMessageAsync(messageId: inputMessageId, content: outputStream);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
-            outputStream.ToArray().Should().BeEquivalentTo(randomMessage.FileContent);
+            outputStream.ToArray().Should().BeEquivalentTo(expectedBytes);
 
             this.tokenServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),
                     Times.Once);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageAsync(inputMessageId, randomToken, 1),
-                    Times.Once);
+                service.RetrieveMessageAsync(
+                    inputMessageId,
+                    randomToken,
+                    It.IsAny<Stream>(),
+                    1),
+                        Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();
@@ -69,11 +80,9 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             byte[] expectedBytes = new byte[] { 1, 2, 3, 4, 5, 6 };
 
             Message chunk1Message = CreateRandomSendMessage();
-            chunk1Message.FileContent = chunk1Bytes;
-            chunk1Message.Headers["mex-chunk-range"] = new System.Collections.Generic.List<string> { "{1:2}" };
+            chunk1Message.Headers["mex-chunk-range"] = new List<string> { "{1:2}" };
 
             Message chunk2Message = CreateRandomSendMessage();
-            chunk2Message.FileContent = chunk2Bytes;
 
             using MemoryStream outputStream = new MemoryStream();
 
@@ -81,20 +90,34 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 service.GenerateTokenAsync())
                     .ReturnsAsync(randomToken);
 
-            this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageAsync(inputMessageId, randomToken, 1))
-                    .ReturnsAsync(chunk1Message);
+            this.meshServiceMock
+                .Setup(service =>
+                    service.RetrieveMessageAsync(
+                        inputMessageId,
+                        randomToken,
+                        It.IsAny<Stream>(),
+                        1))
+                .Callback<string, string, Stream, int>((_, _, stream, _) =>
+                    stream.Write(chunk1Bytes, 0, chunk1Bytes.Length))
+                .ReturnsAsync(chunk1Message);
 
-            this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageAsync(inputMessageId, randomToken, 2))
-                    .ReturnsAsync(chunk2Message);
+            this.meshServiceMock
+                .Setup(service =>
+                    service.RetrieveMessageAsync(
+                        inputMessageId,
+                        randomToken,
+                        It.IsAny<Stream>(),
+                        2))
+                .Callback<string, string, Stream, int>((_, _, stream, _) =>
+                    stream.Write(chunk2Bytes, 0, chunk2Bytes.Length))
+                .ReturnsAsync(chunk2Message);
 
             // when
             Message actualMessage = await this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: inputMessageId, outputStream: outputStream);
+                .RetrieveMessageAsync(messageId: inputMessageId, content: outputStream);
 
             // then
-            actualMessage.FileContent.Should().BeNull();
+            actualMessage.Should().BeEquivalentTo(chunk1Message);
             outputStream.ToArray().Should().BeEquivalentTo(expectedBytes);
 
             this.tokenServiceMock.Verify(service =>
@@ -102,12 +125,20 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     Times.Exactly(2));
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageAsync(inputMessageId, randomToken, 1),
-                    Times.Once);
+                service.RetrieveMessageAsync(
+                    inputMessageId,
+                    randomToken,
+                    It.IsAny<Stream>(),
+                    1),
+                        Times.Once);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageAsync(inputMessageId, randomToken, 2),
-                    Times.Once);
+                service.RetrieveMessageAsync(
+                    inputMessageId,
+                    randomToken,
+                    It.IsAny<Stream>(),
+                    2),
+                        Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();

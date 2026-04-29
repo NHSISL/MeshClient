@@ -3,9 +3,9 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
-using Force.DeepCloner;
 using Moq;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
@@ -31,44 +31,28 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
             int expectedByteCount = randomChunkSizeInBytes;
             int expectedChunkCount = randomChunkCount;
 
-            Message randomMessage =
-                CreateRandomSendMessage(byteArrayContent: randomByteContent);
-
+            Message randomMessage = CreateRandomSendMessage(byteArrayContent: randomByteContent);
             Message inputMessage = randomMessage;
-            List<Message> outputMessages = new List<Message>();
-
-            for (int i = 0; i < chunkParts.Count; i++)
-            {
-                Message chunk = new Message
-                {
-                    Headers = inputMessage.Headers,
-                    FileContent = chunkParts[i]
-                };
-
-                SetMexChunkRange(chunk, item: i + 1, itemCount: chunkParts.Count);
-                outputMessages.Add(chunk);
-            }
-
-            List<Message> expectedMessages = outputMessages.DeepClone();
+            using MemoryStream inputStream = new MemoryStream(randomByteContent);
 
             this.meshConfigurationBrokerMock.Setup(broker =>
                 broker.MaxChunkSizeInBytes)
                     .Returns(value: inputChunkSize);
 
             // when
-            List<Message> actualMessages = this.chunkService.SplitMessageIntoChunks(message: inputMessage);
+            List<(Message message, byte[] content)> actualChunks =
+                this.chunkService.SplitStreamIntoChunks(inputMessage, inputStream).ToList();
 
             // then
-            actualMessages.Count.Should().Be(expectedChunkCount);
+            actualChunks.Count.Should().Be(expectedChunkCount);
 
-            foreach (var message in actualMessages)
+            foreach (var (_, content) in actualChunks)
             {
-                int actualByteCount = message.FileContent.Length;
-                actualByteCount.Should().BeLessOrEqualTo(expectedByteCount);
+                content.Length.Should().BeLessOrEqualTo(expectedByteCount);
             }
 
-            byte[] combinedByteArrayContent = actualMessages.SelectMany(message => message.FileContent).ToArray();
-            combinedByteArrayContent.Should().BeEquivalentTo(inputMessage.FileContent);
+            byte[] combinedByteArrayContent = actualChunks.SelectMany(c => c.content).ToArray();
+            combinedByteArrayContent.Should().BeEquivalentTo(randomByteContent);
 
             this.meshConfigurationBrokerMock.Verify(broker =>
                 broker.MaxChunkSizeInBytes,

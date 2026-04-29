@@ -217,15 +217,13 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             List<HttpResponseMessage> messages = new List<HttpResponseMessage>();
-            List<byte[]> parts = GetByteContentParts(message.FileContent, chunks);
 
-            for (int i = 0; i < parts.Count; i++)
+            for (int i = 0; i < chunks; i++)
             {
                 Message chunkMessage = new Message
                 {
                     MessageId = message.MessageId,
                     Headers = message.Headers,
-                    FileContent = parts[i],
                 };
 
                 HttpResponseMessage httpResponseMessage =
@@ -258,7 +256,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage responseMessage = new HttpResponseMessage()
             {
                 StatusCode = statusCode,
-                Content = new ByteArrayContent(message.FileContent),
+                Content = new ByteArrayContent(new byte[0]),
             };
 
             foreach (var item in contentHeaders)
@@ -346,7 +344,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message message = new Message
             {
                 MessageId = messageId,
-                FileContent = responseMessageBody,
             };
 
             foreach (var item in headers)
@@ -369,7 +366,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message message = new Message
             {
                 MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                FileContent = inputMessage.FileContent,
                 Headers = headers
             };
 

@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -33,7 +34,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 return response.IsSuccessStatusCode;
             });
 
-        public ValueTask<Message> SendMessageAsync(Message message, string authorizationToken) =>
+        public ValueTask<Message> SendMessageAsync(Message message, byte[] fileContent, string authorizationToken) =>
             TryCatch(async () =>
             {
                 ValidateMeshMessageOnSendMessage(message, authorizationToken);
@@ -73,7 +74,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         contentType: GetKeyStringValue("content-type", message.Headers),
                         contentEncoding: GetKeyStringValue("content-encoding", message.Headers),
                         accept: GetKeyStringValue("accept", message.Headers),
-                        fileContents: message.FileContent);
+                        fileContents: fileContent);
                 }
                 else
                 {
@@ -93,7 +94,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         contentType: GetKeyStringValue("content-type", message.Headers),
                         contentEncoding: GetKeyStringValue("content-encoding", message.Headers),
                         accept: GetKeyStringValue("accept", message.Headers),
-                        fileContents: message.FileContent,
+                        fileContents: fileContent,
                         messageId: message.MessageId,
                         chunkNumber: chunkNumber.ToString());
                 }
@@ -106,7 +107,6 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 Message outputMessage = new Message
                 {
                     MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                    FileContent = message.FileContent,
                 };
 
                 GetHeaderValues(responseMessage, outputMessage);
@@ -177,12 +177,11 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 ValidateNullResponse(initialResponse);
                 ValidateReceivedResponse(initialResponse);
 
-                byte[] fileBody = initialResponse.Content.ReadAsByteArrayAsync().Result;
+                byte[] fileBody = await initialResponse.Content.ReadAsByteArrayAsync();
 
                 Message firstMessage = new Message
                 {
                     MessageId = messageId,
-                    FileContent = fileBody,
                 };
 
                 foreach (var header in initialResponse.Headers)
@@ -196,6 +195,54 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 }
 
                 return firstMessage;
+            });
+
+        public ValueTask<Message> RetrieveMessageAsync(
+            string messageId,
+            string authorizationToken,
+            Stream outputStream,
+            int chunkPart = 1) =>
+            TryCatch(async () =>
+            {
+                ValidateRetrieveMessageArguments(messageId, authorizationToken);
+                HttpResponseMessage response;
+
+                if (chunkPart == 1)
+                {
+                    response = await this.meshBroker.GetMessageAsync(messageId, authorizationToken);
+                }
+                else
+                {
+                    response = await this.meshBroker.GetMessageAsync(
+                        messageId: messageId,
+                        chunkNumber: chunkPart.ToString(),
+                        authorizationToken: authorizationToken);
+                }
+
+                ValidateNullResponse(response);
+                ValidateReceivedResponse(response);
+
+                using (response)
+                {
+                    await response.Content.CopyToAsync(outputStream);
+
+                    Message outputMessage = new Message
+                    {
+                        MessageId = messageId,
+                    };
+
+                    foreach (var header in response.Headers)
+                    {
+                        outputMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
+                    }
+
+                    foreach (var header in response.Content.Headers)
+                    {
+                        outputMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
+                    }
+
+                    return outputMessage;
+                }
             });
 
         public ValueTask<bool> AcknowledgeMessageAsync(string messageId, string authorizationToken) =>

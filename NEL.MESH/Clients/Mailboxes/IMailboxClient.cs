@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -25,39 +24,11 @@ namespace NEL.MESH.Clients.Mailboxes
         ValueTask<bool> HandshakeAsync();
 
         /// <summary>
-        /// Sends a text-based message to the specified recipient.
-        /// </summary>
-        /// <param name="mexTo">The recipient of the message.</param>
-        /// <param name="mexWorkflowId">The workflow ID associated with the message.</param>
-        /// <param name="content">The content of the message.</param>
-        /// <param name="mexSubject">The subject of the message (optional).</param>
-        /// <param name="mexLocalId">A local identifier for the message (optional).</param>
-        /// <param name="mexFileName">The file name associated with the message (optional).</param>
-        /// <param name="mexContentChecksum">The checksum of the message content (optional).</param>
-        /// <param name="contentType">The MIME type of the message content (default: empty string).</param>
-        /// <param name="contentEncoding">The encoding of the message content (optional).</param>
-        /// <param name="accept">The expected response format (default: "application/json").</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation. The task result contains the sent message.
-        /// </returns>
-        ValueTask<Message> SendMessageAsync(
-            string mexTo,
-            string mexWorkflowId,
-            string content,
-            string mexSubject = "",
-            string mexLocalId = "",
-            string mexFileName = "",
-            string mexContentChecksum = "",
-            string contentType = "",
-            string contentEncoding = "",
-            string accept = "application/json");
-
-        /// <summary>
         /// Sends a file-based message to the specified recipient.
         /// </summary>
         /// <param name="mexTo">The recipient of the message.</param>
         /// <param name="mexWorkflowId">The workflow ID associated with the message.</param>
-        /// <param name="fileContent">The file content to send.</param>
+        /// <param name="content">The content stream to send.</param>
         /// <param name="mexSubject">The subject of the message (optional).</param>
         /// <param name="mexLocalId">A local identifier for the message (optional).</param>
         /// <param name="mexFileName">The file name associated with the message (optional).</param>
@@ -71,7 +42,7 @@ namespace NEL.MESH.Clients.Mailboxes
         ValueTask<Message> SendMessageAsync(
             string mexTo,
             string mexWorkflowId,
-            byte[] fileContent,
+            Stream content,
             string mexSubject = "",
             string mexLocalId = "",
             string mexFileName = "",
@@ -93,17 +64,6 @@ namespace NEL.MESH.Clients.Mailboxes
         /// Retrieves a list of all available message identifiers.
         /// </summary>
         ValueTask<List<string>> RetrieveMessagesAsync();
-
-        /// <summary>
-        /// Retrieves the details of a specific message.
-        /// </summary>
-        /// <param name="messageId">The identifier of the message to retrieve.</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation. The task result contains the retrieved message.
-        /// </returns>
-        [Obsolete("This method is obsolete. Use RetrieveMessageAsync(string messageId, Stream outputStream) " +
-            "instead to avoid memory issues with large files.")]
-        ValueTask<Message> RetrieveMessageAsync(string messageId);
 
         /// <summary>
         /// Retrieves the details of a specific message, with the message content written to the provided output stream.
