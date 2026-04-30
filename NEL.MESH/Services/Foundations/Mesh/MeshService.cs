@@ -32,8 +32,11 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 ValidateOnHandshake(authorizationToken);
-                HttpResponseMessage response = await this.meshBroker.HandshakeAsync(authorizationToken, cancellationToken);
-                await ValidateResponseAsync(response);
+
+                using HttpResponseMessage response =
+                    await this.meshBroker.HandshakeAsync(authorizationToken, cancellationToken);
+
+                await ValidateResponseAsync(response, cancellationToken);
 
                 return response.IsSuccessStatusCode;
             });
@@ -110,19 +113,23 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         cancellationToken);
                 }
 
-                await ValidateResponseAsync(responseMessage);
-
-                string responseMessageBody =
-                    await responseMessage.Content.ReadAsStringAsync(cancellationToken);
-
-                Message outputMessage = new Message
+                using (responseMessage)
                 {
-                    MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                };
+                    await ValidateResponseAsync(responseMessage, cancellationToken);
 
-                GetHeaderValues(responseMessage, outputMessage);
+                    string responseMessageBody =
+                        await responseMessage.Content.ReadAsStringAsync(cancellationToken);
 
-                return outputMessage;
+                    Message outputMessage = new Message
+                    {
+                        MessageId =
+                            (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
+                    };
+
+                    GetHeaderValues(responseMessage, outputMessage);
+
+                    return outputMessage;
+                }
             });
 
         public ValueTask<Message> TrackMessageAsync(
@@ -134,10 +141,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 cancellationToken.ThrowIfCancellationRequested();
                 ValidateTrackMessageArguments(messageId, authorizationToken);
 
-                HttpResponseMessage responseMessage =
+                using HttpResponseMessage responseMessage =
                     await this.meshBroker.TrackMessageAsync(messageId, authorizationToken, cancellationToken);
 
-                await ValidateResponseAsync(responseMessage);
+                await ValidateResponseAsync(responseMessage, cancellationToken);
                 string responseMessageBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
 
                 Message outputMessage = new Message
@@ -160,10 +167,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 cancellationToken.ThrowIfCancellationRequested();
                 ValidateRetrieveMessagesArguments(authorizationToken);
 
-                HttpResponseMessage responseMessage =
+                using HttpResponseMessage responseMessage =
                     await this.meshBroker.GetMessagesAsync(authorizationToken, cancellationToken);
 
-                await ValidateResponseAsync(responseMessage);
+                await ValidateResponseAsync(responseMessage, cancellationToken);
 
                 string responseMessageBody =
                     await responseMessage.Content.ReadAsStringAsync(cancellationToken);
@@ -200,7 +207,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 }
 
                 ValidateNullResponse(initialResponse);
-                await ValidateReceivedResponseAsync(initialResponse);
+                await ValidateResponseAsync(initialResponse, cancellationToken);
 
                 Message firstMessage = new Message
                 {
@@ -249,7 +256,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 }
 
                 ValidateNullResponse(response);
-                await ValidateReceivedResponseAsync(response);
+                await ValidateResponseAsync(response, cancellationToken);
 
                 using (response)
                 {
@@ -283,10 +290,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 cancellationToken.ThrowIfCancellationRequested();
                 ValidateAcknowledgeMessageArguments(messageId, authorizationToken);
 
-                HttpResponseMessage response =
+                using HttpResponseMessage response =
                     await this.meshBroker.AcknowledgeMessageAsync(messageId, authorizationToken, cancellationToken);
 
-                await ValidateResponseAsync(response);
+                await ValidateResponseAsync(response, cancellationToken);
 
                 return response.IsSuccessStatusCode;
             });

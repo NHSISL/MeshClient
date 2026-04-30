@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ using NEL.MESH.Models.Configurations;
 
 namespace NEL.MESH.Brokers.Mesh
 {
-    internal interface IMeshBroker
+    internal interface IMeshBroker : IDisposable
     {
         MeshConfiguration MeshConfiguration { get; }
 
