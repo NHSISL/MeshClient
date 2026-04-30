@@ -217,8 +217,8 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
         private static dynamic IsInvalidOutputStream(Stream stream) => new
         {
-            Condition = stream is null || !stream.CanWrite || !stream.CanSeek || stream.Length != 0,
-            Message = "Stream is required, must be writable, seekable and must be empty"
+            Condition = stream is null || !stream.CanWrite || !stream.CanSeek,
+            Message = "Stream is required, must be writable and seekable"
         };
 
         private static dynamic IsArgInvalid(string text) => new
