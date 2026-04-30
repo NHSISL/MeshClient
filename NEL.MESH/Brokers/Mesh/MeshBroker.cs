@@ -320,7 +320,6 @@ namespace NEL.MESH.Brokers.Mesh
                         {
                             return true;
                         }
-                        ;
                     }
 
                     throw new Exception(chain.ChainStatus.FirstOrDefault().StatusInformation);
