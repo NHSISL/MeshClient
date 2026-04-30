@@ -31,5 +31,15 @@ namespace NEL.MESH.Services.Foundations.Chunks
                 throw new InvalidStreamChunkException(message: "Stream must be seekable to determine chunk count.");
             }
         }
+
+        private static void ValidateMaxChunkSize(int maxChunkSizeInBytes)
+        {
+            if (maxChunkSizeInBytes <= 0)
+            {
+                throw new InvalidStreamChunkException(
+                    message: "Max chunk size must be greater than zero. " +
+                        "Please check the MaxChunkSizeInMegabytes configuration.");
+            }
+        }
     }
 }

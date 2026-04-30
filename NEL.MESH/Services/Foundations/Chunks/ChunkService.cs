@@ -27,7 +27,9 @@ namespace NEL.MESH.Services.Foundations.Chunks
             {
                 ValidateMessageIsNotNull(messageTemplate);
                 ValidateStream(content);
+                content.Seek(0, SeekOrigin.Begin);
                 int maxPartSize = this.meshConfigurationBroker.MaxChunkSizeInBytes;
+                ValidateMaxChunkSize(maxPartSize);
                 long totalChunksLong = (long)Math.Ceiling((double)content.Length / maxPartSize);
                 int totalChunks = (int)Math.Min(totalChunksLong, int.MaxValue);
                 totalChunks = Math.Max(totalChunks, 1);

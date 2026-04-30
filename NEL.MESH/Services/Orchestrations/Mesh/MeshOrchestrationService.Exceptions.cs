@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Tokens.Exceptions;
@@ -98,6 +99,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 throw CreateValidationException(invalidMeshOrchestrationArgsException);
             }
+            catch (ChunkValidationException chunkValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(chunkValidationException);
+            }
             catch (TokenValidationException tokenValidationException)
             {
                 throw CreateAndLogDependencyValidationException(tokenValidationException);
@@ -113,6 +118,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+            }
+            catch (ChunkServiceException chunkServiceException)
+            {
+                throw CreateDependencyException(chunkServiceException);
             }
             catch (TokenDependencyException tokenDependencyException)
             {
