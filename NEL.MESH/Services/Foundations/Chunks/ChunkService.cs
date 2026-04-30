@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using Force.DeepCloner;
 using NEL.MESH.Brokers.Mesh;
+using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
 
 namespace NEL.MESH.Services.Foundations.Chunks
@@ -52,16 +53,24 @@ namespace NEL.MESH.Services.Foundations.Chunks
                 {
                     int bytesRead = 0;
 
-                    while (bytesRead < maxPartSize)
+                    try
                     {
-                        int read = content.Read(buffer, bytesRead, maxPartSize - bytesRead);
-
-                        if (read == 0)
+                        while (bytesRead < maxPartSize)
                         {
-                            break;
-                        }
+                            int read = content.Read(buffer, bytesRead, maxPartSize - bytesRead);
 
-                        bytesRead += read;
+                            if (read == 0)
+                            {
+                                break;
+                            }
+
+                            bytesRead += read;
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new InvalidStreamChunkException(
+                            message: $"Failed to read chunk {chunkIndex + 1} from stream: {exception.Message}");
                     }
 
                     byte[] chunkData = new byte[bytesRead];
