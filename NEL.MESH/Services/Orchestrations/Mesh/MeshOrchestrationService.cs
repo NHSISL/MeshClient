@@ -128,7 +128,11 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 {
                     string chunkRange = chunks.Replace("{", string.Empty).Replace("}", string.Empty);
                     string[] parts = chunkRange.Split(":");
-                    int totalChunks = int.Parse(parts[1]);
+
+                    if (parts.Length < 2 || !int.TryParse(parts[1], out int totalChunks))
+                    {
+                        totalChunks = 1;
+                    }
 
                     for (int chunkId = 2; chunkId <= totalChunks; chunkId++)
                     {

@@ -207,7 +207,6 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 }
 
                 ValidateNullResponse(initialResponse);
-                await ValidateResponseAsync(initialResponse, cancellationToken);
 
                 Message firstMessage = new Message
                 {
@@ -216,6 +215,8 @@ namespace NEL.MESH.Services.Foundations.Mesh
 
                 using (initialResponse)
                 {
+                    await ValidateResponseAsync(initialResponse, cancellationToken);
+
                     foreach (var header in initialResponse.Headers)
                     {
                         firstMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
@@ -256,10 +257,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 }
 
                 ValidateNullResponse(response);
-                await ValidateResponseAsync(response, cancellationToken);
 
                 using (response)
                 {
+                    await ValidateResponseAsync(response, cancellationToken);
                     await response.Content.CopyToAsync(outputStream, cancellationToken);
 
                     Message outputMessage = new Message

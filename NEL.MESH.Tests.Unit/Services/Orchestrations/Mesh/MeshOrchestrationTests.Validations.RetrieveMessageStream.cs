@@ -257,7 +257,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                         randomMessageId,
                         validToken,
                         It.IsAny<System.IO.Stream>(),
-                        1))
+                        1,
+                        It.IsAny<System.Threading.CancellationToken>()))
                 .ReturnsAsync(chunk1Message);
 
             // when
@@ -280,7 +281,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     randomMessageId,
                     validToken,
                     It.IsAny<System.IO.Stream>(),
-                    1),
+                    1,
+                    It.IsAny<System.Threading.CancellationToken>()),
                         Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();

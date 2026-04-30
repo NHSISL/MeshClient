@@ -24,6 +24,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             string randomMessageId = GetRandomString();
             string inputMessageId = randomMessageId;
             byte[] expectedBytes = new byte[] { 1, 2, 3 };
+            using var cancellationTokenSource = new CancellationTokenSource();
+            CancellationToken inputCancellationToken = cancellationTokenSource.Token;
 
             Message serviceMessage = CreateRandomSendMessage();
             Message expectedMessage = serviceMessage.DeepClone();
@@ -39,14 +41,15 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                         inputMessageId,
                         randomToken,
                         It.IsAny<Stream>(),
-                        1))
+                        1,
+                        inputCancellationToken))
                 .Callback<string, string, Stream, int, CancellationToken>((_, _, stream, _, _) =>
                     stream.Write(expectedBytes, 0, expectedBytes.Length))
                 .ReturnsAsync(serviceMessage);
 
             // when
             Message actualMessage = await this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: inputMessageId, content: outputStream);
+                .RetrieveMessageAsync(messageId: inputMessageId, content: outputStream, inputCancellationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
@@ -61,7 +64,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     inputMessageId,
                     randomToken,
                     It.IsAny<Stream>(),
-                    1),
+                    1,
+                    inputCancellationToken),
                         Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();
@@ -79,6 +83,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             byte[] chunk1Bytes = new byte[] { 1, 2, 3 };
             byte[] chunk2Bytes = new byte[] { 4, 5, 6 };
             byte[] expectedBytes = new byte[] { 1, 2, 3, 4, 5, 6 };
+            using var cancellationTokenSource = new CancellationTokenSource();
+            CancellationToken inputCancellationToken = cancellationTokenSource.Token;
 
             Message chunk1Message = CreateRandomSendMessage();
             chunk1Message.Headers["mex-chunk-range"] = new List<string> { "{1:2}" };
@@ -97,7 +103,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                         inputMessageId,
                         randomToken,
                         It.IsAny<Stream>(),
-                        1))
+                        1,
+                        inputCancellationToken))
                 .Callback<string, string, Stream, int, CancellationToken>((_, _, stream, _, _) =>
                     stream.Write(chunk1Bytes, 0, chunk1Bytes.Length))
                 .ReturnsAsync(chunk1Message);
@@ -108,14 +115,15 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                         inputMessageId,
                         randomToken,
                         It.IsAny<Stream>(),
-                        2))
+                        2,
+                        inputCancellationToken))
                 .Callback<string, string, Stream, int, CancellationToken>((_, _, stream, _, _) =>
                     stream.Write(chunk2Bytes, 0, chunk2Bytes.Length))
                 .ReturnsAsync(chunk2Message);
 
             // when
             Message actualMessage = await this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: inputMessageId, content: outputStream);
+                .RetrieveMessageAsync(messageId: inputMessageId, content: outputStream, inputCancellationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(chunk1Message);
@@ -130,7 +138,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     inputMessageId,
                     randomToken,
                     It.IsAny<Stream>(),
-                    1),
+                    1,
+                    inputCancellationToken),
                         Times.Once);
 
             this.meshServiceMock.Verify(service =>
@@ -138,7 +147,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     inputMessageId,
                     randomToken,
                     It.IsAny<Stream>(),
-                    2),
+                    2,
+                    inputCancellationToken),
                         Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();
