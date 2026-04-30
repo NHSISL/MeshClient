@@ -134,6 +134,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                         token = await this.tokenService.GenerateTokenAsync();
+                        ValidateToken(token);
 
                         await this.meshService.RetrieveMessageAsync(
                             messageId,
