@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
-using NEL.MESH.Models.Orchestrations.Mesh.Exceptions;
 using Xeptions;
 using Xunit;
 

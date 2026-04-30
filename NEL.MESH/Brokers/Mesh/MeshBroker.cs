@@ -319,7 +319,8 @@ namespace NEL.MESH.Brokers.Mesh
                         if (cert != null && chain.Build(cert))
                         {
                             return true;
-                        };
+                        }
+                        ;
                     }
 
                     throw new Exception(chain.ChainStatus.FirstOrDefault().StatusInformation);

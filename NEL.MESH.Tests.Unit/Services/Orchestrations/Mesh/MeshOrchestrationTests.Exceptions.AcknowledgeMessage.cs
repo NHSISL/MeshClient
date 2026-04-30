@@ -23,7 +23,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // given
             string someMessageId = GetRandomString();
 
-            var expectedMeshOrchestrationDependencyValidationException = 
+            var expectedMeshOrchestrationDependencyValidationException =
                 new MeshOrchestrationDependencyValidationException(
                     message: "Mesh orchestration dependency validation error occurred, fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);

@@ -1,8 +1,11 @@
-﻿using System;
+﻿// ---------------------------------------------------------------
+// Copyright (c) North East London ICB. All rights reserved.
+// ---------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xeptions;
 
 namespace NEL.MESH.Services.Foundations.Chunks

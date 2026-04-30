@@ -78,7 +78,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 var failedMeshOrchestrationServiceException =
                     new FailedMeshOrchestrationServiceException(
-                        message: "Failed mesh orchestration service occurred, please contact support", 
+                        message: "Failed mesh orchestration service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateServiceException(failedMeshOrchestrationServiceException);
