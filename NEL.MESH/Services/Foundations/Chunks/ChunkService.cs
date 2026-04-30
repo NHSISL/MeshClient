@@ -45,7 +45,20 @@ namespace NEL.MESH.Services.Foundations.Chunks
 
             for (int chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++)
             {
-                int bytesRead = content.Read(buffer, 0, maxPartSize);
+                int bytesRead = 0;
+
+                while (bytesRead < maxPartSize)
+                {
+                    int read = content.Read(buffer, bytesRead, maxPartSize - bytesRead);
+
+                    if (read == 0)
+                    {
+                        break;
+                    }
+
+                    bytesRead += read;
+                }
+
                 byte[] chunkData = new byte[bytesRead];
                 Buffer.BlockCopy(buffer, 0, chunkData, 0, bytesRead);
 

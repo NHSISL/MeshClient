@@ -177,21 +177,22 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 ValidateNullResponse(initialResponse);
                 await ValidateReceivedResponseAsync(initialResponse);
 
-                byte[] fileBody = await initialResponse.Content.ReadAsByteArrayAsync();
-
                 Message firstMessage = new Message
                 {
                     MessageId = messageId,
                 };
 
-                foreach (var header in initialResponse.Headers)
+                using (initialResponse)
                 {
-                    firstMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
-                }
+                    foreach (var header in initialResponse.Headers)
+                    {
+                        firstMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
+                    }
 
-                foreach (var header in initialResponse.Content.Headers)
-                {
-                    firstMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
+                    foreach (var header in initialResponse.Content.Headers)
+                    {
+                        firstMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
+                    }
                 }
 
                 return firstMessage;

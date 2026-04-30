@@ -60,14 +60,46 @@ namespace NEL.MESH.Brokers.Mesh
             request.Headers.Add("mex-from", mexFrom);
             request.Headers.Add("mex-to", mexTo);
             request.Headers.Add("mex-workflowid", mexWorkflowId);
-            request.Headers.Add("mex-chunk-range", mexChunkRange);
-            request.Headers.Add("mex-subject", mexSubject);
-            request.Headers.Add("mex-localid", mexLocalId);
-            request.Headers.Add("mex-filename", mexFileName);
-            request.Headers.Add("mex-content-checksum", mexContentChecksum);
-            request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            request.Content.Headers.Add("content-encoding", contentEncoding);
-            request.Headers.Add("accept", accept);
+
+            if (!string.IsNullOrWhiteSpace(mexChunkRange))
+            {
+                request.Headers.Add("mex-chunk-range", mexChunkRange);
+            }
+
+            if (!string.IsNullOrWhiteSpace(mexSubject))
+            {
+                request.Headers.Add("mex-subject", mexSubject);
+            }
+
+            if (!string.IsNullOrWhiteSpace(mexLocalId))
+            {
+                request.Headers.Add("mex-localid", mexLocalId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(mexFileName))
+            {
+                request.Headers.Add("mex-filename", mexFileName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(mexContentChecksum))
+            {
+                request.Headers.Add("mex-content-checksum", mexContentChecksum);
+            }
+
+            if (!string.IsNullOrWhiteSpace(contentType))
+            {
+                request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+            }
+
+            if (!string.IsNullOrWhiteSpace(contentEncoding))
+            {
+                request.Content.Headers.Add("content-encoding", contentEncoding);
+            }
+
+            if (!string.IsNullOrWhiteSpace(accept))
+            {
+                request.Headers.Add("accept", accept);
+            }
 
             var response = await this.httpClient.SendAsync(request);
 
@@ -102,14 +134,46 @@ namespace NEL.MESH.Brokers.Mesh
             request.Headers.Add("mex-from", mexFrom);
             request.Headers.Add("mex-to", mexTo);
             request.Headers.Add("mex-workflowid", mexWorkflowId);
-            request.Headers.Add("mex-chunk-range", mexChunkRange);
-            request.Headers.Add("mex-subject", mexSubject);
-            request.Headers.Add("mex-localid", mexLocalId);
-            request.Headers.Add("mex-filename", mexFileName);
-            request.Headers.Add("mex-content-checksum", mexContentChecksum);
-            request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-            request.Content.Headers.Add("Content-Encoding", contentEncoding);
-            request.Headers.Add("Accept", accept);
+
+            if (!string.IsNullOrWhiteSpace(mexChunkRange))
+            {
+                request.Headers.Add("mex-chunk-range", mexChunkRange);
+            }
+
+            if (!string.IsNullOrWhiteSpace(mexSubject))
+            {
+                request.Headers.Add("mex-subject", mexSubject);
+            }
+
+            if (!string.IsNullOrWhiteSpace(mexLocalId))
+            {
+                request.Headers.Add("mex-localid", mexLocalId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(mexFileName))
+            {
+                request.Headers.Add("mex-filename", mexFileName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(mexContentChecksum))
+            {
+                request.Headers.Add("mex-content-checksum", mexContentChecksum);
+            }
+
+            if (!string.IsNullOrWhiteSpace(contentType))
+            {
+                request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+            }
+
+            if (!string.IsNullOrWhiteSpace(contentEncoding))
+            {
+                request.Content.Headers.Add("content-encoding", contentEncoding);
+            }
+
+            if (!string.IsNullOrWhiteSpace(accept))
+            {
+                request.Headers.Add("accept", accept);
+            }
 
             var response = await this.httpClient.SendAsync(request);
 
