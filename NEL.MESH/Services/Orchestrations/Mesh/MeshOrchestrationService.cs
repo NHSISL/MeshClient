@@ -135,23 +135,23 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                     }
 
                     for (int chunkId = 2; chunkId <= totalChunks; chunkId++)
-                        {
-                            cancellationToken.ThrowIfCancellationRequested();
-                            token = await this.tokenService.GenerateTokenAsync();
-                            ValidateToken(token);
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        token = await this.tokenService.GenerateTokenAsync();
+                        ValidateToken(token);
 
-                            await this.meshService.RetrieveMessageAsync(
-                                messageId,
-                                authorizationToken: token,
-                                outputStream: content,
-                                chunkPart: chunkId,
-                                cancellationToken);
-                        }
+                        await this.meshService.RetrieveMessageAsync(
+                            messageId,
+                            authorizationToken: token,
+                            outputStream: content,
+                            chunkPart: chunkId,
+                            cancellationToken);
                     }
+                }
 
-                    content.Seek(0, SeekOrigin.Begin);
+                content.Seek(0, SeekOrigin.Begin);
 
-                    return outputMessage;
+                return outputMessage;
             });
 
         public ValueTask<List<string>> RetrieveMessagesAsync(CancellationToken cancellationToken = default) =>
