@@ -178,7 +178,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 GetMessagesResponse getMessagesResponse =
                     JsonConvert.DeserializeObject<GetMessagesResponse>(responseMessageBody);
 
-                return getMessagesResponse.Messages;
+                return getMessagesResponse?.Messages ?? new List<string>();
             });
 
         public ValueTask<Message> RetrieveMessageAsync(

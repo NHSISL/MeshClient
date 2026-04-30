@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System.Collections.Generic;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -31,7 +30,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Setup(broker =>
                 broker.GetMessagesAsync(
-                    It.IsAny<string>()))
+                    It.IsAny<string>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(response);
 
             var httpRequestException =
@@ -58,7 +57,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshDependencyValidationException.Should().BeEquivalentTo(expectedMeshDependencyValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.GetMessagesAsync(It.IsAny<string>()),
+                broker.GetMessagesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -76,7 +75,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Setup(broker =>
                 broker.GetMessagesAsync(
-                    It.IsAny<string>()))
+                    It.IsAny<string>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(response);
 
             var httpRequestException =
@@ -102,7 +101,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshDependencyException.Should().BeEquivalentTo(expectedMeshDependencyException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.GetMessagesAsync(It.IsAny<string>()),
+                broker.GetMessagesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -123,7 +122,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Setup(broker =>
                 broker.GetMessagesAsync(
-                    It.IsAny<string>()))
+                    It.IsAny<string>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(response);
 
             var httpRequestException =
@@ -149,7 +148,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshServiceException.Should().BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.GetMessagesAsync(It.IsAny<string>()),
+                broker.GetMessagesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();

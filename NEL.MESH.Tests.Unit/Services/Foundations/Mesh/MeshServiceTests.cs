@@ -150,6 +150,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static List<string> GetRandomMessages() =>
+            Enumerable.Range(1, GetRandomNumber())
+                .Select(_ => GetRandomString())
+                .ToList();
+
         private static int GetRandomChunkNumber(int min, int max) =>
             new IntRange(min, max).GetValue();
 
@@ -273,6 +278,18 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             }
 
             return responseMessage;
+        }
+
+        private static HttpResponseMessage CreateGetMessagesHttpResponseMessage(List<string> messages)
+        {
+            var getMessagesResponse = new GetMessagesResponse { Messages = messages };
+            string jsonContent = JsonConvert.SerializeObject(getMessagesResponse);
+
+            return new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(jsonContent, Encoding.UTF8, "application/json")
+            };
         }
 
         private static HttpResponseMessage CreateHttpResponseContentMessageForSendMessage(

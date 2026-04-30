@@ -32,7 +32,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 new Dictionary<string, List<string>>());
 
             this.meshBrokerMock.Setup(broker =>
-                broker.GetMessagesAsync(inputMessage.MessageId))
+                broker.GetMessagesAsync(invalidAuthorizationToken, default))
                     .ReturnsAsync(responseMessage);
 
             var invalidMeshArgsException = new InvalidArgumentsMeshException(
@@ -60,7 +60,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 .BeEquivalentTo(expectedMeshValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.GetMessagesAsync(invalidAuthorizationToken),
+                broker.GetMessagesAsync(invalidAuthorizationToken, default),
                     Times.Never);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
