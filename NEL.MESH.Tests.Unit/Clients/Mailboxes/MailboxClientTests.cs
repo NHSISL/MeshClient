@@ -4,8 +4,13 @@
 
 using Moq;
 using NEL.MESH.Clients.Mailboxes;
+using NEL.MESH.Models.Foundations.Mesh.Exceptions;
+using NEL.MESH.Models.Foundations.Tokens.Exceptions;
+using NEL.MESH.Models.Orchestrations.Mesh.Exceptions;
 using NEL.MESH.Services.Orchestrations.Mesh;
 using Tynamix.ObjectFiller;
+using Xeptions;
+using Xunit;
 
 namespace NEL.MESH.Tests.Unit.Clients.Mailboxes
 {
@@ -24,5 +29,48 @@ namespace NEL.MESH.Tests.Unit.Clients.Mailboxes
 
         private static string GetRandomString() =>
             new MnemonicString(wordCount: 1, wordMinLength: 2, wordMaxLength: 20).GetValue();
+
+        public static TheoryData<Xeption> OrchestrationValidationExceptions()
+        {
+            string randomMessage = GetRandomString();
+            var innerException = new Xeption(randomMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new MeshOrchestrationValidationException(
+                    message: "Mesh orchestration validation errors occurred, please try again.",
+                    innerException),
+
+                new MeshOrchestrationDependencyValidationException(
+                    message: "Mesh orchestration dependency validation error occurred, fix the errors and try again.",
+                    innerException),
+            };
+        }
+
+        public static TheoryData<Xeption> OrchestrationDependencyExceptions()
+        {
+            string randomMessage = GetRandomString();
+            var innerException = new Xeption(randomMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new MeshOrchestrationDependencyException(
+                    message: "Mesh orchestration dependency error occurred, fix the errors and try again.",
+                    innerException),
+            };
+        }
+
+        public static TheoryData<Xeption> OrchestrationServiceExceptions()
+        {
+            string randomMessage = GetRandomString();
+            var innerException = new Xeption(randomMessage);
+
+            return new TheoryData<Xeption>
+            {
+                new MeshOrchestrationServiceException(
+                    message: "Mesh orchestration service error occurred, contact support.",
+                    innerException),
+            };
+        }
     }
 }
