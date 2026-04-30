@@ -243,7 +243,10 @@ namespace NEL.MESH.Brokers.Mesh
 
             var httpClient = new HttpClient(handler)
             {
-                BaseAddress = new Uri(this.MeshConfiguration.Url)
+                BaseAddress = new Uri(this.MeshConfiguration.Url),
+                Timeout = this.MeshConfiguration.MaxRequestTimeoutInSeconds > 0
+                    ? TimeSpan.FromSeconds(this.MeshConfiguration.MaxRequestTimeoutInSeconds)
+                    : System.Threading.Timeout.InfiniteTimeSpan
             };
 
             httpClient.DefaultRequestHeaders.Add(

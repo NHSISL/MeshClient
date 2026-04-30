@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using Force.DeepCloner;
@@ -43,35 +44,42 @@ namespace NEL.MESH.Services.Foundations.Chunks
             int maxPartSize,
             int totalChunks)
         {
-            byte[] buffer = new byte[maxPartSize];
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(maxPartSize);
 
-            for (int chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++)
+            try
             {
-                int bytesRead = 0;
-
-                while (bytesRead < maxPartSize)
+                for (int chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++)
                 {
-                    int read = content.Read(buffer, bytesRead, maxPartSize - bytesRead);
+                    int bytesRead = 0;
 
-                    if (read == 0)
+                    while (bytesRead < maxPartSize)
                     {
-                        break;
+                        int read = content.Read(buffer, bytesRead, maxPartSize - bytesRead);
+
+                        if (read == 0)
+                        {
+                            break;
+                        }
+
+                        bytesRead += read;
                     }
 
-                    bytesRead += read;
+                    byte[] chunkData = new byte[bytesRead];
+                    Buffer.BlockCopy(buffer, 0, chunkData, 0, bytesRead);
+
+                    Message chunk = new Message
+                    {
+                        Headers = messageTemplate.Headers.DeepClone()
+                    };
+
+                    SetMexChunkRange(chunk, item: chunkIndex + 1, itemCount: totalChunks);
+
+                    yield return (chunk, chunkData);
                 }
-
-                byte[] chunkData = new byte[bytesRead];
-                Buffer.BlockCopy(buffer, 0, chunkData, 0, bytesRead);
-
-                Message chunk = new Message
-                {
-                    Headers = messageTemplate.Headers.DeepClone()
-                };
-
-                SetMexChunkRange(chunk, item: chunkIndex + 1, itemCount: totalChunks);
-
-                yield return (chunk, chunkData);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
             }
         }
 
