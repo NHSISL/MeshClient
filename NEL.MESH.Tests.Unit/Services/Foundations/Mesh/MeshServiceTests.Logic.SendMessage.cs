@@ -45,6 +45,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(
                 inputFileMessage, headers);
 
+            byte[] fileContent = GetRandomByteArray();
+
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
                     authorizationToken,
@@ -59,7 +61,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     GetKeyStringValue("content-type", inputFileMessage.Headers),
                     GetKeyStringValue("content-encoding", inputFileMessage.Headers),
                     GetKeyStringValue("accept", inputFileMessage.Headers),
-                    It.IsAny<byte[]>()))
+                    fileContent))
                         .ReturnsAsync(responseMessage);
 
             Message expectedMessage = GetMessageFromHttpResponseMessage(
@@ -67,7 +69,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             Message actualMessage = await this.meshService
-                .SendMessageAsync(inputFileMessage, fileContent: null, authorizationToken);
+                .SendMessageAsync(inputFileMessage, fileContent, authorizationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
@@ -86,7 +88,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     GetKeyStringValue("content-type", inputFileMessage.Headers),
                     GetKeyStringValue("content-encoding", inputFileMessage.Headers),
                     GetKeyStringValue("accept", inputFileMessage.Headers),
-                    It.IsAny<byte[]>()),
+                    fileContent),
                         Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -124,6 +126,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage responseMessage = CreateHttpResponseContentMessageForSendMessage(
                 inputFileMessage, contentHeaders);
 
+            byte[] fileContent = GetRandomByteArray();
+
             this.meshBrokerMock.Setup(broker =>
                 broker.SendMessageAsync(
                     authorizationToken,
@@ -138,7 +142,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     GetKeyStringValue("content-type", inputFileMessage.Headers),
                     GetKeyStringValue("content-encoding", inputFileMessage.Headers),
                     GetKeyStringValue("accept", inputFileMessage.Headers),
-                    It.IsAny<byte[]>(),
+                    fileContent,
                     inputFileMessage.MessageId,
                     chunkPart))
                         .ReturnsAsync(responseMessage);
@@ -148,7 +152,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             Message actualMessage = await this.meshService
-                .SendMessageAsync(inputFileMessage, fileContent: null, authorizationToken);
+                .SendMessageAsync(inputFileMessage, fileContent, authorizationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
@@ -167,7 +171,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     GetKeyStringValue("content-type", inputFileMessage.Headers),
                     GetKeyStringValue("content-encoding", inputFileMessage.Headers),
                     GetKeyStringValue("accept", inputFileMessage.Headers),
-                    It.IsAny<byte[]>(),
+                    fileContent,
                     inputFileMessage.MessageId,
                     chunkPart),
                         Times.Once);

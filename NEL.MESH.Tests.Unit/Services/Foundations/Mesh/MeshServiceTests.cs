@@ -158,6 +158,9 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static int GetRandomChunkNumber(int min, int max) =>
             new IntRange(min, max).GetValue();
 
+        private static byte[] GetRandomByteArray() =>
+            Encoding.UTF8.GetBytes(GetRandomString());
+
         private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
         {
             return dictionary.ContainsKey(key)

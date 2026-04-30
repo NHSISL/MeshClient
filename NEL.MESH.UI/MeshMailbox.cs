@@ -242,10 +242,12 @@ namespace NEL.MESH.UI
         {
             try
             {
+                using var messageStream = new MemoryStream(Encoding.UTF8.GetBytes(txtMessage.Text));
+
                 var message = await meshClient.Mailbox.SendMessageAsync(
                     mexTo: txtTo.Text,
                     mexWorkflowId: txtWorkflowId.Text,
-                    content: new MemoryStream(Encoding.UTF8.GetBytes(txtMessage.Text)),
+                    content: messageStream,
                     mexSubject: txtSubject.Text,
                     mexLocalId: txtLocalId.Text,
                     mexFileName: "message.txt");
@@ -282,10 +284,12 @@ namespace NEL.MESH.UI
             {
                 if (!string.IsNullOrWhiteSpace(txtFileLocation.Text))
                 {
+                    using var fileStream = new FileStream(txtFileLocation.Text, FileMode.Open, FileAccess.Read);
+
                     var message = await meshClient.Mailbox.SendMessageAsync(
                         mexTo: txtTo.Text,
                         mexWorkflowId: txtWorkflowId.Text,
-                        content: new FileStream(txtFileLocation.Text, FileMode.Open, FileAccess.Read),
+                        content: fileStream,
                         mexSubject: txtSubject.Text,
                         mexLocalId: txtLocalId.Text,
                         mexFileName: txtFileName.Text);
