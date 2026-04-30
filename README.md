@@ -124,6 +124,10 @@ var meshConfiguration = new MeshConfiguration
     TlsIntermediateCertificates = new X509Certificate2Collection(),
     ClientSigningCertificate = new X509Certificate2("path/to/cert.pfx", "cert-password"),
     MaxChunkSizeInMegabytes = 20,
+
+    // Set to 0 for no timeout (infinite), which is recommended when sending very large files
+    // on slow connections. Set to any positive integer to limit the per-chunk request timeout
+    // in seconds (e.g. 300 for a 5-minute timeout).
     MaxRequestTimeoutInSeconds = 0
 };
 
@@ -173,4 +177,4 @@ If you want to contribute to this project please before hand review the followin
 - [C# Coding Standard](https://github.com/hassanhabib/CSharpCodingStandard)
 - [The Team Standard](https://github.com/hassanhabib/The-Standard-Team)
 
-If you have a question make sure you open an issue.
+To report a bug, please [open a GitHub issue](https://github.com/NHSISL/MeshClient/issues) with as much detail as possible. If you'd like to contribute, feel free to pick up any open issue and submit a pull request with your changes.
