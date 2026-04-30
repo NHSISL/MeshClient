@@ -39,8 +39,10 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 innerException: invalidMeshOrchestrationArgsException);
 
             // when
+            using MemoryStream outputStreamForMessageId = new MemoryStream();
+
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: invalidMessageId, content: new MemoryStream());
+                .RetrieveMessageAsync(messageId: invalidMessageId, content: outputStreamForMessageId);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
@@ -83,8 +85,10 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     .ReturnsAsync(invalidToken);
 
             // when
+            using MemoryStream outputStreamForToken = new MemoryStream();
+
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: randomMssageId, content: new MemoryStream());
+                .RetrieveMessageAsync(messageId: randomMssageId, content: outputStreamForToken);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);

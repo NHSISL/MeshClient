@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -109,6 +110,142 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 broker.GetMessageAsync(inputMessage.MessageId, chunks.ToString(), invalidAuthorizationToken),
                     Times.Once);
 
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public async Task ShouldThrowValidationExceptionOnRetrieveMessageStreamIfMessageIdIsInvalidAsync(
+            string invalidText)
+        {
+            // given
+            string invalidMessageId = invalidText;
+            string authorizationToken = GetRandomString();
+            using MemoryStream outputStream = new MemoryStream();
+
+            var invalidMeshArgsException = new InvalidArgumentsMeshException(
+                message: "Invalid MESH argument validation errors occurred, " +
+                "please correct the errors and try again.");
+
+            invalidMeshArgsException.AddData(
+                key: nameof(Message.MessageId),
+                values: "Text is required");
+
+            var expectedMeshValidationException = new MeshValidationException(
+                message: "Message validation errors occurred, please try again.",
+                innerException: invalidMeshArgsException);
+
+            // when
+            ValueTask<Message> getMessageTask =
+                this.meshService.RetrieveMessageAsync(
+                    invalidMessageId,
+                    authorizationToken,
+                    outputStream);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(getMessageTask.AsTask);
+
+            // then
+            actualMeshValidationException.Should().BeEquivalentTo(expectedMeshValidationException);
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnRetrieveMessageStreamIfOutputStreamIsNullAsync()
+        {
+            // given
+            string messageId = GetRandomString();
+            string authorizationToken = GetRandomString();
+            Stream nullOutputStream = null;
+
+            var invalidMeshArgsException = new InvalidArgumentsMeshException(
+                message: "Invalid MESH argument validation errors occurred, " +
+                "please correct the errors and try again.");
+
+            invalidMeshArgsException.AddData(
+                key: "outputStream",
+                values: "Stream is required, must be writable, seekable and must be empty");
+
+            var expectedMeshValidationException = new MeshValidationException(
+                message: "Message validation errors occurred, please try again.",
+                innerException: invalidMeshArgsException);
+
+            // when
+            ValueTask<Message> getMessageTask =
+                this.meshService.RetrieveMessageAsync(messageId, authorizationToken, nullOutputStream);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(getMessageTask.AsTask);
+
+            // then
+            actualMeshValidationException.Should().BeEquivalentTo(expectedMeshValidationException);
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnRetrieveMessageStreamIfOutputStreamIsNotEmptyAsync()
+        {
+            // given
+            string messageId = GetRandomString();
+            string authorizationToken = GetRandomString();
+            using MemoryStream nonEmptyOutputStream = new MemoryStream(new byte[] { 1, 2, 3 });
+
+            var invalidMeshArgsException = new InvalidArgumentsMeshException(
+                message: "Invalid MESH argument validation errors occurred, " +
+                "please correct the errors and try again.");
+
+            invalidMeshArgsException.AddData(
+                key: "outputStream",
+                values: "Stream is required, must be writable, seekable and must be empty");
+
+            var expectedMeshValidationException = new MeshValidationException(
+                message: "Message validation errors occurred, please try again.",
+                innerException: invalidMeshArgsException);
+
+            // when
+            ValueTask<Message> getMessageTask =
+                this.meshService.RetrieveMessageAsync(messageId, authorizationToken, nonEmptyOutputStream);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(getMessageTask.AsTask);
+
+            // then
+            actualMeshValidationException.Should().BeEquivalentTo(expectedMeshValidationException);
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnRetrieveMessageStreamIfOutputStreamIsNotWritableAsync()
+        {
+            // given
+            string messageId = GetRandomString();
+            string authorizationToken = GetRandomString();
+            byte[] buffer = new byte[16];
+            using MemoryStream nonWritableOutputStream = new MemoryStream(buffer, writable: false);
+
+            var invalidMeshArgsException = new InvalidArgumentsMeshException(
+                message: "Invalid MESH argument validation errors occurred, " +
+                "please correct the errors and try again.");
+
+            invalidMeshArgsException.AddData(
+                key: "outputStream",
+                values: "Stream is required, must be writable, seekable and must be empty");
+
+            var expectedMeshValidationException = new MeshValidationException(
+                message: "Message validation errors occurred, please try again.",
+                innerException: invalidMeshArgsException);
+
+            // when
+            ValueTask<Message> getMessageTask =
+                this.meshService.RetrieveMessageAsync(messageId, authorizationToken, nonWritableOutputStream);
+
+            MeshValidationException actualMeshValidationException =
+                await Assert.ThrowsAsync<MeshValidationException>(getMessageTask.AsTask);
+
+            // then
+            actualMeshValidationException.Should().BeEquivalentTo(expectedMeshValidationException);
             this.meshBrokerMock.VerifyNoOtherCalls();
         }
     }

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -120,6 +121,19 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
+        public static void ValidateRetrieveMessageStreamArguments(
+            string messageId,
+            string authorizationToken,
+            Stream outputStream)
+        {
+            Validate<InvalidArgumentsMeshException>(
+                message: "Invalid MESH argument validation errors occurred, " +
+                    "please correct the errors and try again.",
+                (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"),
+                (Rule: IsInvalidOutputStream(outputStream), Parameter: nameof(outputStream)));
+        }
+
         public static void ValidateRetrieveMessagesArguments(string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
@@ -200,6 +214,12 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 Condition = IsInvalidKeyLength(dictionary, key, maxLength),
                 Message = $"Text length should not be greater than {maxLength}"
             };
+
+        private static dynamic IsInvalidOutputStream(Stream stream) => new
+        {
+            Condition = stream is null || !stream.CanWrite || !stream.CanSeek || stream.Length != 0,
+            Message = "Stream is required, must be writable, seekable and must be empty"
+        };
 
         private static dynamic IsArgInvalid(string text) => new
         {

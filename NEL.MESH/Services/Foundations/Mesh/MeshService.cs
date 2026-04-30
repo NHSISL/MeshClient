@@ -240,7 +240,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
             TryCatch(async () =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                ValidateRetrieveMessageArguments(messageId, authorizationToken);
+                ValidateRetrieveMessageStreamArguments(messageId, authorizationToken, outputStream);
                 HttpResponseMessage response;
 
                 if (chunkPart == 1)
