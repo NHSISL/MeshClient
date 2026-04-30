@@ -53,7 +53,7 @@ namespace NEL.MESH.Brokers.Mesh
 
             var request = new HttpRequestMessage(HttpMethod.Post, path)
             {
-                Content = new ByteArrayContent(fileContents)
+                Content = new ReadOnlyMemoryContent(fileContents)
             };
 
             request.Headers.Add("authorization", authorizationToken);
@@ -95,7 +95,7 @@ namespace NEL.MESH.Brokers.Mesh
 
             var request = new HttpRequestMessage(HttpMethod.Post, path)
             {
-                Content = new ByteArrayContent(fileContents)
+                Content = new ReadOnlyMemoryContent(fileContents)
             };
 
             request.Headers.Add("authorization", authorizationToken);

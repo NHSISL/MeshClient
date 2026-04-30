@@ -52,11 +52,9 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 IEnumerable<(Message message, byte[] content)> chunkedMessages =
                     this.chunkService.SplitStreamIntoChunks(message, content);
 
-                List<(Message message, byte[] content)> chunkedMessageList = chunkedMessages.ToList();
-                ValidateChunksOnSendMessage(chunkedMessageList.Select(c => c.message).ToList());
                 Message outputMessage = null;
 
-                foreach ((Message chunkedMessage, byte[] chunkContent) in chunkedMessageList)
+                foreach ((Message chunkedMessage, byte[] chunkContent) in chunkedMessages)
                 {
                     string token = await this.tokenService.GenerateTokenAsync();
                     ValidateToken(token);
@@ -69,6 +67,11 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                     {
                         outputMessage = sentMessage;
                     }
+                }
+
+                if (outputMessage is null)
+                {
+                    ValidateChunksOnSendMessage(new List<Message>());
                 }
 
                 return outputMessage;

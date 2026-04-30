@@ -60,5 +60,36 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
 
             this.meshConfigurationBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public void ShouldCalculateChunkCountCorrectlyForLargeStreams()
+        {
+            // given
+            const int maxPartSize = 100 * 1024 * 1024; // 100 MB chunks
+            const long largeFileSize = 3L * 1024 * 1024 * 1024; // 3 GB: overflows int if cast naively
+            const int expectedChunkCount = 31; // ceil(3 * 1024 / 100)
+
+            Message randomMessage = CreateRandomSendMessage(byteArrayContent: new byte[0]);
+            Message inputMessage = randomMessage;
+
+            using LargeVirtualStream inputStream = new LargeVirtualStream(largeFileSize);
+
+            this.meshConfigurationBrokerMock.Setup(broker =>
+                broker.MaxChunkSizeInBytes)
+                    .Returns(maxPartSize);
+
+            // when
+            int actualChunkCount =
+                this.chunkService.SplitStreamIntoChunks(inputMessage, inputStream).Count();
+
+            // then
+            actualChunkCount.Should().Be(expectedChunkCount);
+
+            this.meshConfigurationBrokerMock.Verify(broker =>
+                broker.MaxChunkSizeInBytes,
+                    Times.Once);
+
+            this.meshConfigurationBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

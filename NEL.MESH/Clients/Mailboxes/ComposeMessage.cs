@@ -54,7 +54,7 @@ namespace NEL.MESH.Clients.Mailboxes
                 message.Headers.Add("content-encoding", new List<string> { contentEncoding });
             }
 
-            if (!string.IsNullOrWhiteSpace(contentEncoding))
+            if (!string.IsNullOrWhiteSpace(accept))
             {
                 message.Headers.Add("accept", new List<string> { accept });
             }

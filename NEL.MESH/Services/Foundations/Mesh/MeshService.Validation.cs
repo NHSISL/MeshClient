@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh.ExternalModels;
@@ -16,11 +17,11 @@ namespace NEL.MESH.Services.Foundations.Mesh
 {
     internal partial class MeshService
     {
-        private static void ValidateResponse(HttpResponseMessage response)
+        private static async Task ValidateResponseAsync(HttpResponseMessage response)
         {
             if (response.IsSuccessStatusCode == false)
             {
-                string body = response.Content.ReadAsStringAsync().Result;
+                string body = await response.Content.ReadAsStringAsync();
                 SendMessageErrorResponse error;
 
                 try
@@ -63,11 +64,11 @@ namespace NEL.MESH.Services.Foundations.Mesh
             }
         }
 
-        private static void ValidateReceivedResponse(HttpResponseMessage response)
+        private static async Task ValidateReceivedResponseAsync(HttpResponseMessage response)
         {
             if (response.IsSuccessStatusCode == false)
             {
-                string body = response.Content.ReadAsStringAsync().Result;
+                string body = await response.Content.ReadAsStringAsync();
                 SendMessageErrorResponse error = JsonConvert.DeserializeObject<SendMessageErrorResponse>(body);
                 string message = $"{(int)response.StatusCode} - {response.ReasonPhrase}";
 

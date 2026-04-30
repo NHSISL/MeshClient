@@ -29,7 +29,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 ValidateOnHandshake(authorizationToken);
                 HttpResponseMessage response = await this.meshBroker.HandshakeAsync(authorizationToken);
-                ValidateResponse(response);
+                await ValidateResponseAsync(response);
 
                 return response.IsSuccessStatusCode;
             });
@@ -99,10 +99,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         chunkNumber: chunkNumber.ToString());
                 }
 
-                ValidateResponse(responseMessage);
+                await ValidateResponseAsync(responseMessage);
 
                 string responseMessageBody =
-                    responseMessage.Content.ReadAsStringAsync().Result;
+                    await responseMessage.Content.ReadAsStringAsync();
 
                 Message outputMessage = new Message
                 {
@@ -122,8 +122,8 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 HttpResponseMessage responseMessage =
                     await this.meshBroker.TrackMessageAsync(messageId, authorizationToken);
 
-                ValidateResponse(responseMessage);
-                string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+                await ValidateResponseAsync(responseMessage);
+                string responseMessageBody = await responseMessage.Content.ReadAsStringAsync();
 
                 Message outputMessage = new Message
                 {
@@ -145,10 +145,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 HttpResponseMessage responseMessage = await this.meshBroker
                     .GetMessagesAsync(authorizationToken);
 
-                ValidateResponse(responseMessage);
+                await ValidateResponseAsync(responseMessage);
 
-                string responseMessageBody = responseMessage.Content
-                    .ReadAsStringAsync().Result;
+                string responseMessageBody = await responseMessage.Content
+                    .ReadAsStringAsync();
 
                 GetMessagesResponse getMessagesResponse =
                     JsonConvert.DeserializeObject<GetMessagesResponse>(responseMessageBody);
@@ -175,7 +175,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 }
 
                 ValidateNullResponse(initialResponse);
-                ValidateReceivedResponse(initialResponse);
+                await ValidateReceivedResponseAsync(initialResponse);
 
                 byte[] fileBody = await initialResponse.Content.ReadAsByteArrayAsync();
 
@@ -220,7 +220,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 }
 
                 ValidateNullResponse(response);
-                ValidateReceivedResponse(response);
+                await ValidateReceivedResponseAsync(response);
 
                 using (response)
                 {
@@ -253,7 +253,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 HttpResponseMessage response =
                     await this.meshBroker.AcknowledgeMessageAsync(messageId, authorizationToken);
 
-                ValidateResponse(response);
+                await ValidateResponseAsync(response);
 
                 return response.IsSuccessStatusCode;
             });
