@@ -54,6 +54,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
             outputStream.ToArray().Should().BeEquivalentTo(expectedBytes);
+            outputStream.Position.Should().Be(0);
 
             this.tokenServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),
@@ -128,6 +129,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // then
             actualMessage.Should().BeEquivalentTo(chunk1Message);
             outputStream.ToArray().Should().BeEquivalentTo(expectedBytes);
+            outputStream.Position.Should().Be(0);
 
             this.tokenServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),

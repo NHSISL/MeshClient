@@ -174,6 +174,28 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         }
 
         [Fact]
+        public async Task ShouldThrowOperationCanceledExceptionOnRetrieveMessageIfCancellationRequestedAsync()
+        {
+            // given
+            string messageId = GetRandomString();
+            string authorizationToken = GetRandomString();
+            using var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.Cancel();
+
+            // when
+            ValueTask<Message> retrieveMessageTask =
+                this.meshService.RetrieveMessageAsync(
+                    messageId,
+                    authorizationToken,
+                    cancellationToken: cancellationTokenSource.Token);
+
+            // then
+            await Assert.ThrowsAsync<OperationCanceledException>(retrieveMessageTask.AsTask);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldThrowOperationCanceledExceptionOnRetrieveMessageStreamIfCancellationRequestedAsync()
         {
             // given
