@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
 
@@ -17,11 +18,12 @@ namespace NEL.MESH.Clients.Mailboxes
         /// <summary>
         /// Performs a handshake with the MESH mailbox service.
         /// </summary>
+        /// <param name="cancellationToken">A token to cancel the operation (optional).</param>
         /// <returns>
         /// A task that represents the asynchronous operation. 
         /// The task result contains a value indicating whether the handshake was successful.
         /// </returns>
-        ValueTask<bool> HandshakeAsync();
+        ValueTask<bool> HandshakeAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sends a file-based message to the specified recipient.
@@ -36,6 +38,7 @@ namespace NEL.MESH.Clients.Mailboxes
         /// <param name="contentType">The MIME type of the file content (default: "application/octet-stream").</param>
         /// <param name="contentEncoding">The encoding of the file content (optional).</param>
         /// <param name="accept">The expected response format (default: "application/json").</param>
+        /// <param name="cancellationToken">A token to cancel the operation (optional).</param>
         /// <returns>
         /// A task that represents the asynchronous operation. The task result contains the sent message.
         /// </returns>
@@ -49,40 +52,52 @@ namespace NEL.MESH.Clients.Mailboxes
             string mexContentChecksum = "",
             string contentType = "application/octet-stream",
             string contentEncoding = "",
-            string accept = "application/json");
+            string accept = "application/json",
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Tracks the status of a specific message.
         /// </summary>
         /// <param name="messageId">The identifier of the message to track.</param>
+        /// <param name="cancellationToken">A token to cancel the operation (optional).</param>
         /// <returns>
         /// A task that represents the asynchronous operation. The task result contains the tracked message.
         /// </returns>
-        ValueTask<Message> TrackMessageAsync(string messageId);
+        ValueTask<Message> TrackMessageAsync(
+            string messageId,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Retrieves a list of all available message identifiers.
         /// </summary>
-        ValueTask<List<string>> RetrieveMessagesAsync();
+        /// <param name="cancellationToken">A token to cancel the operation (optional).</param>
+        ValueTask<List<string>> RetrieveMessagesAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Retrieves the details of a specific message, with the message content written to the provided output stream.
         /// </summary>
         /// <param name="messageId">The identifier of the message to retrieve.</param>
         /// <param name="outputStream">An empty writable stream to which the message content will be written.</param>
+        /// <param name="cancellationToken">A token to cancel the operation (optional).</param>
         /// <returns>
         /// A task that represents the asynchronous operation. The task result contains the retrieved message.
         /// </returns>
-        ValueTask<Message> RetrieveMessageAsync(string messageId, Stream outputStream);
+        ValueTask<Message> RetrieveMessageAsync(
+            string messageId,
+            Stream outputStream,
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Acknowledges a specific message, marking it as processed.
         /// </summary>
         /// <param name="messageId">The identifier of the message to acknowledge.</param>
+        /// <param name="cancellationToken">A token to cancel the operation (optional).</param>
         /// <returns>
         /// A task that represents the asynchronous operation. 
         /// The task result contains a value indicating whether the acknowledgment was successful.
         /// </returns>
-        ValueTask<bool> AcknowledgeMessageAsync(string messageId);
+        ValueTask<bool> AcknowledgeMessageAsync(
+            string messageId,
+            CancellationToken cancellationToken = default);
     }
 }

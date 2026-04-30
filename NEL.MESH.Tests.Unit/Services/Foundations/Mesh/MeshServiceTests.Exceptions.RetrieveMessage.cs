@@ -3,7 +3,10 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -148,6 +151,24 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             this.meshBrokerMock.Verify(broker =>
                 broker.GetMessagesAsync(It.IsAny<string>()),
                     Times.Once);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowOperationCanceledExceptionOnRetrieveMessagesIfCancellationRequestedAsync()
+        {
+            // given
+            string authorizationToken = GetRandomString();
+            using var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.Cancel();
+
+            // when
+            ValueTask<List<string>> retrieveMessagesTask =
+                this.meshService.RetrieveMessagesAsync(authorizationToken, cancellationTokenSource.Token);
+
+            // then
+            await Assert.ThrowsAsync<OperationCanceledException>(retrieveMessagesTask.AsTask);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }

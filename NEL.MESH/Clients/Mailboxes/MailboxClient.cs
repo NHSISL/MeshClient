@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -20,11 +21,11 @@ namespace NEL.MESH.Clients.Mailboxes
         public MailboxClient(IMeshOrchestrationService meshOrchestrationService) =>
             this.meshOrchestrationService = meshOrchestrationService;
 
-        public async ValueTask<bool> HandshakeAsync()
+        public async ValueTask<bool> HandshakeAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                return await meshOrchestrationService.HandshakeAsync();
+                return await meshOrchestrationService.HandshakeAsync(cancellationToken);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
@@ -58,7 +59,8 @@ namespace NEL.MESH.Clients.Mailboxes
             string mexContentChecksum = "",
             string contentType = "application/octet-stream",
             string contentEncoding = "",
-            string accept = "application/json")
+            string accept = "application/json",
+            CancellationToken cancellationToken = default)
         {
             try
             {
@@ -73,7 +75,7 @@ namespace NEL.MESH.Clients.Mailboxes
                     contentEncoding,
                     accept);
 
-                return await meshOrchestrationService.SendMessageAsync(message, content);
+                return await meshOrchestrationService.SendMessageAsync(message, content, cancellationToken);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
@@ -99,11 +101,13 @@ namespace NEL.MESH.Clients.Mailboxes
             }
         }
 
-        public async ValueTask<Message> TrackMessageAsync(string messageId)
+        public async ValueTask<Message> TrackMessageAsync(
+            string messageId,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await meshOrchestrationService.TrackMessageAsync(messageId);
+                return await meshOrchestrationService.TrackMessageAsync(messageId, cancellationToken);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
@@ -129,11 +133,11 @@ namespace NEL.MESH.Clients.Mailboxes
             }
         }
 
-        public async ValueTask<List<string>> RetrieveMessagesAsync()
+        public async ValueTask<List<string>> RetrieveMessagesAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                return await meshOrchestrationService.RetrieveMessagesAsync();
+                return await meshOrchestrationService.RetrieveMessagesAsync(cancellationToken);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
@@ -159,11 +163,14 @@ namespace NEL.MESH.Clients.Mailboxes
             }
         }
 
-        public async ValueTask<Message> RetrieveMessageAsync(string messageId, Stream outputStream)
+        public async ValueTask<Message> RetrieveMessageAsync(
+            string messageId,
+            Stream outputStream,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await meshOrchestrationService.RetrieveMessageAsync(messageId, outputStream);
+                return await meshOrchestrationService.RetrieveMessageAsync(messageId, outputStream, cancellationToken);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
@@ -189,11 +196,13 @@ namespace NEL.MESH.Clients.Mailboxes
             }
         }
 
-        public async ValueTask<bool> AcknowledgeMessageAsync(string messageId)
+        public async ValueTask<bool> AcknowledgeMessageAsync(
+            string messageId,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await meshOrchestrationService.AcknowledgeMessageAsync(messageId);
+                return await meshOrchestrationService.AcknowledgeMessageAsync(messageId, cancellationToken);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {

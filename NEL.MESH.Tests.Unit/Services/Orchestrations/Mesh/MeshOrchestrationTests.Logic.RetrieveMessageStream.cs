@@ -4,6 +4,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -39,7 +40,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                         randomToken,
                         It.IsAny<Stream>(),
                         1))
-                .Callback<string, string, Stream, int>((_, _, stream, _) =>
+                .Callback<string, string, Stream, int, CancellationToken>((_, _, stream, _, _) =>
                     stream.Write(expectedBytes, 0, expectedBytes.Length))
                 .ReturnsAsync(serviceMessage);
 
@@ -97,7 +98,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                         randomToken,
                         It.IsAny<Stream>(),
                         1))
-                .Callback<string, string, Stream, int>((_, _, stream, _) =>
+                .Callback<string, string, Stream, int, CancellationToken>((_, _, stream, _, _) =>
                     stream.Write(chunk1Bytes, 0, chunk1Bytes.Length))
                 .ReturnsAsync(chunk1Message);
 
@@ -108,7 +109,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                         randomToken,
                         It.IsAny<Stream>(),
                         2))
-                .Callback<string, string, Stream, int>((_, _, stream, _) =>
+                .Callback<string, string, Stream, int, CancellationToken>((_, _, stream, _, _) =>
                     stream.Write(chunk2Bytes, 0, chunk2Bytes.Length))
                 .ReturnsAsync(chunk2Message);
 

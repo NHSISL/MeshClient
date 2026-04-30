@@ -24,6 +24,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
             {
                 return await returningBooleanFunction();
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (InvalidArgumentsMeshException invalidArgumentMeshException)
             {
                 throw CreateValidationException(invalidArgumentMeshException);
@@ -67,6 +71,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
             try
             {
                 return await retruningMessageFunction();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (NullMessageException nullMessageException)
             {
@@ -128,6 +136,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
             try
             {
                 return await returningStringListFunction();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (HttpRequestException httpRequestException)
                 when ((int)httpRequestException.StatusCode >= 400 && (int)httpRequestException.StatusCode <= 499)

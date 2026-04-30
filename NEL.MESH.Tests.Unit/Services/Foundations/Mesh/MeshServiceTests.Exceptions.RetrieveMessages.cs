@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -146,11 +148,33 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Verify(broker =>
                 broker.GetMessageAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<string>()),
-                    Times.Once);
+                                         It.IsAny<string>(),
+                                         It.IsAny<string>()),
+                                         Times.Once);
 
-            this.meshBrokerMock.VerifyNoOtherCalls();
-        }
-    }
-}
+                                this.meshBrokerMock.VerifyNoOtherCalls();
+                            }
+
+                                    [Fact]
+                                    public async Task ShouldThrowOperationCanceledExceptionOnRetrieveMessageIfCancellationRequestedAsync()
+                                    {
+                                        // given
+                                        string someMessageId = GetRandomString();
+                                        string someAuthorizationToken = GetRandomString();
+                                        using var cancellationTokenSource = new CancellationTokenSource();
+                                        cancellationTokenSource.Cancel();
+
+                                        // when
+                                        ValueTask<Message> retrieveMessageTask =
+                                            this.meshService.RetrieveMessageAsync(
+                                                someMessageId,
+                                                someAuthorizationToken,
+                                                cancellationToken: cancellationTokenSource.Token);
+
+                                        // then
+                                        await Assert.ThrowsAsync<OperationCanceledException>(retrieveMessageTask.AsTask);
+
+                                        this.meshBrokerMock.VerifyNoOtherCalls();
+                                    }
+                                }
+                            }

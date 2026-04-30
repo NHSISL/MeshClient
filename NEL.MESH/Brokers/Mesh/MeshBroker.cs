@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Configurations;
 
@@ -24,12 +25,14 @@ namespace NEL.MESH.Brokers.Mesh
 
         public MeshConfiguration MeshConfiguration { get; private set; }
 
-        public async ValueTask<HttpResponseMessage> HandshakeAsync(string authorizationToken)
+        public async ValueTask<HttpResponseMessage> HandshakeAsync(
+            string authorizationToken,
+            CancellationToken cancellationToken = default)
         {
             string path = $"/messageexchange/{this.MeshConfiguration.MailboxId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("authorization", authorizationToken);
-            var response = await this.httpClient.SendAsync(request);
+            var response = await this.httpClient.SendAsync(request, cancellationToken);
 
             return response;
         }
@@ -47,7 +50,8 @@ namespace NEL.MESH.Brokers.Mesh
             string contentType,
             string contentEncoding,
             string accept,
-            byte[] fileContents)
+            byte[] fileContents,
+            CancellationToken cancellationToken = default)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox";
 
@@ -101,7 +105,7 @@ namespace NEL.MESH.Brokers.Mesh
                 request.Headers.Add("accept", accept);
             }
 
-            var response = await this.httpClient.SendAsync(request);
+            var response = await this.httpClient.SendAsync(request, cancellationToken);
 
             return response;
         }
@@ -121,7 +125,8 @@ namespace NEL.MESH.Brokers.Mesh
             string accept,
             byte[] fileContents,
             string messageId,
-            string chunkNumber)
+            string chunkNumber,
+            CancellationToken cancellationToken = default)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox/{messageId}/{chunkNumber}";
 
@@ -175,39 +180,47 @@ namespace NEL.MESH.Brokers.Mesh
                 request.Headers.Add("accept", accept);
             }
 
-            var response = await this.httpClient.SendAsync(request);
+            var response = await this.httpClient.SendAsync(request, cancellationToken);
 
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> TrackMessageAsync(string messageId, string authorizationToken)
+        public async ValueTask<HttpResponseMessage> TrackMessageAsync(
+            string messageId,
+            string authorizationToken,
+            CancellationToken cancellationToken = default)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/outbox/tracking?messageID={messageId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("authorization", authorizationToken);
-            var response = await this.httpClient.SendAsync(request);
+            var response = await this.httpClient.SendAsync(request, cancellationToken);
 
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> GetMessagesAsync(string authorizationToken)
+        public async ValueTask<HttpResponseMessage> GetMessagesAsync(
+            string authorizationToken,
+            CancellationToken cancellationToken = default)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("authorization", authorizationToken);
-            var response = await this.httpClient.SendAsync(request);
+            var response = await this.httpClient.SendAsync(request, cancellationToken);
 
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> GetMessageAsync(string messageId, string authorizationToken)
+        public async ValueTask<HttpResponseMessage> GetMessageAsync(
+            string messageId,
+            string authorizationToken,
+            CancellationToken cancellationToken = default)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("authorization", authorizationToken);
 
             var response =
-                await this.httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                await this.httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 
             return response;
         }
@@ -215,24 +228,28 @@ namespace NEL.MESH.Brokers.Mesh
         public async ValueTask<HttpResponseMessage> GetMessageAsync(
             string messageId,
             string chunkNumber,
-            string authorizationToken)
+            string authorizationToken,
+            CancellationToken cancellationToken = default)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}/{chunkNumber}";
             var request = new HttpRequestMessage(HttpMethod.Get, path);
             request.Headers.Add("authorization", authorizationToken);
 
             var response =
-                await this.httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                await this.httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 
             return response;
         }
 
-        public async ValueTask<HttpResponseMessage> AcknowledgeMessageAsync(string messageId, string authorizationToken)
+        public async ValueTask<HttpResponseMessage> AcknowledgeMessageAsync(
+            string messageId,
+            string authorizationToken,
+            CancellationToken cancellationToken = default)
         {
             var path = $"/messageexchange/{this.MeshConfiguration.MailboxId}/inbox/{messageId}/status/acknowledged";
             var request = new HttpRequestMessage(HttpMethod.Put, path);
             request.Headers.Add("authorization", authorizationToken);
-            var response = await this.httpClient.SendAsync(request);
+            var response = await this.httpClient.SendAsync(request, cancellationToken);
 
             return response;
         }

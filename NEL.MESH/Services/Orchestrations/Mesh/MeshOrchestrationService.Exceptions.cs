@@ -26,6 +26,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 return await returningBooleanFunction();
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (NullMeshMessageException nullMeshMessageException)
             {
                 throw CreateValidationException(nullMeshMessageException);
@@ -86,6 +90,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             try
             {
                 return await returningMessageFunction();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (NullMeshMessageException nullMeshMessageException)
             {
@@ -154,6 +162,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             try
             {
                 return await returningStringsFunction();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (InvalidTokenException invalidTokenException)
             {

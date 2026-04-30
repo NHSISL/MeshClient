@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -33,18 +34,23 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             this.meshConfigurationBroker = meshConfigurationBroker;
         }
 
-        public ValueTask<bool> HandshakeAsync() =>
+        public ValueTask<bool> HandshakeAsync(CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
 
-                return await this.meshService.HandshakeAsync(authorizationToken: token);
+                return await this.meshService.HandshakeAsync(authorizationToken: token, cancellationToken);
             });
 
-        public ValueTask<Message> SendMessageAsync(Message message, Stream content) =>
+        public ValueTask<Message> SendMessageAsync(
+            Message message,
+            Stream content,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateMessageIsNotNull(message);
                 ValidateSendMessageStreamArgs(message, content);
                 SetHeader(message, "mex-from", this.meshConfigurationBroker.MexFrom);
@@ -56,12 +62,13 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
 
                 foreach ((Message chunkedMessage, byte[] chunkContent) in chunkedMessages)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     string token = await this.tokenService.GenerateTokenAsync();
                     ValidateToken(token);
                     chunkedMessage.MessageId = outputMessage?.MessageId;
 
                     Message sentMessage = await this.meshService
-                        .SendMessageAsync(chunkedMessage, chunkContent, authorizationToken: token);
+                        .SendMessageAsync(chunkedMessage, chunkContent, authorizationToken: token, cancellationToken);
 
                     if (outputMessage is null)
                     {
@@ -77,20 +84,29 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 return outputMessage;
             });
 
-        public ValueTask<Message> TrackMessageAsync(string messageId) =>
+        public ValueTask<Message> TrackMessageAsync(
+            string messageId,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateTrackMessageArgs(messageId);
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
-                Message outputMessage = await this.meshService.TrackMessageAsync(messageId, authorizationToken: token);
+
+                Message outputMessage =
+                    await this.meshService.TrackMessageAsync(messageId, authorizationToken: token, cancellationToken);
 
                 return outputMessage;
             });
 
-        public ValueTask<Message> RetrieveMessageAsync(string messageId, Stream content) =>
+        public ValueTask<Message> RetrieveMessageAsync(
+            string messageId,
+            Stream content,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateRetrieveMessageArgs(messageId, content);
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
@@ -100,7 +116,8 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                         messageId,
                         authorizationToken: token,
                         outputStream: content,
-                        chunkPart: 1);
+                        chunkPart: 1,
+                        cancellationToken);
 
                 var chunks = outputMessage.Headers
                     .FirstOrDefault(h => h.Key == "mex-chunk-range")
@@ -115,37 +132,46 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
 
                     for (int chunkId = 2; chunkId <= totalChunks; chunkId++)
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
                         token = await this.tokenService.GenerateTokenAsync();
 
                         await this.meshService.RetrieveMessageAsync(
                             messageId,
                             authorizationToken: token,
                             outputStream: content,
-                            chunkPart: chunkId);
+                            chunkPart: chunkId,
+                            cancellationToken);
                     }
                 }
 
                 return outputMessage;
             });
 
-        public ValueTask<List<string>> RetrieveMessagesAsync() =>
+        public ValueTask<List<string>> RetrieveMessagesAsync(CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
-                List<string> outputMessage = await this.meshService.RetrieveMessagesAsync(authorizationToken: token);
+
+                List<string> outputMessage =
+                    await this.meshService.RetrieveMessagesAsync(authorizationToken: token, cancellationToken);
 
                 return outputMessage;
             });
 
-        public ValueTask<bool> AcknowledgeMessageAsync(string messageId) =>
+        public ValueTask<bool> AcknowledgeMessageAsync(
+            string messageId,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateTrackMessageArgs(messageId);
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
 
-                return await this.meshService.AcknowledgeMessageAsync(messageId, authorizationToken: token);
+                return await this.meshService
+                    .AcknowledgeMessageAsync(messageId, authorizationToken: token, cancellationToken);
             });
 
         private static void SetHeader(Message message, string key, string value)
