@@ -39,7 +39,10 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: invalidMessageId, content: outputStream);
+                .RetrieveMessageAsync(
+                    messageId: invalidMessageId,
+                    outputStream: outputStream,
+                    cancellationToken: TestContext.Current.CancellationToken);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
@@ -78,7 +81,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: randomMessageId, content: nullOutputStream);
+                .RetrieveMessageAsync(messageId: randomMessageId, outputStream: nullOutputStream);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
@@ -117,7 +120,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: randomMessageId, content: nonEmptyOutputStream);
+                .RetrieveMessageAsync(messageId: randomMessageId, outputStream: nonEmptyOutputStream);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
@@ -157,7 +160,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: randomMessageId, content: backingStream);
+                .RetrieveMessageAsync(messageId: randomMessageId, outputStream: backingStream);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
@@ -202,7 +205,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: randomMessageId, content: outputStream);
+                .RetrieveMessageAsync(messageId: randomMessageId, outputStream: outputStream);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
@@ -262,7 +265,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: randomMessageId, content: outputStream);
+                .RetrieveMessageAsync(messageId: randomMessageId, outputStream: outputStream);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);

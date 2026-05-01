@@ -49,7 +49,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
             TryCatch(async () =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                ValidateMeshMessageOnSendMessage(message, authorizationToken);
+                ValidateMeshMessageOnSendMessage(message, fileContent, authorizationToken);
 
                 string chunkRange = GetKeyStringValue("mex-chunk-range", message.Headers)
                     .Replace("{", string.Empty)

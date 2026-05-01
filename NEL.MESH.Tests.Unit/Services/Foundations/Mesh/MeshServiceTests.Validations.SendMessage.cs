@@ -105,6 +105,10 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                 values: "Text is required");
 
             invalidMeshException.AddData(
+                key: "fileContent",
+                values: "Content is required");
+
+            invalidMeshException.AddData(
                 key: "mex-from",
                 values: "Header value is required");
 
@@ -188,7 +192,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> addMessageTask =
-                this.meshService.SendMessageAsync(inputFileMessage, fileContent: null, authorizationToken);
+                this.meshService.SendMessageAsync(
+                    inputFileMessage,
+                    fileContent: GetRandomByteArray(),
+                    authorizationToken,
+                    cancellationToken: TestContext.Current.CancellationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>
@@ -229,7 +237,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> addMessageTask =
-                this.meshService.SendMessageAsync(randomMessage, fileContent: null, invalidAuthorizationToken);
+                this.meshService.SendMessageAsync(randomMessage, fileContent: GetRandomByteArray(), invalidAuthorizationToken);
 
             MeshValidationException actualMeshValidationException =
                 await Assert.ThrowsAsync<MeshValidationException>(() =>

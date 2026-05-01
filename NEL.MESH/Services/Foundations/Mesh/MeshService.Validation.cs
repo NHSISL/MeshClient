@@ -25,7 +25,10 @@ namespace NEL.MESH.Services.Foundations.Mesh
         {
             if (response.IsSuccessStatusCode == false)
             {
-                string body = await response.Content.ReadAsStringAsync(cancellationToken);
+                string body = response.Content is not null
+                    ? await response.Content.ReadAsStringAsync(cancellationToken)
+                    : string.Empty;
+
                 SendMessageErrorResponse error;
 
                 try
@@ -76,13 +79,18 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
-        private static void ValidateMeshMessageOnSendMessage(Message message, string authorizationToken)
+        private static void ValidateMeshMessageOnSendMessage(
+            Message message,
+            byte[] fileContent,
+            string authorizationToken)
         {
             ValidateMessageIsNotNull(message);
             ValidateHeadersIsNotNull(message);
+
             Validate<InvalidMeshException>(
                 message: "Invalid message, please correct errors and try again.",
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"),
+                (Rule: IsInvalid(fileContent), Parameter: "fileContent"),
                 (Rule: IsInvalid(message.Headers, "mex-from"), Parameter: "mex-from"),
                 (Rule: IsInvalid(message.Headers, "mex-to"), Parameter: "mex-to"),
                 (Rule: IsInvalid(message.Headers, "mex-workflowid"), Parameter: "mex-workflowid"),

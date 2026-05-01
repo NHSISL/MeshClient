@@ -1,8 +1,9 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -32,12 +33,15 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             this.meshServiceMock.Setup(service =>
                 service.RetrieveMessageAsync(
-                    inputMessageId, randomToken, It.IsAny<Stream>(), 1))
+                    inputMessageId, randomToken, It.IsAny<Stream>(), 1, It.IsAny<CancellationToken>()))
                         .ReturnsAsync(outputMessage);
 
             // when
             Message actualMessage = await this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: inputMessageId, content: outputStream);
+                .RetrieveMessageAsync(
+                    messageId: inputMessageId,
+                    outputStream: outputStream,
+                    cancellationToken: TestContext.Current.CancellationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
@@ -48,7 +52,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             this.meshServiceMock.Verify(service =>
                 service.RetrieveMessageAsync(
-                    inputMessageId, randomToken, It.IsAny<Stream>(), 1),
+                    inputMessageId, randomToken, It.IsAny<Stream>(), 1, It.IsAny<CancellationToken>()),
                         Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();

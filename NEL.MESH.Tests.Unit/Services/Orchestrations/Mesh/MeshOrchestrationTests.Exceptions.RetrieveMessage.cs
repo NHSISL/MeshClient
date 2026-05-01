@@ -1,4 +1,4 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
@@ -35,7 +35,10 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> sendMessageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(someMessageId, content: new MemoryStream());
+                .RetrieveMessageAsync(
+                    someMessageId,
+                    outputStream: new MemoryStream(),
+                    cancellationToken: TestContext.Current.CancellationToken);
 
             MeshOrchestrationDependencyValidationException actualMeshOrchestrationDependencyValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationDependencyValidationException>(sendMessageTask.AsTask);
@@ -71,7 +74,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> sendMessageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(someMessageId, content: new MemoryStream());
+                .RetrieveMessageAsync(someMessageId, outputStream: new MemoryStream());
 
             MeshOrchestrationDependencyException actualMeshOrchestrationDependencyException =
                 await Assert.ThrowsAsync<MeshOrchestrationDependencyException>(sendMessageTask.AsTask);
@@ -111,7 +114,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> sendMessageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(someMessageId, content: new MemoryStream());
+                .RetrieveMessageAsync(someMessageId, outputStream: new MemoryStream());
 
             MeshOrchestrationServiceException actualMeshOrchestrationServiceException =
                 await Assert.ThrowsAsync<MeshOrchestrationServiceException>(sendMessageTask.AsTask);

@@ -19,7 +19,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
 
         ValueTask<Message> RetrieveMessageAsync(
             string messageId,
-            Stream content,
+            Stream outputStream,
             CancellationToken cancellationToken = default);
 
         ValueTask<bool> AcknowledgeMessageAsync(string messageId, CancellationToken cancellationToken = default);

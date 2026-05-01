@@ -41,7 +41,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<byte[]>()))
+                    It.IsAny<byte[]>(),
+                    It.IsAny<CancellationToken>()))
                         .ReturnsAsync(dependencyValidationResponseMessage);
 
             var httpRequestException =
@@ -62,7 +63,11 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> sendMessageTask =
-                this.meshService.SendMessageAsync(someMessage, fileContent: null, authorizationToken);
+                this.meshService.SendMessageAsync(
+                    someMessage,
+                    fileContent: GetRandomByteArray(),
+                    authorizationToken,
+                    cancellationToken: TestContext.Current.CancellationToken);
 
             MeshDependencyValidationException actualMeshDependencyValidationException =
                 await Assert.ThrowsAsync<MeshDependencyValidationException>(sendMessageTask.AsTask);
@@ -84,7 +89,8 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
-                    It.IsAny<byte[]>()),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -134,7 +140,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> sendMessageTask =
-                this.meshService.SendMessageAsync(someMessage, fileContent: null, authorizationToken);
+                this.meshService.SendMessageAsync(someMessage, fileContent: GetRandomByteArray(), authorizationToken);
 
             MeshDependencyException actualMeshDependencyException =
                 await Assert.ThrowsAsync<MeshDependencyException>(sendMessageTask.AsTask);
@@ -205,7 +211,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> sendMessageTask =
-                this.meshService.SendMessageAsync(someMessage, fileContent: null, authorizationToken);
+                this.meshService.SendMessageAsync(someMessage, fileContent: GetRandomByteArray(), authorizationToken);
 
             MeshServiceException actualMeshServiceException =
                 await Assert.ThrowsAsync<MeshServiceException>(sendMessageTask.AsTask);
@@ -244,7 +250,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             // when
             ValueTask<Message> sendMessageTask =
-                this.meshService.SendMessageAsync(someMessage, fileContent: null, authorizationToken,
+                this.meshService.SendMessageAsync(someMessage, fileContent: GetRandomByteArray(), authorizationToken,
                     cancellationTokenSource.Token);
 
             // then

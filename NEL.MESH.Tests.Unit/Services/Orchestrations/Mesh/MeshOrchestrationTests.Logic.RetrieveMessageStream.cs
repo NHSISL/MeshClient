@@ -49,7 +49,10 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             Message actualMessage = await this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: inputMessageId, content: outputStream, inputCancellationToken);
+                .RetrieveMessageAsync(
+                    messageId: inputMessageId,
+                    outputStream: outputStream,
+                    inputCancellationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
@@ -124,7 +127,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             Message actualMessage = await this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: inputMessageId, content: outputStream, inputCancellationToken);
+                .RetrieveMessageAsync(messageId: inputMessageId, outputStream: outputStream, inputCancellationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(chunk1Message);

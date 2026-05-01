@@ -102,12 +102,12 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
 
         public ValueTask<Message> RetrieveMessageAsync(
             string messageId,
-            Stream content,
+            Stream outputStream,
             CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                ValidateRetrieveMessageArgs(messageId, content);
+                ValidateRetrieveMessageArgs(messageId, outputStream);
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
 
@@ -115,7 +115,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                     await this.meshService.RetrieveMessageAsync(
                         messageId,
                         authorizationToken: token,
-                        outputStream: content,
+                        outputStream: outputStream,
                         chunkPart: 1,
                         cancellationToken);
 
@@ -143,13 +143,13 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                         await this.meshService.RetrieveMessageAsync(
                             messageId,
                             authorizationToken: token,
-                            outputStream: content,
+                            outputStream: outputStream,
                             chunkPart: chunkId,
                             cancellationToken);
                     }
                 }
 
-                content.Seek(0, SeekOrigin.Begin);
+                outputStream.Seek(0, SeekOrigin.Begin);
 
                 return outputMessage;
             });
