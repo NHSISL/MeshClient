@@ -21,7 +21,8 @@ namespace NEL.MESH.Tests.Unit.Clients.Mailboxes
         {
             // given
             var expectedMeshClientValidationException = new MeshClientValidationException(
-                innerException: orchestrationValidationException.InnerException as Xeption);
+                innerException: orchestrationValidationException.InnerException as Xeption,
+                data: orchestrationValidationException.InnerException.Data);
 
             this.meshOrchestrationServiceMock.Setup(service =>
                 service.HandshakeAsync(It.IsAny<CancellationToken>()))

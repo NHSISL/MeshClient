@@ -30,12 +30,14 @@ namespace NEL.MESH.Clients.Mailboxes
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshOrchestrationValidationException.InnerException as Xeption);
+                    meshOrchestrationValidationException.InnerException as Xeption,
+                    meshOrchestrationValidationException.InnerException.Data);
             }
             catch (MeshOrchestrationDependencyValidationException meshOrchestrationDependencyValidationException)
             {
                 throw new MeshClientValidationException(
-                    meshOrchestrationDependencyValidationException.InnerException as Xeption);
+                    meshOrchestrationDependencyValidationException.InnerException as Xeption,
+                    meshOrchestrationDependencyValidationException.InnerException.Data);
             }
             catch (MeshOrchestrationDependencyException meshOrchestrationDependencyException)
             {
