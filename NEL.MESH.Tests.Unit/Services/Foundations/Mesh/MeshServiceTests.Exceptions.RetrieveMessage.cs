@@ -2,8 +2,11 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -28,7 +31,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Setup(broker =>
                 broker.GetMessagesAsync(
-                    It.IsAny<string>()))
+                    It.IsAny<string>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(response);
 
             var httpRequestException =
@@ -55,7 +58,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshDependencyValidationException.Should().BeEquivalentTo(expectedMeshDependencyValidationException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.GetMessagesAsync(It.IsAny<string>()),
+                broker.GetMessagesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -73,7 +76,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Setup(broker =>
                 broker.GetMessagesAsync(
-                    It.IsAny<string>()))
+                    It.IsAny<string>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(response);
 
             var httpRequestException =
@@ -99,7 +102,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshDependencyException.Should().BeEquivalentTo(expectedMeshDependencyException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.GetMessagesAsync(It.IsAny<string>()),
+                broker.GetMessagesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
                     Times.Once);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
@@ -120,7 +123,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
 
             this.meshBrokerMock.Setup(broker =>
                 broker.GetMessagesAsync(
-                    It.IsAny<string>()))
+                    It.IsAny<string>(), It.IsAny<CancellationToken>()))
                         .ReturnsAsync(response);
 
             var httpRequestException =
@@ -146,8 +149,72 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             actualMeshServiceException.Should().BeEquivalentTo(expectedMeshServiceException);
 
             this.meshBrokerMock.Verify(broker =>
-                broker.GetMessagesAsync(It.IsAny<string>()),
+                broker.GetMessagesAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
                     Times.Once);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowOperationCanceledExceptionOnRetrieveMessagesIfCancellationRequestedAsync()
+        {
+            // given
+            string authorizationToken = GetRandomString();
+            using var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.Cancel();
+
+            // when
+            ValueTask<List<string>> retrieveMessagesTask =
+                this.meshService.RetrieveMessagesAsync(authorizationToken, cancellationTokenSource.Token);
+
+            // then
+            await Assert.ThrowsAsync<OperationCanceledException>(retrieveMessagesTask.AsTask);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowOperationCanceledExceptionOnRetrieveMessageIfCancellationRequestedAsync()
+        {
+            // given
+            string messageId = GetRandomString();
+            string authorizationToken = GetRandomString();
+            using var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.Cancel();
+
+            // when
+            ValueTask<Message> retrieveMessageTask =
+                this.meshService.RetrieveMessageAsync(
+                    messageId,
+                    authorizationToken,
+                    cancellationToken: cancellationTokenSource.Token);
+
+            // then
+            await Assert.ThrowsAsync<OperationCanceledException>(retrieveMessageTask.AsTask);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowOperationCanceledExceptionOnRetrieveMessageStreamIfCancellationRequestedAsync()
+        {
+            // given
+            string messageId = GetRandomString();
+            string authorizationToken = GetRandomString();
+            using MemoryStream outputStream = new MemoryStream();
+            using var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.Cancel();
+
+            // when
+            ValueTask<Message> retrieveMessageTask =
+                this.meshService.RetrieveMessageAsync(
+                    messageId,
+                    authorizationToken,
+                    outputStream,
+                    cancellationToken: cancellationTokenSource.Token);
+
+            // then
+            await Assert.ThrowsAsync<OperationCanceledException>(retrieveMessageTask.AsTask);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }

@@ -2,10 +2,10 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -34,104 +34,90 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             this.meshConfigurationBroker = meshConfigurationBroker;
         }
 
-        public ValueTask<bool> HandshakeAsync() =>
+        public ValueTask<bool> HandshakeAsync(CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
 
-                return await this.meshService.HandshakeAsync(authorizationToken: token);
+                return await this.meshService.HandshakeAsync(authorizationToken: token, cancellationToken);
             });
 
-        public ValueTask<Message> SendMessageAsync(Message message) =>
+        public ValueTask<Message> SendMessageAsync(
+            Message message,
+            Stream content,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateMessageIsNotNull(message);
+                ValidateSendMessageStreamArgs(message, content);
                 SetHeader(message, "mex-from", this.meshConfigurationBroker.MexFrom);
-                List<Message> chunkedMessages = this.chunkService.SplitMessageIntoChunks(message);
-                ValidateChunksOnSendMessage(chunkedMessages);
+
+                IEnumerable<(Message message, byte[] content)> chunkedMessages =
+                    this.chunkService.SplitStreamIntoChunks(message, content);
+
                 Message outputMessage = null;
 
-                foreach (Message chunkedMessage in chunkedMessages)
+                foreach ((Message chunkedMessage, byte[] chunkContent) in chunkedMessages)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     string token = await this.tokenService.GenerateTokenAsync();
                     ValidateToken(token);
                     chunkedMessage.MessageId = outputMessage?.MessageId;
 
                     Message sentMessage = await this.meshService
-                        .SendMessageAsync(chunkedMessage, authorizationToken: token);
+                        .SendMessageAsync(chunkedMessage, chunkContent, authorizationToken: token, cancellationToken);
 
-                    if (chunkedMessage == chunkedMessages.First())
+                    if (outputMessage is null)
                     {
                         outputMessage = sentMessage;
-                        outputMessage.FileContent = message.FileContent;
                     }
+                }
+
+                if (outputMessage is null)
+                {
+                    ValidateChunksOnSendMessage(new List<Message>());
                 }
 
                 return outputMessage;
             });
 
-        public ValueTask<Message> TrackMessageAsync(string messageId) =>
+        public ValueTask<Message> TrackMessageAsync(
+            string messageId,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
-                ValidateTrackMessageArgs(messageId);
-                string token = await this.tokenService.GenerateTokenAsync();
-                ValidateToken(token);
-                Message outputMessage = await this.meshService.TrackMessageAsync(messageId, authorizationToken: token);
-
-                return outputMessage;
-            });
-
-        [Obsolete("This method is obsolete. Use RetrieveMessageAsync(string messageId, Stream outputStream) " +
-            "instead to avoid memory issues with large files.")]
-        public ValueTask<Message> RetrieveMessageAsync(string messageId) =>
-            TryCatch(async () =>
-            {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateTrackMessageArgs(messageId);
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
 
                 Message outputMessage =
-                    await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token, 1);
-
-                var chunks = outputMessage.Headers
-                    .FirstOrDefault(h => h.Key == "mex-chunk-range")
-                    .Value?
-                    .FirstOrDefault();
-
-                if (chunks != null)
-                {
-                    string chunkRange = chunks.Replace("{", string.Empty).Replace("}", string.Empty);
-                    string[] parts = chunkRange.Split(":");
-                    int totalChunks = int.Parse(parts[1]);
-
-                    for (int chunkId = 2; chunkId <= totalChunks; chunkId++)
-                    {
-                        token = await this.tokenService.GenerateTokenAsync();
-
-                        Message responseMessage =
-                            await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token, chunkId);
-
-                        byte[] fileContent = responseMessage.FileContent;
-                        outputMessage.FileContent = outputMessage.FileContent.Concat(fileContent).ToArray();
-                    }
-                }
+                    await this.meshService.TrackMessageAsync(messageId, authorizationToken: token, cancellationToken);
 
                 return outputMessage;
             });
 
-        public ValueTask<Message> RetrieveMessageAsync(string messageId, Stream outputStream) =>
+        public ValueTask<Message> RetrieveMessageAsync(
+            string messageId,
+            Stream outputStream,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateRetrieveMessageArgs(messageId, outputStream);
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
 
                 Message outputMessage =
-                    await this.meshService.RetrieveMessageAsync(messageId, authorizationToken: token, 1);
-
-                await outputStream.WriteAsync(outputMessage.FileContent);
-                outputMessage.FileContent = null;
+                    await this.meshService.RetrieveMessageAsync(
+                        messageId,
+                        authorizationToken: token,
+                        outputStream: outputStream,
+                        chunkPart: 1,
+                        cancellationToken);
 
                 var chunks = outputMessage.Headers
                     .FirstOrDefault(h => h.Key == "mex-chunk-range")
@@ -142,42 +128,57 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
                 {
                     string chunkRange = chunks.Replace("{", string.Empty).Replace("}", string.Empty);
                     string[] parts = chunkRange.Split(":");
-                    int totalChunks = int.Parse(parts[1]);
+
+                    if (parts.Length < 2 || !int.TryParse(parts[1], out int totalChunks))
+                    {
+                        totalChunks = 1;
+                    }
 
                     for (int chunkId = 2; chunkId <= totalChunks; chunkId++)
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
                         token = await this.tokenService.GenerateTokenAsync();
+                        ValidateToken(token);
 
-                        Message responseMessage =
-                            await this.meshService
-                                .RetrieveMessageAsync(messageId, authorizationToken: token, chunkId);
-
-                        await outputStream.WriteAsync(responseMessage.FileContent);
+                        await this.meshService.RetrieveMessageAsync(
+                            messageId,
+                            authorizationToken: token,
+                            outputStream: outputStream,
+                            chunkPart: chunkId,
+                            cancellationToken);
                     }
                 }
 
+                outputStream.Seek(0, SeekOrigin.Begin);
+
                 return outputMessage;
             });
 
-
-        public ValueTask<List<string>> RetrieveMessagesAsync() =>
+        public ValueTask<List<string>> RetrieveMessagesAsync(CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
-                List<string> outputMessage = await this.meshService.RetrieveMessagesAsync(authorizationToken: token);
+
+                List<string> outputMessage =
+                    await this.meshService.RetrieveMessagesAsync(authorizationToken: token, cancellationToken);
 
                 return outputMessage;
             });
 
-        public ValueTask<bool> AcknowledgeMessageAsync(string messageId) =>
+        public ValueTask<bool> AcknowledgeMessageAsync(
+            string messageId,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateTrackMessageArgs(messageId);
                 string token = await this.tokenService.GenerateTokenAsync();
                 ValidateToken(token);
 
-                return await this.meshService.AcknowledgeMessageAsync(messageId, authorizationToken: token);
+                return await this.meshService
+                    .AcknowledgeMessageAsync(messageId, authorizationToken: token, cancellationToken);
             });
 
         private static void SetHeader(Message message, string key, string value)

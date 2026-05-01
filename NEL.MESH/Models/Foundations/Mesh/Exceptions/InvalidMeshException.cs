@@ -9,7 +9,7 @@ namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
     public class InvalidMeshException : Xeption
     {
         public InvalidMeshException(string message)
-            : base(message) 
+            : base(message)
         { }
     }
 }

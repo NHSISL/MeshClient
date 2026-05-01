@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Tokens.Exceptions;
@@ -24,6 +25,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             try
             {
                 return await returningBooleanFunction();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (NullMeshMessageException nullMeshMessageException)
             {
@@ -73,7 +78,7 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 var failedMeshOrchestrationServiceException =
                     new FailedMeshOrchestrationServiceException(
-                        message: "Failed mesh orchestration service occurred, please contact support", 
+                        message: "Failed mesh orchestration service occurred, please contact support",
                         innerException: exception);
 
                 throw CreateServiceException(failedMeshOrchestrationServiceException);
@@ -86,6 +91,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             {
                 return await returningMessageFunction();
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (NullMeshMessageException nullMeshMessageException)
             {
                 throw CreateValidationException(nullMeshMessageException);
@@ -97,6 +106,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             catch (InvalidMeshOrchestrationArgsException invalidMeshOrchestrationArgsException)
             {
                 throw CreateValidationException(invalidMeshOrchestrationArgsException);
+            }
+            catch (ChunkValidationException chunkValidationException)
+            {
+                throw CreateAndLogDependencyValidationException(chunkValidationException);
             }
             catch (TokenValidationException tokenValidationException)
             {
@@ -113,6 +126,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             catch (MeshDependencyValidationException meshDependencyValidationException)
             {
                 throw CreateAndLogDependencyValidationException(meshDependencyValidationException);
+            }
+            catch (ChunkServiceException chunkServiceException)
+            {
+                throw CreateDependencyException(chunkServiceException);
             }
             catch (TokenDependencyException tokenDependencyException)
             {
@@ -145,6 +162,10 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
             try
             {
                 return await returningStringsFunction();
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (InvalidTokenException invalidTokenException)
             {

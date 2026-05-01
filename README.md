@@ -94,11 +94,82 @@ NOTE: The key value will have to be requested from NHS Digital as the version on
     "TlsIntermediateCertificates": [""],
     "ClientSigningCertificate": "",
     "ClientSigningCertificatePassword": "",
-    "MaxChunkSizeInMegabytes": ""
+    "MaxChunkSizeInMegabytes": "",
+    "MaxRequestTimeoutInSeconds": 0
   }
 }
 
 ```
+# Example Implementation
+
+```csharp
+using System.IO;
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using NEL.MESH.Clients;
+using NEL.MESH.Models.Configurations;
+using Microsoft.Extensions.Logging;
+
+// Build configuration
+var meshConfiguration = new MeshConfiguration
+{
+    MailboxId = "YOUR_MAILBOX_ID",
+    Password = "YOUR_PASSWORD",
+    SharedKey = "YOUR_SHARED_KEY",
+    Url = "https://msg.int.spine2.ncrs.nhs.uk",
+    MexClientVersion = "ApiDocs==0.0.1",
+    MexOSName = "Windows",
+    MexOSVersion = "#11",
+    TlsRootCertificates = new X509Certificate2Collection(),
+    TlsIntermediateCertificates = new X509Certificate2Collection(),
+    ClientSigningCertificate = new X509Certificate2("path/to/cert.pfx", "cert-password"),
+    MaxChunkSizeInMegabytes = 20,
+
+    // Set to 0 for no timeout (infinite), which is recommended when sending very large files
+    // on slow connections. Set to any positive integer to limit the per-chunk request timeout
+    // in seconds (e.g. 300 for a 5-minute timeout).
+    MaxRequestTimeoutInSeconds = 0
+};
+
+// Optionally provide a logger factory
+ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
+// Create the client
+IMeshClient meshClient = new MeshClient(meshConfiguration, loggerFactory);
+
+// Validate mailbox access (handshake)
+bool isReachable = await meshClient.Mailbox.HandshakeAsync();
+
+// Send a message
+using FileStream fileToSend = File.OpenRead("path/to/file.csv");
+
+NEL.MESH.Models.Foundations.Mesh.Message sentMessage =
+    await meshClient.Mailbox.SendMessageAsync(
+        mexTo: "RECIPIENT_MAILBOX_ID",
+        mexWorkflowId: "YOUR_WORKFLOW_ID",
+        content: fileToSend,
+        mexSubject: "My subject",
+        mexFileName: "file.csv",
+        contentType: "text/csv");
+
+// Track a sent message
+NEL.MESH.Models.Foundations.Mesh.Message trackedMessage =
+    await meshClient.Mailbox.TrackMessageAsync(sentMessage.MessageId);
+
+// Retrieve message IDs from the inbox
+List<string> messageIds = await meshClient.Mailbox.RetrieveMessagesAsync();
+
+// Retrieve a specific message
+using MemoryStream outputStream = new MemoryStream();
+
+NEL.MESH.Models.Foundations.Mesh.Message receivedMessage =
+    await meshClient.Mailbox.RetrieveMessageAsync(messageIds[0], outputStream);
+
+// Acknowledge the message
+bool acknowledged = await meshClient.Mailbox.AcknowledgeMessageAsync(messageIds[0]);
+```
+
+---
 
 # How to Contribute
 If you want to contribute to this project please before hand review the following documents to gain an understanding of the patterns and practices used in building this package:
@@ -106,4 +177,4 @@ If you want to contribute to this project please before hand review the followin
 - [C# Coding Standard](https://github.com/hassanhabib/CSharpCodingStandard)
 - [The Team Standard](https://github.com/hassanhabib/The-Standard-Team)
 
-If you have a question make sure you open an issue.
+To report a bug, please [open a GitHub issue](https://github.com/NHSISL/MeshClient/issues) with as much detail as possible. If you'd like to contribute, feel free to pick up any open issue and submit a pull request with your changes.

@@ -15,7 +15,7 @@ namespace NEL.MESH.Infrastructure
             scriptGenerationService.GenerateBuildScript(
                 branchName: "main",
                 projectName: "NEL.MESH",
-                dotNetVersion: "9.0.100");
+                dotNetVersion: "10.x");
 
             scriptGenerationService.GeneratePrLintScript("main");
         }

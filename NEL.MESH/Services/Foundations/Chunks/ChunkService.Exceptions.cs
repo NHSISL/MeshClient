@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
-using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using Xeptions;
 
 namespace NEL.MESH.Services.Foundations.Chunks
@@ -14,6 +13,7 @@ namespace NEL.MESH.Services.Foundations.Chunks
     internal partial class ChunkService
     {
         private delegate List<Message> RetruningMessageListFunction();
+        private delegate IEnumerable<(Message Message, byte[] Content)> ReturningMessageEnumerableFunction();
 
         private List<Message> TryCatch(RetruningMessageListFunction retruningMessageListFunction)
         {
@@ -24,6 +24,32 @@ namespace NEL.MESH.Services.Foundations.Chunks
             catch (NullMessageChunkException nullMessageChunkException)
             {
                 throw CreateValidationException(nullMessageChunkException);
+            }
+            catch (Exception exception)
+            {
+                var failedChunkServiceException =
+                    new FailedChunkServiceException(
+                        message: "Chunk service error occurred, contact support.",
+                        innerException: exception);
+
+                throw CreateServiceException(failedChunkServiceException);
+            }
+        }
+
+        private IEnumerable<(Message Message, byte[] Content)> TryCatch(
+            ReturningMessageEnumerableFunction returningMessageEnumerableFunction)
+        {
+            try
+            {
+                return returningMessageEnumerableFunction();
+            }
+            catch (NullMessageChunkException nullMessageChunkException)
+            {
+                throw CreateValidationException(nullMessageChunkException);
+            }
+            catch (InvalidStreamChunkException invalidStreamChunkException)
+            {
+                throw CreateValidationException(invalidStreamChunkException);
             }
             catch (Exception exception)
             {

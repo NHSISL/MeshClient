@@ -124,10 +124,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             expectedMessage = GetMessageFromHttpResponseMessageForReceive(
                 responseMessages[0], inputMessage.MessageId);
 
-            expectedMessage.FileContent =
-                    GetMessageFromHttpResponseMessageForReceive(responseMessages[0], inputMessage.MessageId)
-                        .FileContent;
-
             // when
             var actualMessage = await this.meshService
                 .RetrieveMessageAsync(inputMessage.MessageId, authorizationToken);
@@ -194,16 +190,14 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
                     authorizationToken))
                         .ReturnsAsync(responseMessage);
 
-            expectedMessage.FileContent =
-                GetMessageFromHttpResponseMessageForReceive(responseMessage, inputMessage.MessageId)
-                    .FileContent;
+            expectedMessage = GetMessageFromHttpResponseMessageForReceive(responseMessage, inputMessage.MessageId);
 
             // when
             var actualMessage = await this.meshService
                 .RetrieveMessageAsync(inputMessage.MessageId, authorizationToken, chunkPartToRetrieve);
 
             // then
-            actualMessage.FileContent.Should().BeEquivalentTo(expectedMessage.FileContent);
+            actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             this.meshBrokerMock.Verify(broker =>
                 broker.GetMessageAsync(

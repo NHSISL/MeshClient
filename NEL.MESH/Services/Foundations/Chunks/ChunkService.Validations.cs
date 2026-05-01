@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.IO;
 using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
 
@@ -14,6 +15,34 @@ namespace NEL.MESH.Services.Foundations.Chunks
             if (message is null)
             {
                 throw new NullMessageChunkException(message: "Message chunk is null.");
+            }
+        }
+
+        private static void ValidateStream(Stream content)
+        {
+            if (content is null)
+            {
+                throw new InvalidStreamChunkException(message: "Stream is null.");
+            }
+
+            if (!content.CanRead)
+            {
+                throw new InvalidStreamChunkException(message: "Stream is not readable.");
+            }
+
+            if (!content.CanSeek)
+            {
+                throw new InvalidStreamChunkException(message: "Stream must be seekable to determine chunk count.");
+            }
+        }
+
+        private static void ValidateMaxChunkSize(int maxChunkSizeInBytes)
+        {
+            if (maxChunkSizeInBytes <= 0)
+            {
+                throw new InvalidStreamChunkException(
+                    message: "Max chunk size must be greater than zero. " +
+                        "Please check the MaxChunkSizeInMegabytes configuration.");
             }
         }
     }

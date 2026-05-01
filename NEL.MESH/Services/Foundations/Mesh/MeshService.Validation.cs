@@ -4,8 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh.ExternalModels;
@@ -16,11 +19,16 @@ namespace NEL.MESH.Services.Foundations.Mesh
 {
     internal partial class MeshService
     {
-        private static void ValidateResponse(HttpResponseMessage response)
+        private static async Task ValidateResponseAsync(
+            HttpResponseMessage response,
+            CancellationToken cancellationToken = default)
         {
             if (response.IsSuccessStatusCode == false)
             {
-                string body = response.Content.ReadAsStringAsync().Result;
+                string body = response.Content is not null
+                    ? await response.Content.ReadAsStringAsync(cancellationToken)
+                    : string.Empty;
+
                 SendMessageErrorResponse error;
 
                 try
@@ -63,32 +71,6 @@ namespace NEL.MESH.Services.Foundations.Mesh
             }
         }
 
-        private static void ValidateReceivedResponse(HttpResponseMessage response)
-        {
-            if (response.IsSuccessStatusCode == false)
-            {
-                string body = response.Content.ReadAsStringAsync().Result;
-                SendMessageErrorResponse error = JsonConvert.DeserializeObject<SendMessageErrorResponse>(body);
-                string message = $"{(int)response.StatusCode} - {response.ReasonPhrase}";
-
-                var httpRequestException =
-                   new HttpRequestException(
-                       message: message,
-                       inner: null,
-                       statusCode: response.StatusCode);
-
-                if (error != null)
-                {
-                    httpRequestException.Data.Add("MessageId", new List<string> { error.MessageId });
-                    httpRequestException.Data.Add("ErrorEvent", new List<string> { error.ErrorEvent });
-                    httpRequestException.Data.Add("ErrorCode", new List<string> { error.ErrorCode });
-                    httpRequestException.Data.Add("ErrorDescription", new List<string> { error.ErrorDescription });
-                }
-
-                throw httpRequestException;
-            }
-        }
-
         private static void ValidateOnHandshake(string authorizationToken)
         {
             Validate<InvalidArgumentsMeshException>(
@@ -97,13 +79,18 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
         }
 
-        private static void ValidateMeshMessageOnSendMessage(Message message, string authorizationToken)
+        private static void ValidateMeshMessageOnSendMessage(
+            Message message,
+            byte[] fileContent,
+            string authorizationToken)
         {
             ValidateMessageIsNotNull(message);
             ValidateHeadersIsNotNull(message);
+
             Validate<InvalidMeshException>(
                 message: "Invalid message, please correct errors and try again.",
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"),
+                (Rule: IsInvalid(fileContent), Parameter: "fileContent"),
                 (Rule: IsInvalid(message.Headers, "mex-from"), Parameter: "mex-from"),
                 (Rule: IsInvalid(message.Headers, "mex-to"), Parameter: "mex-to"),
                 (Rule: IsInvalid(message.Headers, "mex-workflowid"), Parameter: "mex-workflowid"),
@@ -114,8 +101,7 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 (Rule: IsInvalid(message.Headers, "mex-subject", 500), Parameter: "mex-subject"),
                 (Rule: IsInvalid(message.Headers, "mex-localid", 300), Parameter: "mex-localid"),
                 (Rule: IsInvalid(message.Headers, "mex-filename", 300), Parameter: "mex-filename"),
-                (Rule: IsInvalid(message.Headers, "mex-content-checksum", 100), Parameter: "mex-content-checksum"),
-                (Rule: IsInvalid(message.FileContent), Parameter: nameof(Message.FileContent)));
+                (Rule: IsInvalid(message.Headers, "mex-content-checksum", 100), Parameter: "mex-content-checksum"));
         }
 
         private static void ValidateMexChunkRangeOnMultiPartFile(Message message)
@@ -141,6 +127,19 @@ namespace NEL.MESH.Services.Foundations.Mesh
                     "please correct the errors and try again.",
                 (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
                 (Rule: IsInvalid(authorizationToken), Parameter: "Token"));
+        }
+
+        public static void ValidateRetrieveMessageStreamArguments(
+            string messageId,
+            string authorizationToken,
+            Stream outputStream)
+        {
+            Validate<InvalidArgumentsMeshException>(
+                message: "Invalid MESH argument validation errors occurred, " +
+                    "please correct the errors and try again.",
+                (Rule: IsInvalid(messageId), Parameter: nameof(Message.MessageId)),
+                (Rule: IsInvalid(authorizationToken), Parameter: "Token"),
+                (Rule: IsInvalidOutputStream(outputStream), Parameter: nameof(outputStream)));
         }
 
         public static void ValidateRetrieveMessagesArguments(string authorizationToken)
@@ -223,6 +222,12 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 Condition = IsInvalidKeyLength(dictionary, key, maxLength),
                 Message = $"Text length should not be greater than {maxLength}"
             };
+
+        private static dynamic IsInvalidOutputStream(Stream stream) => new
+        {
+            Condition = stream is null || !stream.CanWrite || !stream.CanSeek,
+            Message = "Stream is required, must be writable and seekable"
+        };
 
         private static dynamic IsArgInvalid(string text) => new
         {

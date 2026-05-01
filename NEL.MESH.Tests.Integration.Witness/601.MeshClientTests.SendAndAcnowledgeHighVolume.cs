@@ -5,6 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
@@ -35,11 +37,12 @@ namespace NEL.MESH.Tests.Integration.Witness
             {
                 string content = GetRandomString();
                 string mexLocalId = Guid.NewGuid().ToString();
+                using MemoryStream sendStream = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
                 Models.Foundations.Mesh.Message sendMessageResponse = await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    content,
+                    sendStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -65,7 +68,8 @@ namespace NEL.MESH.Tests.Integration.Witness
 
                 foreach (var item in messageIds)
                 {
-                    await this.meshClient.Mailbox.RetrieveMessageAsync(item);
+                    using MemoryStream outputStream = new MemoryStream();
+                    await this.meshClient.Mailbox.RetrieveMessageAsync(item, outputStream);
                     await this.meshClient.Mailbox.AcknowledgeMessageAsync(item);
                 }
 
@@ -96,15 +100,16 @@ namespace NEL.MESH.Tests.Integration.Witness
 
             for (int i = 0; i < messageCount; i++)
             {
-                // Generate unique content for each message
                 string content = GetRandomString();
                 string mexLocalId = Guid.NewGuid().ToString();
 
                 // when
+                using MemoryStream sendStream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
                 Models.Foundations.Mesh.Message sendMessageResponse = await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    content,
+                    sendStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,

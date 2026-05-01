@@ -2,6 +2,7 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.IO;
 using System.Threading.Tasks;
 using Force.DeepCloner;
 using NEL.MESH.Clients;
@@ -25,9 +26,11 @@ namespace NEL.MESH.Tests.Integration.Witness
             string invalidMessageId = "20231117125902185257_995DE8";
             //string invalidMessageId = "20231123151625288395_ADB038";
 
+            using MemoryStream outputStream = new MemoryStream();
+
             // when
             Message retrievedMessage =
-                    await meshClient.Mailbox.RetrieveMessageAsync(invalidMessageId);
+                    await meshClient.Mailbox.RetrieveMessageAsync(invalidMessageId, outputStream);
 
             // then
         }

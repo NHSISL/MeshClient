@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
@@ -25,8 +26,10 @@ namespace NEL.MESH.Tests.Integration.Witness
             List<string> errorDescription = new List<string> { "Message does not exist" };
 
             // when
+            using MemoryStream outputStream = new MemoryStream();
+
             ValueTask<Message> retrievedMessageTask =
-                    this.meshClient.Mailbox.RetrieveMessageAsync(invalidMessageId);
+                    this.meshClient.Mailbox.RetrieveMessageAsync(invalidMessageId, outputStream);
 
             MeshClientValidationException actualMeshClientValidationException =
                await Assert.ThrowsAsync<MeshClientValidationException>(retrievedMessageTask.AsTask);

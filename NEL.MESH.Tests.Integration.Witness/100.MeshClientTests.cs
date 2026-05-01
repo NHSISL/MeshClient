@@ -157,11 +157,9 @@ namespace NEL.MESH.Tests.Integration.Witness
 
         private static Filler<Message> CreateMessageFiller(string content)
         {
-            byte[] fileContent = Encoding.UTF8.GetBytes(content);
             var filler = new Filler<Message>();
 
             filler.Setup()
-                .OnProperty(message => message.FileContent).Use(fileContent)
                 .OnProperty(message => message.Headers).Use(new Dictionary<string, List<string>>());
 
             return filler;

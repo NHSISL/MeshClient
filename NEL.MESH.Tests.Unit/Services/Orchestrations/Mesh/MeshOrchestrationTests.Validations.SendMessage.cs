@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -29,7 +30,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .SendMessageAsync(message: nullMessage);
+                .SendMessageAsync(message: nullMessage, content: new MemoryStream());
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
@@ -51,16 +52,17 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         {
             // given
             string invalidToken = invalidText;
-            string randomToken = GetRandomString();
+            byte[] randomBytes = new byte[] { 1, 2, 3 };
             Message randomMessage = CreateRandomSendMessage();
             Message inputMessage = randomMessage;
-            int randomChunkCount = GetRandomNumber();
-            List<Message> randomChunkedMessages = CreateRandomChunkedSendMessages(randomChunkCount);
-            List<Message> chunkedInputMessages = randomChunkedMessages;
+            using MemoryStream inputStream = new MemoryStream(randomBytes);
 
             this.chunkServiceMock.Setup(service =>
-                service.SplitMessageIntoChunks(inputMessage))
-                    .Returns(chunkedInputMessages);
+                service.SplitStreamIntoChunks(inputMessage, inputStream))
+                    .Returns(new List<(Message, byte[])>
+                    {
+                        (CreateRandomSendMessage(), randomBytes)
+                    });
 
             var invalidTokenException = new InvalidTokenException(message: "Token is invalid.");
 
@@ -78,7 +80,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .SendMessageAsync(message: randomMessage);
+                .SendMessageAsync(message: randomMessage, content: inputStream);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
@@ -88,7 +90,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 .BeEquivalentTo(expectedMeshOrchestrationValidationException);
 
             this.chunkServiceMock.Verify(service =>
-                service.SplitMessageIntoChunks(inputMessage),
+                service.SplitStreamIntoChunks(inputMessage, inputStream),
                     Times.Once);
 
             this.tokenServiceMock.Verify(service =>
@@ -108,10 +110,12 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // given
             Message randomMessage = CreateRandomSendMessage();
             Message inputMessage = randomMessage;
+            byte[] randomBytes = new byte[] { 1, 2, 3 };
+            using MemoryStream inputStream = new MemoryStream(randomBytes);
 
             this.chunkServiceMock.Setup(service =>
-                service.SplitMessageIntoChunks(inputMessage))
-                    .Returns(invalidData);
+                service.SplitStreamIntoChunks(inputMessage, inputStream))
+                    .Returns(new List<(Message, byte[])>());
 
             var invalidMeshOrchestrationArgsException = new InvalidMeshOrchestrationArgsException(
                 message: "Invalid mesh orchestration argument validation errors occurred, " +
@@ -127,7 +131,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .SendMessageAsync(message: randomMessage);
+                .SendMessageAsync(message: randomMessage, content: inputStream);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
@@ -137,7 +141,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 .BeEquivalentTo(expectedMeshOrchestrationValidationException);
 
             this.chunkServiceMock.Verify(service =>
-                service.SplitMessageIntoChunks(inputMessage),
+                service.SplitStreamIntoChunks(inputMessage, inputStream),
                     Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();

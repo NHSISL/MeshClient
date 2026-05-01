@@ -3,9 +3,12 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.IO;
 using Force.DeepCloner;
 using NEL.MESH.Brokers.Mesh;
+using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
 
 namespace NEL.MESH.Services.Foundations.Chunks
@@ -19,58 +22,74 @@ namespace NEL.MESH.Services.Foundations.Chunks
             this.meshConfigurationBroker = meshConfigurationBroker;
         }
 
-        public List<Message> SplitMessageIntoChunks(Message message) =>
+        public IEnumerable<(Message message, byte[] content)> SplitStreamIntoChunks(
+            Message messageTemplate,
+            Stream content) =>
             TryCatch(() =>
             {
-                ValidateMessageIsNotNull(message);
+                ValidateMessageIsNotNull(messageTemplate);
+                ValidateStream(content);
+                content.Seek(0, SeekOrigin.Begin);
                 int maxPartSize = this.meshConfigurationBroker.MaxChunkSizeInBytes;
+                ValidateMaxChunkSize(maxPartSize);
+                long totalChunksLong = (long)Math.Ceiling((double)content.Length / maxPartSize);
+                int totalChunks = (int)Math.Min(totalChunksLong, int.MaxValue);
+                totalChunks = Math.Max(totalChunks, 1);
 
-                if (message.FileContent.Length <= maxPartSize)
-                {
-                    SetMexChunkRange(message, item: 1, itemCount: 1);
-
-                    return new List<Message> { message };
-                }
-
-                List<byte[]> parts = GetChunkedByteArrayContent(message, maxPartSize);
-                List<Message> chunkedMessages = ComposeNewMessagesFromChunks(message, parts);
-
-                return chunkedMessages;
+                return ReadChunksFromStream(messageTemplate, content, maxPartSize, totalChunks);
             });
 
-        private static List<Message> ComposeNewMessagesFromChunks(Message message, List<byte[]> parts)
+        private static IEnumerable<(Message Message, byte[] Content)> ReadChunksFromStream(
+            Message messageTemplate,
+            Stream content,
+            int maxPartSize,
+            int totalChunks)
         {
-            List<Message> chunkedMessages = new List<Message>();
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(maxPartSize);
 
-            for (int i = 0; i < parts.Count; i++)
+            try
             {
-                Message chunk = new Message
+                for (int chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++)
                 {
-                    Headers = message.Headers.DeepClone(),
-                    FileContent = parts[i]
-                };
+                    int bytesRead = 0;
 
-                SetMexChunkRange(chunk, item: i + 1, itemCount: parts.Count);
-                chunkedMessages.Add(chunk);
+                    try
+                    {
+                        while (bytesRead < maxPartSize)
+                        {
+                            int read = content.Read(buffer, bytesRead, maxPartSize - bytesRead);
+
+                            if (read == 0)
+                            {
+                                break;
+                            }
+
+                            bytesRead += read;
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new InvalidStreamChunkException(
+                            message: $"Failed to read chunk {chunkIndex + 1} from stream: {exception.Message}");
+                    }
+
+                    byte[] chunkData = new byte[bytesRead];
+                    Buffer.BlockCopy(buffer, 0, chunkData, 0, bytesRead);
+
+                    Message chunk = new Message
+                    {
+                        Headers = messageTemplate.Headers.DeepClone()
+                    };
+
+                    SetMexChunkRange(chunk, item: chunkIndex + 1, itemCount: totalChunks);
+
+                    yield return (chunk, chunkData);
+                }
             }
-
-            return chunkedMessages;
-        }
-
-        private static List<byte[]> GetChunkedByteArrayContent(Message message, int chunkSizeInBytes)
-        {
-            byte[] byteContent = message.FileContent;
-            List<byte[]> chunkedContent = new List<byte[]>();
-
-            for (int i = 0; i < byteContent.Length; i += chunkSizeInBytes)
+            finally
             {
-                int chunkSize = Math.Min(chunkSizeInBytes, byteContent.Length - i);
-                byte[] chunk = new byte[chunkSize];
-                Array.Copy(byteContent, i, chunk, 0, chunkSize);
-                chunkedContent.Add(chunk);
+                ArrayPool<byte>.Shared.Return(buffer);
             }
-
-            return chunkedContent;
         }
 
         private static void SetMexChunkRange(Message message, int item, int itemCount)

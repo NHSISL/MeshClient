@@ -9,7 +9,7 @@ namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
     public class NullHttpResponseMessageException : Xeption
     {
         public NullHttpResponseMessageException(string message)
-            : base(message) 
+            : base(message)
         { }
     }
 }

@@ -1,8 +1,10 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
 using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -31,11 +33,13 @@ namespace NEL.MESH.Tests.Integration
             string contentType = "text/plain";
             string contentEncoding = "";
 
+            using MemoryStream sendStream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    content,
+                    sendStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
