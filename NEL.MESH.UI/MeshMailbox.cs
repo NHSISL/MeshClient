@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Force.DeepCloner;
@@ -195,9 +196,29 @@ namespace NEL.MESH.UI
         private static X509Certificate2 GetPkcs12Certificate(string value, string password = "")
         {
             byte[] certBytes = Convert.FromBase64String(value);
-            var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
 
-            return certificate;
+            try
+            {
+                return X509CertificateLoader.LoadPkcs12(
+                    certBytes,
+                    password,
+                    X509KeyStorageFlags.Exportable);
+            }
+            catch (CryptographicException)
+            {
+                var fallbackCert = X509CertificateLoader.LoadCertificate(certBytes);
+
+                if (!fallbackCert.HasPrivateKey)
+                {
+                    fallbackCert.Dispose();
+
+                    throw new CryptographicException(
+                        "Failed to load PKCS#12 certificate and fallback " +
+                        "certificate does not contain a private key.");
+                }
+
+                return fallbackCert;
+            }
         }
 
         private void cbApplications_SelectedIndexChanged(object sender, EventArgs e)

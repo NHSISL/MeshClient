@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using NEL.MESH.Clients;
@@ -100,9 +101,30 @@ namespace NEL.MESH.Tests.Integration
         private static X509Certificate2 GetPkcs12Certificate(string value, string password = "")
         {
             byte[] certBytes = Convert.FromBase64String(value);
-            var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
 
-            return certificate;
+            X509KeyStorageFlags flags = OperatingSystem.IsWindows()
+                ? X509KeyStorageFlags.Exportable
+                : X509KeyStorageFlags.EphemeralKeySet;
+
+            try
+            {
+                return X509CertificateLoader.LoadPkcs12(certBytes, password, flags);
+            }
+            catch (CryptographicException)
+            {
+                var fallbackCert = X509CertificateLoader.LoadCertificate(certBytes);
+
+                if (!fallbackCert.HasPrivateKey)
+                {
+                    fallbackCert.Dispose();
+
+                    throw new CryptographicException(
+                        "Failed to load PKCS#12 certificate and fallback " +
+                        "certificate does not contain a private key.");
+                }
+
+                return fallbackCert;
+            }
         }
 
         private static string GetRandomString(int wordMinLength = 2, int wordMaxLength = 100) =>
