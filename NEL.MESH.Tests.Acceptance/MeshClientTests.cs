@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using NEL.MESH.Clients;
@@ -101,9 +102,18 @@ namespace NEL.MESH.Tests.Acceptance
         private static X509Certificate2 GetPkcs12Certificate(string value, string password = "")
         {
             byte[] certBytes = Convert.FromBase64String(value);
-            var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
 
-            return certificate;
+            try
+            {
+                return X509CertificateLoader.LoadPkcs12(
+                    certBytes,
+                    password,
+                    X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);
+            }
+            catch (CryptographicException)
+            {
+                return X509CertificateLoader.LoadCertificate(certBytes);
+            }
         }
 
         private static string GetRandomString(
