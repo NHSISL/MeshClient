@@ -197,17 +197,27 @@ namespace NEL.MESH.UI
         {
             byte[] certBytes = Convert.FromBase64String(value);
 
-            X509KeyStorageFlags flags = OperatingSystem.IsWindows()
-                ? X509KeyStorageFlags.Exportable
-                : X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable;
-
             try
             {
-                return X509CertificateLoader.LoadPkcs12(certBytes, password, flags);
+                return X509CertificateLoader.LoadPkcs12(
+                    certBytes,
+                    password,
+                    X509KeyStorageFlags.Exportable);
             }
             catch (CryptographicException)
             {
-                return X509CertificateLoader.LoadCertificate(certBytes);
+                var fallbackCert = X509CertificateLoader.LoadCertificate(certBytes);
+
+                if (!fallbackCert.HasPrivateKey)
+                {
+                    fallbackCert.Dispose();
+
+                    throw new CryptographicException(
+                        "Failed to load PKCS#12 certificate and fallback " +
+                        "certificate does not contain a private key.");
+                }
+
+                return fallbackCert;
             }
         }
 

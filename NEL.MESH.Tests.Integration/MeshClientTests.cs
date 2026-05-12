@@ -104,7 +104,7 @@ namespace NEL.MESH.Tests.Integration
 
             X509KeyStorageFlags flags = OperatingSystem.IsWindows()
                 ? X509KeyStorageFlags.Exportable
-                : X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable;
+                : X509KeyStorageFlags.EphemeralKeySet;
 
             try
             {
@@ -112,7 +112,18 @@ namespace NEL.MESH.Tests.Integration
             }
             catch (CryptographicException)
             {
-                return X509CertificateLoader.LoadCertificate(certBytes);
+                var fallbackCert = X509CertificateLoader.LoadCertificate(certBytes);
+
+                if (!fallbackCert.HasPrivateKey)
+                {
+                    fallbackCert.Dispose();
+
+                    throw new CryptographicException(
+                        "Failed to load PKCS#12 certificate and fallback " +
+                        "certificate does not contain a private key.");
+                }
+
+                return fallbackCert;
             }
         }
 
