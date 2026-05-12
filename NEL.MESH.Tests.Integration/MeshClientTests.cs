@@ -102,12 +102,13 @@ namespace NEL.MESH.Tests.Integration
         {
             byte[] certBytes = Convert.FromBase64String(value);
 
+            X509KeyStorageFlags flags = OperatingSystem.IsWindows()
+                ? X509KeyStorageFlags.Exportable
+                : X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable;
+
             try
             {
-                return X509CertificateLoader.LoadPkcs12(
-                    certBytes,
-                    password,
-                    X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable);
+                return X509CertificateLoader.LoadPkcs12(certBytes, password, flags);
             }
             catch (CryptographicException)
             {
