@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
@@ -320,9 +319,7 @@ namespace NEL.MESH.Brokers.Mesh
 
                 if (chain == null)
                 {
-                    throw new Exception(
-                        "TLS certificate validation failed because no "
-                        + "certificate chain was provided.");
+                    return false;
                 }
 
                 if (hasRootCerts)
@@ -345,13 +342,7 @@ namespace NEL.MESH.Brokers.Mesh
                 chain.ChainPolicy.VerificationFlags =
                     X509VerificationFlags.IgnoreWrongUsage;
 
-                if (cert != null && chain.Build(cert))
-                {
-                    return true;
-                }
-
-                throw new Exception(
-                    chain.ChainStatus.FirstOrDefault().StatusInformation);
+                return cert != null && chain.Build(cert);
             };
 
             return handler;
