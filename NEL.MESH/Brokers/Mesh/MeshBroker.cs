@@ -3,7 +3,6 @@
 // ---------------------------------------------------------------
 
 using System;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
@@ -297,34 +296,54 @@ namespace NEL.MESH.Brokers.Mesh
                 handler.ClientCertificates.Add(this.MeshConfiguration.ClientSigningCertificate);
             }
 
-            if (this.MeshConfiguration.TlsRootCertificates != null
-                || this.MeshConfiguration.TlsRootCertificates.Count > 0)
+            handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
             {
-                handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
+                bool hasRootCerts =
+                    this.MeshConfiguration.TlsRootCertificates != null
+                    && this.MeshConfiguration.TlsRootCertificates.Count > 0;
+
+                bool hasIntermediateCerts =
+                    this.MeshConfiguration.TlsIntermediateCertificates != null
+                    && this.MeshConfiguration.TlsIntermediateCertificates.Count > 0;
+
+                if (!hasRootCerts && !hasIntermediateCerts)
                 {
-                    if (chain != null)
-                    {
-                        chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
-                        chain.ChainPolicy.CustomTrustStore.AddRange(this.MeshConfiguration.TlsRootCertificates);
+                    return sslPolicyErrors == System.Net.Security.SslPolicyErrors.None;
+                }
 
-                        if (this.MeshConfiguration.TlsIntermediateCertificates != null
-                            || this.MeshConfiguration.TlsIntermediateCertificates.Count > 0)
-                        {
-                            chain.ChainPolicy.ExtraStore.AddRange(this.MeshConfiguration.TlsIntermediateCertificates);
-                        }
+                if ((sslPolicyErrors & ~System.Net.Security.SslPolicyErrors
+                    .RemoteCertificateChainErrors) != 0)
+                {
+                    return false;
+                }
 
-                        chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
-                        chain.ChainPolicy.VerificationFlags = X509VerificationFlags.IgnoreWrongUsage;
+                if (chain == null)
+                {
+                    return false;
+                }
 
-                        if (cert != null && chain.Build(cert))
-                        {
-                            return true;
-                        }
-                    }
+                if (hasRootCerts)
+                {
+                    chain.ChainPolicy.TrustMode =
+                        X509ChainTrustMode.CustomRootTrust;
 
-                    throw new Exception(chain.ChainStatus.FirstOrDefault().StatusInformation);
-                };
-            }
+                    chain.ChainPolicy.CustomTrustStore
+                        .AddRange(this.MeshConfiguration.TlsRootCertificates);
+                }
+
+                if (hasIntermediateCerts)
+                {
+                    chain.ChainPolicy.ExtraStore
+                        .AddRange(this.MeshConfiguration.TlsIntermediateCertificates);
+                }
+
+                chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+
+                chain.ChainPolicy.VerificationFlags =
+                    X509VerificationFlags.IgnoreWrongUsage;
+
+                return cert != null && chain.Build(cert);
+            };
 
             return handler;
         }
