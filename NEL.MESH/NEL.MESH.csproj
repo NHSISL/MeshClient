@@ -13,9 +13,10 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageIcon>Mesh.png</PackageIcon>
 		<PackageIconUrl />
-		<Version>3.0.0.0</Version>
-		<AssemblyVersion>3.0.0.0</AssemblyVersion>
-		<FileVersion>3.0.0.0</FileVersion>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Version>3.1.0</Version>
+		<AssemblyVersion>3.1.0.0</AssemblyVersion>
+		<FileVersion>3.1.0.0</FileVersion>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageLicenseExpression></PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/TowerHamletsCCG/MeshClient</PackageProjectUrl>
@@ -23,7 +24,7 @@
 		<RepositoryUrl>https://github.com/TowerHamletsCCG/MeshClient</RepositoryUrl>
 		<RepositoryType>Github</RepositoryType>
 		<PackageTags>.NET Client MESH Messaging</PackageTags>
-		<PackageReleaseNotes>This release contains breaking changes.  Support was added for large file handling.</PackageReleaseNotes>
+		<PackageReleaseNotes>SSL Certificate Chain Validation Fix</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -35,6 +36,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 		<None Include="License.txt">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
