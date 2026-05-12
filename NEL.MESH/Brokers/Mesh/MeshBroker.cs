@@ -312,31 +312,42 @@ namespace NEL.MESH.Brokers.Mesh
                     return sslPolicyErrors == System.Net.Security.SslPolicyErrors.None;
                 }
 
-                if (chain != null)
+                if ((sslPolicyErrors & ~System.Net.Security.SslPolicyErrors
+                    .RemoteCertificateChainErrors) != 0)
                 {
-                    chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
+                    return false;
+                }
 
-                    if (hasRootCerts)
-                    {
-                        chain.ChainPolicy.CustomTrustStore
-                            .AddRange(this.MeshConfiguration.TlsRootCertificates);
-                    }
+                if (chain == null)
+                {
+                    throw new Exception(
+                        "TLS certificate validation failed because no "
+                        + "certificate chain was provided.");
+                }
 
-                    if (hasIntermediateCerts)
-                    {
-                        chain.ChainPolicy.ExtraStore
-                            .AddRange(this.MeshConfiguration.TlsIntermediateCertificates);
-                    }
+                if (hasRootCerts)
+                {
+                    chain.ChainPolicy.TrustMode =
+                        X509ChainTrustMode.CustomRootTrust;
 
-                    chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+                    chain.ChainPolicy.CustomTrustStore
+                        .AddRange(this.MeshConfiguration.TlsRootCertificates);
+                }
 
-                    chain.ChainPolicy.VerificationFlags =
-                        X509VerificationFlags.IgnoreWrongUsage;
+                if (hasIntermediateCerts)
+                {
+                    chain.ChainPolicy.ExtraStore
+                        .AddRange(this.MeshConfiguration.TlsIntermediateCertificates);
+                }
 
-                    if (cert != null && chain.Build(cert))
-                    {
-                        return true;
-                    }
+                chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+
+                chain.ChainPolicy.VerificationFlags =
+                    X509VerificationFlags.IgnoreWrongUsage;
+
+                if (cert != null && chain.Build(cert))
+                {
+                    return true;
                 }
 
                 throw new Exception(
