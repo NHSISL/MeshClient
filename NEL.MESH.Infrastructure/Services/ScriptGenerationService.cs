@@ -149,30 +149,6 @@ namespace NEL.MESH.Infrastructure.Services
                                 }
                             }
                         }
-                    },
-                    {
-                        "add_tag",
-                        new TagJob(
-                            runsOn: BuildMachines.UbuntuLatest,
-                            dependsOn: "build_windows",
-                            projectRelativePath: $"{projectName}/{projectName}.csproj",
-                            githubToken: "${{ secrets.PAT_FOR_TAGGING }}",
-                            branchName: branchName)
-                        {
-                            Name = "Add Tag and Create Release",
-                            Needs = ["build_windows", "build_ubuntu"]
-                        }
-                    },
-                    {
-                        "publish",
-                        new PublishJobV2(
-                            runsOn: BuildMachines.UbuntuLatest,
-                            dependsOn: "add_tag",
-                            dotNetVersion: dotNetVersion,
-                            nugetApiKey: "${{ secrets.NUGET_ACCESS }}")
-                        {
-                            Name = "Publish to NuGet"
-                        }
                     }
                 }
             };
