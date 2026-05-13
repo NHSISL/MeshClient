@@ -35,7 +35,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Unit Tests
-      run: dotnet test NEL.MESH.Tests.Unit/NEL.MESH.Tests.Unit.csproj --verbosity normal
+      run: dotnet test NEL.MESH.Tests.Unit/NEL.Mesh.Tests.Unit.csproj --verbosity normal
     - name: Acceptance Tests
       run: dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --verbosity normal
   build_ubuntu:
@@ -53,7 +53,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Unit Tests
-      run: dotnet test NEL.MESH.Tests.Unit/NEL.MESH.Tests.Unit.csproj --verbosity normal
+      run: dotnet test NEL.MESH.Tests.Unit/NEL.Mesh.Tests.Unit.csproj --verbosity normal
     - name: Acceptance Tests
       run: dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --verbosity normal
   add_tag:

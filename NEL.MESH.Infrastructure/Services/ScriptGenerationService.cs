@@ -85,7 +85,7 @@ namespace NEL.MESH.Infrastructure.Services
                                     Name = "Unit Tests",
 
                                     Run = $"dotnet test {projectName}.Tests.Unit/" +
-                                        $"{projectName}.Tests.Unit.csproj --verbosity normal"
+                                        $"NEL.Mesh.Tests.Unit.csproj --verbosity normal"
                                 },
 
                                 new TestTask
@@ -137,7 +137,7 @@ namespace NEL.MESH.Infrastructure.Services
                                     Name = "Unit Tests",
 
                                     Run = $"dotnet test {projectName}.Tests.Unit/" +
-                                        $"{projectName}.Tests.Unit.csproj --verbosity normal"
+                                        $"NEL.Mesh.Tests.Unit.csproj --verbosity normal"
                                 },
 
                                 new TestTask
