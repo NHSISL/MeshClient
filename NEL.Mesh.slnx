@@ -12,7 +12,7 @@
     </Project>
     <Project Path="NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj" />
     <Project Path="NEL.MESH.Tests.Integration/NEL.MESH.Tests.Integration.csproj" />
-    <Project Path="NEL.MESH.Tests.Unit/NEL.Mesh.Tests.Unit.csproj" />
+    <Project Path="NEL.MESH.Tests.Unit/NEL.MESH.Tests.Unit.csproj" />
     <Project Path="NEL.MESH/NEL.MESH.csproj">
       <BuildType Solution="Acceptance|*" Project="Release" />
       <BuildType Solution="Test|*" Project="Release" />
