@@ -24,7 +24,7 @@
 		<RepositoryUrl>https://github.com/TowerHamletsCCG/MeshClient</RepositoryUrl>
 		<RepositoryType>Github</RepositoryType>
 		<PackageTags>.NET Client MESH Messaging</PackageTags>
-		<PackageReleaseNotes>SSL Certificate Chain Validation Fix</PackageReleaseNotes>
+		<PackageReleaseNotes>SSL Certificate Chain Validation Fix.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
