@@ -47,7 +47,7 @@ jobs:
     - name: Setup Dot Net Version
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 9.0.100
+        dotnet-version: 10.x
     - name: Restore
       run: dotnet restore
     - name: Build
@@ -60,16 +60,12 @@ jobs:
     name: Add Tag and Create Release
     runs-on: ubuntu-latest
     needs:
-    - build
+    - build_windows
+    - build_ubuntu
     if: >-
-      needs.build.result == 'success' && 
-
-      github.event.pull_request.merged && 
-
-      github.event.pull_request.base.ref == 'main' && 
-
-      startsWith(github.event.pull_request.title, 'RELEASES:') && 
-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main' &&
+      startsWith(github.event.pull_request.title, 'RELEASES:') &&
       contains(github.event.pull_request.labels.*.name, 'RELEASES')
     steps:
     - name: Checkout code
