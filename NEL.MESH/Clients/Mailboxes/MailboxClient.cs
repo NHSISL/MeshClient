@@ -2,9 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -21,61 +21,11 @@ namespace NEL.MESH.Clients.Mailboxes
         public MailboxClient(IMeshOrchestrationService meshOrchestrationService) =>
             this.meshOrchestrationService = meshOrchestrationService;
 
-        public async ValueTask<bool> HandshakeAsync()
+        public async ValueTask<bool> HandshakeAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                return await meshOrchestrationService.HandshakeAsync();
-            }
-            catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
-            {
-                throw new MeshClientValidationException(
-                    meshOrchestrationValidationException.InnerException as Xeption);
-            }
-            catch (MeshOrchestrationDependencyValidationException meshOrchestrationDependencyValidationException)
-            {
-                throw new MeshClientValidationException(
-                    meshOrchestrationDependencyValidationException.InnerException as Xeption);
-            }
-            catch (MeshOrchestrationDependencyException meshOrchestrationDependencyException)
-            {
-                throw new MeshClientDependencyException(
-                    meshOrchestrationDependencyException.InnerException as Xeption);
-            }
-            catch (MeshOrchestrationServiceException meshOrchestrationServiceException)
-            {
-                throw new MeshClientServiceException(
-                    meshOrchestrationServiceException.InnerException as Xeption);
-            }
-        }
-
-        public async ValueTask<Message> SendMessageAsync(
-            string mexTo,
-            string mexWorkflowId,
-            string content,
-            string mexSubject = "",
-            string mexLocalId = "",
-            string mexFileName = "",
-            string mexContentChecksum = "",
-            string contentType = "",
-            string contentEncoding = "",
-            string accept = "application/json")
-        {
-            try
-            {
-                Message message = ComposeMessage.CreateStringMessage(
-                    mexTo,
-                    mexWorkflowId,
-                    content,
-                    mexSubject,
-                    mexLocalId,
-                    mexFileName,
-                    mexContentChecksum,
-                    contentType,
-                    contentEncoding,
-                    accept);
-
-                return await meshOrchestrationService.SendMessageAsync(message);
+                return await meshOrchestrationService.HandshakeAsync(cancellationToken);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
@@ -104,21 +54,21 @@ namespace NEL.MESH.Clients.Mailboxes
         public async ValueTask<Message> SendMessageAsync(
             string mexTo,
             string mexWorkflowId,
-            byte[] fileContent,
+            Stream content,
             string mexSubject = "",
             string mexLocalId = "",
             string mexFileName = "",
             string mexContentChecksum = "",
-            string contentType = "",
+            string contentType = "application/octet-stream",
             string contentEncoding = "",
-            string accept = "application/json")
+            string accept = "application/json",
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                Message message = ComposeMessage.CreateFileMessage(
+                Message message = ComposeMessage.CreateMessage(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -127,7 +77,7 @@ namespace NEL.MESH.Clients.Mailboxes
                     contentEncoding,
                     accept);
 
-                return await meshOrchestrationService.SendMessageAsync(message);
+                return await meshOrchestrationService.SendMessageAsync(message, content, cancellationToken);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
@@ -153,11 +103,13 @@ namespace NEL.MESH.Clients.Mailboxes
             }
         }
 
-        public async ValueTask<Message> TrackMessageAsync(string messageId)
+        public async ValueTask<Message> TrackMessageAsync(
+            string messageId,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await meshOrchestrationService.TrackMessageAsync(messageId);
+                return await meshOrchestrationService.TrackMessageAsync(messageId, cancellationToken);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
@@ -183,11 +135,11 @@ namespace NEL.MESH.Clients.Mailboxes
             }
         }
 
-        public async ValueTask<List<string>> RetrieveMessagesAsync()
+        public async ValueTask<List<string>> RetrieveMessagesAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                return await meshOrchestrationService.RetrieveMessagesAsync();
+                return await meshOrchestrationService.RetrieveMessagesAsync(cancellationToken);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
@@ -213,13 +165,14 @@ namespace NEL.MESH.Clients.Mailboxes
             }
         }
 
-        [Obsolete("This method is obsolete. Use RetrieveMessageAsync(string messageId, Stream outputStream) " +
-            "instead to avoid memory issues with large files.")]
-        public async ValueTask<Message> RetrieveMessageAsync(string messageId)
+        public async ValueTask<Message> RetrieveMessageAsync(
+            string messageId,
+            Stream outputStream,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await meshOrchestrationService.RetrieveMessageAsync(messageId);
+                return await meshOrchestrationService.RetrieveMessageAsync(messageId, outputStream, cancellationToken);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {
@@ -245,42 +198,13 @@ namespace NEL.MESH.Clients.Mailboxes
             }
         }
 
-
-        public async ValueTask<Message> RetrieveMessageAsync(string messageId, Stream outputStream)
+        public async ValueTask<bool> AcknowledgeMessageAsync(
+            string messageId,
+            CancellationToken cancellationToken = default)
         {
             try
             {
-                return await meshOrchestrationService.RetrieveMessageAsync(messageId, outputStream);
-            }
-            catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
-            {
-                throw new MeshClientValidationException(
-                    meshOrchestrationValidationException.InnerException as Xeption,
-                    meshOrchestrationValidationException.InnerException.Data);
-            }
-            catch (MeshOrchestrationDependencyValidationException meshOrchestrationDependencyValidationException)
-            {
-                throw new MeshClientValidationException(
-                    meshOrchestrationDependencyValidationException.InnerException as Xeption,
-                    meshOrchestrationDependencyValidationException.InnerException.Data);
-            }
-            catch (MeshOrchestrationDependencyException meshOrchestrationDependencyException)
-            {
-                throw new MeshClientDependencyException(
-                    meshOrchestrationDependencyException.InnerException as Xeption);
-            }
-            catch (MeshOrchestrationServiceException meshOrchestrationServiceException)
-            {
-                throw new MeshClientServiceException(
-                    meshOrchestrationServiceException.InnerException as Xeption);
-            }
-        }
-
-        public async ValueTask<bool> AcknowledgeMessageAsync(string messageId)
-        {
-            try
-            {
-                return await meshOrchestrationService.AcknowledgeMessageAsync(messageId);
+                return await meshOrchestrationService.AcknowledgeMessageAsync(messageId, cancellationToken);
             }
             catch (MeshOrchestrationValidationException meshOrchestrationValidationException)
             {

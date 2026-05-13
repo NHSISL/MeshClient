@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net10.0</TargetFrameworks>
@@ -13,9 +13,10 @@
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageIcon>Mesh.png</PackageIcon>
 		<PackageIconUrl />
-		<Version>2.1.0.0</Version>
-		<AssemblyVersion>2.1.0.0</AssemblyVersion>
-		<FileVersion>2.1.0.0</FileVersion>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Version>3.1.0</Version>
+		<AssemblyVersion>3.1.0.0</AssemblyVersion>
+		<FileVersion>3.1.0.0</FileVersion>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageLicenseExpression></PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/TowerHamletsCCG/MeshClient</PackageProjectUrl>
@@ -23,7 +24,7 @@
 		<RepositoryUrl>https://github.com/TowerHamletsCCG/MeshClient</RepositoryUrl>
 		<RepositoryType>Github</RepositoryType>
 		<PackageTags>.NET Client MESH Messaging</PackageTags>
-		<PackageReleaseNotes>This release contains bug fixes for chunked messages</PackageReleaseNotes>
+		<PackageReleaseNotes>SSL Certificate Chain Validation Fix</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -35,6 +36,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 		<None Include="License.txt">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
@@ -49,6 +54,6 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.7" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-		<PackageReference Include="Xeption" Version="2.8.0" />
+		<PackageReference Include="Xeption" Version="2.9.0" />
 	</ItemGroup>
 </Project>

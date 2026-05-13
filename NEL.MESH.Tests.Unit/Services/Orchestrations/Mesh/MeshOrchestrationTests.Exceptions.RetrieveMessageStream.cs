@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -126,6 +127,30 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             this.tokenServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),
                     Times.Once);
+
+            this.chunkServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.tokenServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowOperationCanceledExceptionOnRetrieveMessageStreamIfCancellationRequestedAsync()
+        {
+            // given
+            string someMessageId = GetRandomString();
+            using MemoryStream outputStream = new MemoryStream();
+            using var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.Cancel();
+
+            // when
+            ValueTask<Message> messageTask =
+                this.meshOrchestrationService.RetrieveMessageAsync(
+                    someMessageId,
+                    outputStream,
+                    cancellationTokenSource.Token);
+
+            // then
+            await Assert.ThrowsAsync<OperationCanceledException>(messageTask.AsTask);
 
             this.chunkServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();

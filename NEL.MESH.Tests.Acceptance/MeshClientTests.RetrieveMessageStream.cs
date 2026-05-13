@@ -33,10 +33,9 @@ namespace NEL.MESH.Tests.Acceptance
             string contentType = "text/plain";
             string contentEncoding = GetRandomString();
 
-            Message randomMessage = ComposeMessage.CreateStringMessage(
+            Message randomMessage = ComposeMessage.CreateMessage(
                 mexTo,
                 mexWorkflowId,
-                content,
                 mexSubject,
                 mexLocalId,
                 mexFileName,
@@ -45,7 +44,7 @@ namespace NEL.MESH.Tests.Acceptance
                 contentEncoding);
 
             randomMessage.MessageId = inputMessageId;
-            byte[] expectedBytes = randomMessage.FileContent;
+            byte[] expectedBytes = Encoding.UTF8.GetBytes(content);
             var path = $"/messageexchange/{this.meshConfigurations.MailboxId}/inbox/{inputMessageId}";
 
             this.wireMockServer
@@ -61,7 +60,7 @@ namespace NEL.MESH.Tests.Acceptance
                     Response.Create()
                         .WithSuccess()
                         .WithHeader("content-type", contentType)
-                        .WithBody(randomMessage.FileContent));
+                        .WithBody(expectedBytes));
 
             using MemoryStream outputStream = new MemoryStream();
 
@@ -71,7 +70,6 @@ namespace NEL.MESH.Tests.Acceptance
 
             // then
             actualGetMessageResult.MessageId.Should().BeEquivalentTo(inputMessageId);
-            actualGetMessageResult.FileContent.Should().BeNull();
             outputStream.ToArray().Should().BeEquivalentTo(expectedBytes);
         }
 
@@ -85,7 +83,6 @@ namespace NEL.MESH.Tests.Acceptance
             string mexTo = GetRandomString();
             string mexWorkflowId = GetRandomString();
             byte[] fileContent = Encoding.ASCII.GetBytes(GetRandomString(wordMinLength: GetRandomNumber()));
-            string mexContentEncrypted = GetRandomString();
             string mexSubject = GetRandomString();
             string mexLocalId = GetRandomString();
             string mexFileName = GetRandomString();
@@ -93,11 +90,9 @@ namespace NEL.MESH.Tests.Acceptance
             string contentType = "application/octet-stream";
             string contentEncoding = GetRandomString();
 
-            Message randomMessage = ComposeMessage.CreateFileMessage(
+            Message randomMessage = ComposeMessage.CreateMessage(
                 mexTo,
                 mexWorkflowId,
-                fileContent,
-                mexContentEncrypted,
                 mexSubject,
                 mexLocalId,
                 mexFileName,
@@ -106,7 +101,7 @@ namespace NEL.MESH.Tests.Acceptance
                 contentEncoding);
 
             randomMessage.MessageId = inputMessageId;
-            byte[] expectedBytes = randomMessage.FileContent;
+            byte[] expectedBytes = fileContent;
             var path = $"/messageexchange/{this.meshConfigurations.MailboxId}/inbox/{inputMessageId}";
 
             this.wireMockServer
@@ -122,7 +117,7 @@ namespace NEL.MESH.Tests.Acceptance
                     Response.Create()
                         .WithSuccess()
                         .WithHeader("content-type", contentType)
-                        .WithBody(randomMessage.FileContent));
+                        .WithBody(fileContent));
 
             using MemoryStream outputStream = new MemoryStream();
 
@@ -132,7 +127,6 @@ namespace NEL.MESH.Tests.Acceptance
 
             // then
             actualGetMessageResult.MessageId.Should().BeEquivalentTo(inputMessageId);
-            actualGetMessageResult.FileContent.Should().BeNull();
             outputStream.ToArray().Should().BeEquivalentTo(expectedBytes);
         }
 
@@ -194,7 +188,6 @@ namespace NEL.MESH.Tests.Acceptance
 
             // then
             actualGetMessageResult.MessageId.Should().BeEquivalentTo(inputMessageId);
-            actualGetMessageResult.FileContent.Should().BeNull();
             outputStream.ToArray().Should().BeEquivalentTo(expectedBytes);
         }
     }

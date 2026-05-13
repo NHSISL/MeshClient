@@ -3,44 +3,15 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
-using System.Text;
 using NEL.MESH.Models.Foundations.Mesh;
 
 namespace NEL.MESH.Clients.Mailboxes
 {
     public static class ComposeMessage
     {
-        public static Message CreateStringMessage(
+        public static Message CreateMessage(
             string mexTo,
             string mexWorkflowId,
-            string content,
-            string mexSubject = "",
-            string mexLocalId = "",
-            string mexFileName = "",
-            string mexContentChecksum = "",
-            string contentType = "",
-            string contentEncoding = "",
-            string accept = "application/json")
-        {
-            byte[] fileContent = Encoding.ASCII.GetBytes(content);
-
-            return CreateFileMessage(
-                mexTo,
-                mexWorkflowId,
-                fileContent,
-                mexSubject,
-                mexLocalId,
-                mexFileName,
-                mexContentChecksum,
-                contentType,
-                contentEncoding,
-                accept);
-        }
-
-        public static Message CreateFileMessage(
-            string mexTo,
-            string mexWorkflowId,
-            byte[] fileContent,
             string mexSubject = "",
             string mexLocalId = "",
             string mexFileName = "",
@@ -52,7 +23,6 @@ namespace NEL.MESH.Clients.Mailboxes
             Message message = new Message();
             message.Headers.Add("mex-to", new List<string> { mexTo });
             message.Headers.Add("mex-workflowid", new List<string> { mexWorkflowId });
-            message.FileContent = fileContent;
 
             if (!string.IsNullOrWhiteSpace(mexSubject))
             {
@@ -84,7 +54,7 @@ namespace NEL.MESH.Clients.Mailboxes
                 message.Headers.Add("content-encoding", new List<string> { contentEncoding });
             }
 
-            if (!string.IsNullOrWhiteSpace(contentEncoding))
+            if (!string.IsNullOrWhiteSpace(accept))
             {
                 message.Headers.Add("accept", new List<string> { accept });
             }

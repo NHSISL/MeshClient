@@ -150,8 +150,16 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
         private static int GetRandomNumber() =>
             new IntRange(min: 2, max: 10).GetValue();
 
+        private static List<string> GetRandomMessages() =>
+            Enumerable.Range(1, GetRandomNumber())
+                .Select(_ => GetRandomString())
+                .ToList();
+
         private static int GetRandomChunkNumber(int min, int max) =>
             new IntRange(min, max).GetValue();
+
+        private static byte[] GetRandomByteArray() =>
+            Encoding.UTF8.GetBytes(GetRandomString());
 
         private static string GetKeyStringValue(string key, Dictionary<string, List<string>> dictionary)
         {
@@ -217,15 +225,13 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             List<HttpResponseMessage> messages = new List<HttpResponseMessage>();
-            List<byte[]> parts = GetByteContentParts(message.FileContent, chunks);
 
-            for (int i = 0; i < parts.Count; i++)
+            for (int i = 0; i < chunks; i++)
             {
                 Message chunkMessage = new Message
                 {
                     MessageId = message.MessageId,
                     Headers = message.Headers,
-                    FileContent = parts[i],
                 };
 
                 HttpResponseMessage httpResponseMessage =
@@ -258,7 +264,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             HttpResponseMessage responseMessage = new HttpResponseMessage()
             {
                 StatusCode = statusCode,
-                Content = new ByteArrayContent(message.FileContent),
+                Content = new ByteArrayContent(new byte[0]),
             };
 
             foreach (var item in contentHeaders)
@@ -275,6 +281,18 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             }
 
             return responseMessage;
+        }
+
+        private static HttpResponseMessage CreateGetMessagesHttpResponseMessage(List<string> messages)
+        {
+            var getMessagesResponse = new GetMessagesResponse { Messages = messages };
+            string jsonContent = JsonConvert.SerializeObject(getMessagesResponse);
+
+            return new HttpResponseMessage()
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(jsonContent, Encoding.UTF8, "application/json")
+            };
         }
 
         private static HttpResponseMessage CreateHttpResponseContentMessageForSendMessage(
@@ -346,7 +364,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message message = new Message
             {
                 MessageId = messageId,
-                FileContent = responseMessageBody,
             };
 
             foreach (var item in headers)
@@ -369,7 +386,6 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             Message message = new Message
             {
                 MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                FileContent = inputMessage.FileContent,
                 Headers = headers
             };
 

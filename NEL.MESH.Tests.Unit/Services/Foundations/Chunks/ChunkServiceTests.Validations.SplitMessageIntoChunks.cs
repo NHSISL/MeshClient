@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.IO;
 using FluentAssertions;
 using NEL.MESH.Models.Foundations.Chunking.Exceptions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -18,6 +19,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
         {
             // given
             Message nullMessage = null;
+            using MemoryStream someStream = new MemoryStream(new byte[] { 1, 2, 3 });
 
             var nullMessageChunkException =
                 new NullMessageChunkException(message: "Message chunk is null.");
@@ -29,7 +31,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
 
             // when
             Action splitMessageIntoChunksAction = () =>
-                this.chunkService.SplitMessageIntoChunks(message: nullMessage);
+                this.chunkService.SplitStreamIntoChunks(messageTemplate: nullMessage, content: someStream);
 
             ChunkValidationException actualChunkValidationException =
                Assert.Throws<ChunkValidationException>(splitMessageIntoChunksAction);

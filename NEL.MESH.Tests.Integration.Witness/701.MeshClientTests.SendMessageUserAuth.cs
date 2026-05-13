@@ -3,6 +3,8 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -30,11 +32,13 @@ namespace NEL.MESH.Tests.Integration.Witness
             string contentEncoding = "";
 
             // when
+            using MemoryStream sendStream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    content,
+                    sendStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,

@@ -1,10 +1,11 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
 using NEL.MESH.Models.Foundations.Mesh.ExternalModels;
 using Newtonsoft.Json;
@@ -33,19 +34,7 @@ namespace NEL.MESH.Tests.Acceptance
             string mexContentChecksum = GetRandomString();
             string contentType = "text/plain";
             string contentEncoding = GetRandomString();
-
-            Message randomMessage = ComposeMessage.CreateStringMessage(
-                mexTo,
-                mexWorkflowId,
-                content,
-                mexSubject,
-                mexLocalId,
-                mexFileName,
-                mexContentChecksum,
-                contentType,
-                contentEncoding);
-
-            Message inputMessage = randomMessage;
+            byte[] contentBytes = Encoding.UTF8.GetBytes(content);
 
             SendMessageResponse responseMessage = new SendMessageResponse
             {
@@ -54,14 +43,7 @@ namespace NEL.MESH.Tests.Acceptance
             };
 
             string serialisedResponseMessage = JsonConvert.SerializeObject(responseMessage);
-
-            Message outputMessage = new Message
-            {
-                MessageId = outputId,
-                FileContent = inputMessage.FileContent
-            };
-
-            Message expectedSendMessageResult = outputMessage;
+            Message expectedSendMessageResult = new Message { MessageId = outputId };
 
             this.wireMockServer
                 .Given(
@@ -70,30 +52,32 @@ namespace NEL.MESH.Tests.Acceptance
                         .UsingPost()
                         .WithHeader("authorization", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
                         .WithHeader("mex-from", this.meshConfigurations.MailboxId)
-                        .WithHeader("mex-to", GetKeyStringValue("mex-to", inputMessage.Headers))
-                        .WithHeader("mex-workflowid", GetKeyStringValue("mex-workflowid", inputMessage.Headers))
+                        .WithHeader("mex-to", mexTo)
+                        .WithHeader("mex-workflowid", mexWorkflowId)
                         .WithHeader("mex-chunk-range", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
-                        .WithHeader("mex-subject", GetKeyStringValue("mex-subject", inputMessage.Headers))
-                        .WithHeader("mex-localid", GetKeyStringValue("mex-localid", inputMessage.Headers))
-                        .WithHeader("mex-filename", GetKeyStringValue("mex-filename", inputMessage.Headers))
-                        .WithHeader("mex-content-checksum", GetKeyStringValue("mex-content-checksum", inputMessage.Headers))
-                        .WithHeader("Accept", "*", WireMock.Matchers.MatchBehaviour.AcceptOnMatch)
+                        .WithHeader("mex-subject", mexSubject)
+                        .WithHeader("mex-localid", mexLocalId)
+                        .WithHeader("mex-filename", mexFileName)
+                        .WithHeader("mex-content-checksum", mexContentChecksum)
+                        .WithHeader("content-type", contentType)
+                        .WithHeader("content-encoding", contentEncoding)
                         .WithHeader("mex-clientversion", this.meshConfigurations.MexClientVersion)
                         .WithHeader("mex-osname", this.meshConfigurations.MexOSName)
                         .WithHeader("mex-osversion", this.meshConfigurations.MexOSVersion)
-                        .WithBody(randomMessage.FileContent)
-                    )
+                        .WithBody(contentBytes))
                 .RespondWith(
                     Response.Create()
                         .WithSuccess()
                         .WithBody(serialisedResponseMessage));
+
+            using MemoryStream inputStream = new MemoryStream(contentBytes);
 
             // when
             Message actualSendMessageResult = await this.meshClient.Mailbox
                 .SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    content,
+                    inputStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -102,7 +86,7 @@ namespace NEL.MESH.Tests.Acceptance
                     contentEncoding);
 
             // then
-            actualSendMessageResult.Should().BeEquivalentTo(expectedSendMessageResult);
+            actualSendMessageResult.MessageId.Should().BeEquivalentTo(expectedSendMessageResult.MessageId);
         }
     }
 }

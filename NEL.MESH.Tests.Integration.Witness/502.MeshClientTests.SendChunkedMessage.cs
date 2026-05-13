@@ -1,8 +1,9 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,12 +30,15 @@ namespace NEL.MESH.Tests.Integration.Witness
             string mexContentChecksum = Guid.NewGuid().ToString();
             string contentType = "text/plain";
             string contentEncoding = "";
+            byte[] contentBytes = Encoding.ASCII.GetBytes(content);
+
+            using MemoryStream sendStream = new MemoryStream(contentBytes);
 
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    content,
+                    sendStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -43,22 +47,19 @@ namespace NEL.MESH.Tests.Integration.Witness
                     contentEncoding);
 
             string messageId = sendMessageResponse.MessageId;
+            using MemoryStream outputStream = new MemoryStream();
 
             // when
             Message retrievedMessage =
-                await this.meshClient.Mailbox.RetrieveMessageAsync(messageId);
+                await this.meshClient.Mailbox.RetrieveMessageAsync(messageId, outputStream);
 
             // then
-
             var fileName = retrievedMessage.Headers
                     .FirstOrDefault(h => h.Key == "mex-filename")
                         .Value.FirstOrDefault();
 
-            var contentBytes =
-                    Encoding.ASCII.GetBytes(content);
-
             fileName.Should().BeEquivalentTo(mexFileName);
-            retrievedMessage.FileContent.Should().BeEquivalentTo(contentBytes);
+            outputStream.ToArray().Should().BeEquivalentTo(contentBytes);
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(retrievedMessage.MessageId);
         }
     }

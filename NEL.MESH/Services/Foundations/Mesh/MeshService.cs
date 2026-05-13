@@ -3,9 +3,11 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using NEL.MESH.Brokers.Mesh;
 using NEL.MESH.Models.Foundations.Mesh;
@@ -23,20 +25,31 @@ namespace NEL.MESH.Services.Foundations.Mesh
             this.meshBroker = meshBroker;
         }
 
-        public ValueTask<bool> HandshakeAsync(string authorizationToken) =>
+        public ValueTask<bool> HandshakeAsync(
+            string authorizationToken,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateOnHandshake(authorizationToken);
-                HttpResponseMessage response = await this.meshBroker.HandshakeAsync(authorizationToken);
-                ValidateResponse(response);
+
+                using HttpResponseMessage response =
+                    await this.meshBroker.HandshakeAsync(authorizationToken, cancellationToken);
+
+                await ValidateResponseAsync(response, cancellationToken);
 
                 return response.IsSuccessStatusCode;
             });
 
-        public ValueTask<Message> SendMessageAsync(Message message, string authorizationToken) =>
+        public ValueTask<Message> SendMessageAsync(
+            Message message,
+            byte[] fileContent,
+            string authorizationToken,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
-                ValidateMeshMessageOnSendMessage(message, authorizationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+                ValidateMeshMessageOnSendMessage(message, fileContent, authorizationToken);
 
                 string chunkRange = GetKeyStringValue("mex-chunk-range", message.Headers)
                     .Replace("{", string.Empty)
@@ -73,7 +86,8 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         contentType: GetKeyStringValue("content-type", message.Headers),
                         contentEncoding: GetKeyStringValue("content-encoding", message.Headers),
                         accept: GetKeyStringValue("accept", message.Headers),
-                        fileContents: message.FileContent);
+                        fileContents: fileContent,
+                        cancellationToken);
                 }
                 else
                 {
@@ -93,37 +107,45 @@ namespace NEL.MESH.Services.Foundations.Mesh
                         contentType: GetKeyStringValue("content-type", message.Headers),
                         contentEncoding: GetKeyStringValue("content-encoding", message.Headers),
                         accept: GetKeyStringValue("accept", message.Headers),
-                        fileContents: message.FileContent,
+                        fileContents: fileContent,
                         messageId: message.MessageId,
-                        chunkNumber: chunkNumber.ToString());
+                        chunkNumber: chunkNumber.ToString(),
+                        cancellationToken);
                 }
 
-                ValidateResponse(responseMessage);
-
-                string responseMessageBody =
-                    responseMessage.Content.ReadAsStringAsync().Result;
-
-                Message outputMessage = new Message
+                using (responseMessage)
                 {
-                    MessageId = (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
-                    FileContent = message.FileContent,
-                };
+                    await ValidateResponseAsync(responseMessage, cancellationToken);
 
-                GetHeaderValues(responseMessage, outputMessage);
+                    string responseMessageBody =
+                        await responseMessage.Content.ReadAsStringAsync(cancellationToken);
 
-                return outputMessage;
+                    Message outputMessage = new Message
+                    {
+                        MessageId =
+                            (JsonConvert.DeserializeObject<SendMessageResponse>(responseMessageBody)).MessageId,
+                    };
+
+                    GetHeaderValues(responseMessage, outputMessage);
+
+                    return outputMessage;
+                }
             });
 
-        public ValueTask<Message> TrackMessageAsync(string messageId, string authorizationToken) =>
+        public ValueTask<Message> TrackMessageAsync(
+            string messageId,
+            string authorizationToken,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateTrackMessageArguments(messageId, authorizationToken);
 
-                HttpResponseMessage responseMessage =
-                    await this.meshBroker.TrackMessageAsync(messageId, authorizationToken);
+                using HttpResponseMessage responseMessage =
+                    await this.meshBroker.TrackMessageAsync(messageId, authorizationToken, cancellationToken);
 
-                ValidateResponse(responseMessage);
-                string responseMessageBody = responseMessage.Content.ReadAsStringAsync().Result;
+                await ValidateResponseAsync(responseMessage, cancellationToken);
+                string responseMessageBody = await responseMessage.Content.ReadAsStringAsync(cancellationToken);
 
                 Message outputMessage = new Message
                 {
@@ -137,76 +159,142 @@ namespace NEL.MESH.Services.Foundations.Mesh
                 return outputMessage;
             });
 
-        public ValueTask<List<string>> RetrieveMessagesAsync(string authorizationToken) =>
+        public ValueTask<List<string>> RetrieveMessagesAsync(
+            string authorizationToken,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateRetrieveMessagesArguments(authorizationToken);
 
-                HttpResponseMessage responseMessage = await this.meshBroker
-                    .GetMessagesAsync(authorizationToken);
+                using HttpResponseMessage responseMessage =
+                    await this.meshBroker.GetMessagesAsync(authorizationToken, cancellationToken);
 
-                ValidateResponse(responseMessage);
+                await ValidateResponseAsync(responseMessage, cancellationToken);
 
-                string responseMessageBody = responseMessage.Content
-                    .ReadAsStringAsync().Result;
+                string responseMessageBody =
+                    await responseMessage.Content.ReadAsStringAsync(cancellationToken);
 
                 GetMessagesResponse getMessagesResponse =
                     JsonConvert.DeserializeObject<GetMessagesResponse>(responseMessageBody);
 
-                return getMessagesResponse.Messages;
+                return getMessagesResponse?.Messages ?? new List<string>();
             });
 
-        public ValueTask<Message> RetrieveMessageAsync(string messageId, string authorizationToken, int chunkPart = 1) =>
+        public ValueTask<Message> RetrieveMessageAsync(
+            string messageId,
+            string authorizationToken,
+            int chunkPart = 1,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateRetrieveMessageArguments(messageId, authorizationToken);
                 HttpResponseMessage initialResponse;
 
                 if (chunkPart == 1)
                 {
-                    initialResponse = await this.meshBroker.GetMessageAsync(messageId, authorizationToken);
+                    initialResponse =
+                        await this.meshBroker.GetMessageAsync(messageId, authorizationToken, cancellationToken);
                 }
                 else
                 {
                     initialResponse = await this.meshBroker.GetMessageAsync(
                         messageId: messageId,
                         chunkNumber: chunkPart.ToString(),
-                        authorizationToken: authorizationToken);
+                        authorizationToken: authorizationToken,
+                        cancellationToken);
                 }
 
                 ValidateNullResponse(initialResponse);
-                ValidateReceivedResponse(initialResponse);
-
-                byte[] fileBody = initialResponse.Content.ReadAsByteArrayAsync().Result;
 
                 Message firstMessage = new Message
                 {
                     MessageId = messageId,
-                    FileContent = fileBody,
                 };
 
-                foreach (var header in initialResponse.Headers)
+                using (initialResponse)
                 {
-                    firstMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
-                }
+                    await ValidateResponseAsync(initialResponse, cancellationToken);
 
-                foreach (var header in initialResponse.Content.Headers)
-                {
-                    firstMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
+                    foreach (var header in initialResponse.Headers)
+                    {
+                        firstMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
+                    }
+
+                    foreach (var header in initialResponse.Content.Headers)
+                    {
+                        firstMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
+                    }
                 }
 
                 return firstMessage;
             });
 
-        public ValueTask<bool> AcknowledgeMessageAsync(string messageId, string authorizationToken) =>
+        public ValueTask<Message> RetrieveMessageAsync(
+            string messageId,
+            string authorizationToken,
+            Stream outputStream,
+            int chunkPart = 1,
+            CancellationToken cancellationToken = default) =>
             TryCatch(async () =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
+                ValidateRetrieveMessageStreamArguments(messageId, authorizationToken, outputStream);
+                HttpResponseMessage response;
+
+                if (chunkPart == 1)
+                {
+                    response = await this.meshBroker.GetMessageAsync(messageId, authorizationToken, cancellationToken);
+                }
+                else
+                {
+                    response = await this.meshBroker.GetMessageAsync(
+                        messageId: messageId,
+                        chunkNumber: chunkPart.ToString(),
+                        authorizationToken: authorizationToken,
+                        cancellationToken);
+                }
+
+                ValidateNullResponse(response);
+
+                using (response)
+                {
+                    await ValidateResponseAsync(response, cancellationToken);
+                    await response.Content.CopyToAsync(outputStream, cancellationToken);
+
+                    Message outputMessage = new Message
+                    {
+                        MessageId = messageId,
+                    };
+
+                    foreach (var header in response.Headers)
+                    {
+                        outputMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
+                    }
+
+                    foreach (var header in response.Content.Headers)
+                    {
+                        outputMessage.Headers.Add(header.Key.ToLower(), header.Value.ToList());
+                    }
+
+                    return outputMessage;
+                }
+            });
+
+        public ValueTask<bool> AcknowledgeMessageAsync(
+            string messageId,
+            string authorizationToken,
+            CancellationToken cancellationToken = default) =>
+            TryCatch(async () =>
+            {
+                cancellationToken.ThrowIfCancellationRequested();
                 ValidateAcknowledgeMessageArguments(messageId, authorizationToken);
 
-                HttpResponseMessage response =
-                    await this.meshBroker.AcknowledgeMessageAsync(messageId, authorizationToken);
+                using HttpResponseMessage response =
+                    await this.meshBroker.AcknowledgeMessageAsync(messageId, authorizationToken, cancellationToken);
 
-                ValidateResponse(response);
+                await ValidateResponseAsync(response, cancellationToken);
 
                 return response.IsSuccessStatusCode;
             });

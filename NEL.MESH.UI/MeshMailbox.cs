@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Force.DeepCloner;
@@ -195,9 +196,29 @@ namespace NEL.MESH.UI
         private static X509Certificate2 GetPkcs12Certificate(string value, string password = "")
         {
             byte[] certBytes = Convert.FromBase64String(value);
-            var certificate = X509CertificateLoader.LoadPkcs12(certBytes, password);
 
-            return certificate;
+            try
+            {
+                return X509CertificateLoader.LoadPkcs12(
+                    certBytes,
+                    password,
+                    X509KeyStorageFlags.Exportable);
+            }
+            catch (CryptographicException)
+            {
+                var fallbackCert = X509CertificateLoader.LoadCertificate(certBytes);
+
+                if (!fallbackCert.HasPrivateKey)
+                {
+                    fallbackCert.Dispose();
+
+                    throw new CryptographicException(
+                        "Failed to load PKCS#12 certificate and fallback " +
+                        "certificate does not contain a private key.");
+                }
+
+                return fallbackCert;
+            }
         }
 
         private void cbApplications_SelectedIndexChanged(object sender, EventArgs e)
@@ -242,10 +263,12 @@ namespace NEL.MESH.UI
         {
             try
             {
+                using var messageStream = new MemoryStream(Encoding.UTF8.GetBytes(txtMessage.Text));
+
                 var message = await meshClient.Mailbox.SendMessageAsync(
                     mexTo: txtTo.Text,
                     mexWorkflowId: txtWorkflowId.Text,
-                    fileContent: Encoding.UTF8.GetBytes(txtMessage.Text),
+                    content: messageStream,
                     mexSubject: txtSubject.Text,
                     mexLocalId: txtLocalId.Text,
                     mexFileName: "message.txt");
@@ -282,12 +305,12 @@ namespace NEL.MESH.UI
             {
                 if (!string.IsNullOrWhiteSpace(txtFileLocation.Text))
                 {
-                    var fileBytes = File.ReadAllBytes(txtFileLocation.Text);
+                    using var fileStream = new FileStream(txtFileLocation.Text, FileMode.Open, FileAccess.Read);
 
                     var message = await meshClient.Mailbox.SendMessageAsync(
                         mexTo: txtTo.Text,
                         mexWorkflowId: txtWorkflowId.Text,
-                        fileContent: fileBytes,
+                        content: fileStream,
                         mexSubject: txtSubject.Text,
                         mexLocalId: txtLocalId.Text,
                         mexFileName: txtFileName.Text);
@@ -332,14 +355,16 @@ namespace NEL.MESH.UI
                 if (lbInbox.SelectedItem != null)
                 {
                     string messageId = lbInbox.SelectedItem.ToString();
-                    var message = await meshClient.Mailbox.RetrieveMessageAsync(messageId);
+                    using MemoryStream outputStream = new MemoryStream();
+                    var message = await meshClient.Mailbox.RetrieveMessageAsync(messageId, outputStream);
                     txtHeaders.Text = ConvertHeadersToString(message.Headers);
 
                     string filename = message.Headers["mex-filename"].FirstOrDefault() ?? string.Empty;
 
                     if (string.IsNullOrWhiteSpace(filename) || filename.EndsWith(".txt"))
                     {
-                        string content = Encoding.UTF8.GetString(message.FileContent);
+                        byte[] contentBytes = outputStream.ToArray();
+                        string content = Encoding.UTF8.GetString(contentBytes);
 
                         int lenghtLimit = 1000000;
 
@@ -409,17 +434,20 @@ namespace NEL.MESH.UI
                 if (lbInbox.SelectedItem != null)
                 {
                     string messageId = lbInbox.SelectedItem.ToString();
-                    var message = await meshClient.Mailbox.RetrieveMessageAsync(messageId);
-                    string filename = message.Headers["mex-filename"].FirstOrDefault() ?? string.Empty;
-
                     SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+                    using MemoryStream outputStream = new MemoryStream();
+                    var message = await meshClient.Mailbox.RetrieveMessageAsync(messageId, outputStream);
+                    string filename = message.Headers["mex-filename"].FirstOrDefault() ?? string.Empty;
                     saveFileDialog.FileName = filename;
 
                     if (saveFileDialog.ShowDialog() == DialogResult.OK)
                     {
+                        byte[] fileBytes = outputStream.ToArray();
+
                         using (var fileStream = new FileStream(saveFileDialog.FileName, FileMode.Create))
                         {
-                            await fileStream.WriteAsync(message.FileContent, 0, message.FileContent.Length);
+                            await fileStream.WriteAsync(fileBytes, 0, fileBytes.Length);
                             txtContent.Text = $"File saved to: {saveFileDialog.FileName}";
                         }
                     }

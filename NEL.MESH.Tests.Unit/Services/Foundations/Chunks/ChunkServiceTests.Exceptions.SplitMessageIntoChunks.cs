@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.IO;
 using FluentAssertions;
 using Moq;
 using NEL.MESH.Models.Foundations.Chunking.Exceptions;
@@ -19,6 +20,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
         {
             // given
             Message someMessage = CreateRandomMessage();
+            using MemoryStream someStream = new MemoryStream(new byte[] { 1, 2, 3 });
             string someStringMessage = GetRandomString();
             Exception someException = new Exception(someStringMessage);
 
@@ -37,7 +39,7 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Chunks
 
             // when
             Action splitMessageIntoChunksAction = () =>
-                this.chunkService.SplitMessageIntoChunks(message: someMessage);
+                this.chunkService.SplitStreamIntoChunks(messageTemplate: someMessage, content: someStream);
 
             ChunkServiceException actualChunkServiceException =
                Assert.Throws<ChunkServiceException>(splitMessageIntoChunksAction);

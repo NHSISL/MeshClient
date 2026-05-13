@@ -2,9 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using NEL.MESH.Models.Foundations.Mesh;
 
@@ -12,16 +12,16 @@ namespace NEL.MESH.Services.Orchestrations.Mesh
 {
     internal interface IMeshOrchestrationService
     {
-        ValueTask<bool> HandshakeAsync();
-        ValueTask<Message> SendMessageAsync(Message message);
-        ValueTask<Message> TrackMessageAsync(string messageId);
-        ValueTask<List<string>> RetrieveMessagesAsync();
+        ValueTask<bool> HandshakeAsync(CancellationToken cancellationToken = default);
+        ValueTask<Message> SendMessageAsync(Message message, Stream content, CancellationToken cancellationToken = default);
+        ValueTask<Message> TrackMessageAsync(string messageId, CancellationToken cancellationToken = default);
+        ValueTask<List<string>> RetrieveMessagesAsync(CancellationToken cancellationToken = default);
 
-        [Obsolete("This method is obsolete. Use RetrieveMessageAsync(string messageId, Stream outputStream) " +
-            "instead to avoid memory issues with large files.")]
-        ValueTask<Message> RetrieveMessageAsync(string messageId);
+        ValueTask<Message> RetrieveMessageAsync(
+            string messageId,
+            Stream outputStream,
+            CancellationToken cancellationToken = default);
 
-        ValueTask<Message> RetrieveMessageAsync(string messageId, Stream outputStream);
-        ValueTask<bool> AcknowledgeMessageAsync(string messageId);
+        ValueTask<bool> AcknowledgeMessageAsync(string messageId, CancellationToken cancellationToken = default);
     }
 }

@@ -4,7 +4,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NEL.MESH.Models.Clients.Mesh.Exceptions;
@@ -37,11 +39,13 @@ namespace NEL.MESH.Tests.Integration.Witness
             List<string> errorDescription = new List<string> { "Unregistered to address" };
 
             // when
+            using MemoryStream sendStream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
             ValueTask<Message> sendMessageTask =
                 this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    content,
+                    sendStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -65,7 +69,8 @@ namespace NEL.MESH.Tests.Integration.Witness
             List<string> messageIds = await this.meshClient.Mailbox.RetrieveMessagesAsync();
             foreach (var item in messageIds)
             {
-                var msg = await this.meshClient.Mailbox.RetrieveMessageAsync(item);
+                using MemoryStream itemStream = new MemoryStream();
+                var msg = await this.meshClient.Mailbox.RetrieveMessageAsync(item, itemStream);
                 List<string> linkedId = new List<string>();
                 msg.Headers.TryGetValue("mex-linkedmsgid", out linkedId);
 

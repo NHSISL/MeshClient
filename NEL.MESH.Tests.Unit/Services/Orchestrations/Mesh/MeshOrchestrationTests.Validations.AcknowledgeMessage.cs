@@ -2,7 +2,6 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
-using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -18,13 +17,11 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAknowledgeMessageIfMessageIsNullAndLogItAsync(
+        public async Task ShouldThrowValidationExceptionOnAcknowledgeMessageIfMessageIsNullAndLogItAsync(
             string invalidText)
         {
             // given
             string invalidMessageId = invalidText;
-            string randomToken = GetRandomString();
-            Message randomMessage = CreateRandomSendMessage();
 
             var invalidMeshOrchestrationArgsException = new InvalidMeshOrchestrationArgsException(
                 message: "Invalid mesh orchestration argument validation errors occurred, " +
@@ -66,9 +63,8 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             string invalidText)
         {
             // given
-            string randomMssageId = GetRandomString();
+            string randomMessageId = GetRandomString();
             string invalidToken = invalidText;
-            Message randomMessage = CreateRandomSendMessage();
             var invalidTokenException = new InvalidTokenException(message: "Token is invalid.");
 
             invalidTokenException.AddData(
@@ -85,7 +81,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             // when
             ValueTask<bool> messageTask = this.meshOrchestrationService
-                .AcknowledgeMessageAsync(messageId: randomMssageId);
+                .AcknowledgeMessageAsync(messageId: randomMessageId);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);

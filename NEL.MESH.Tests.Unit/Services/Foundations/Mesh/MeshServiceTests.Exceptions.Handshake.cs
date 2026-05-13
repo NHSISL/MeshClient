@@ -2,7 +2,9 @@
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -139,6 +141,24 @@ namespace NEL.MESH.Tests.Unit.Services.Foundations.Mesh
             this.meshBrokerMock.Verify(broker =>
                 broker.HandshakeAsync(authorizationToken),
                     Times.Once);
+
+            this.meshBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowOperationCanceledExceptionOnHandshakeIfCancellationRequestedAsync()
+        {
+            // given
+            string authorizationToken = GetRandomString();
+            using var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.Cancel();
+
+            // when
+            ValueTask<bool> handshakeTask =
+                this.meshService.HandshakeAsync(authorizationToken, cancellationTokenSource.Token);
+
+            // then
+            await Assert.ThrowsAsync<OperationCanceledException>(handshakeTask.AsTask);
 
             this.meshBrokerMock.VerifyNoOtherCalls();
         }

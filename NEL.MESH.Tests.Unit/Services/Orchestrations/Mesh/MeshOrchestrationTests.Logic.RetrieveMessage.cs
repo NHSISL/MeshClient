@@ -1,7 +1,9 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -23,18 +25,23 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             Message randomMessage = CreateRandomSendMessage();
             Message outputMessage = randomMessage.DeepClone();
             Message expectedMessage = outputMessage;
+            using MemoryStream outputStream = new MemoryStream();
 
             this.tokenServiceMock.Setup(service =>
                 service.GenerateTokenAsync())
                     .ReturnsAsync(randomToken);
 
             this.meshServiceMock.Setup(service =>
-                service.RetrieveMessageAsync(inputMessageId, randomToken, 1))
-                    .ReturnsAsync(outputMessage);
+                service.RetrieveMessageAsync(
+                    inputMessageId, randomToken, It.IsAny<Stream>(), 1, It.IsAny<CancellationToken>()))
+                        .ReturnsAsync(outputMessage);
 
             // when
             Message actualMessage = await this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: inputMessageId);
+                .RetrieveMessageAsync(
+                    messageId: inputMessageId,
+                    outputStream: outputStream,
+                    cancellationToken: TestContext.Current.CancellationToken);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
@@ -44,8 +51,9 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     Times.Once);
 
             this.meshServiceMock.Verify(service =>
-                service.RetrieveMessageAsync(inputMessageId, randomToken, 1),
-                    Times.Once);
+                service.RetrieveMessageAsync(
+                    inputMessageId, randomToken, It.IsAny<Stream>(), 1, It.IsAny<CancellationToken>()),
+                        Times.Once);
 
             this.chunkServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();

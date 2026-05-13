@@ -1,12 +1,12 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using NEL.MESH.Clients.Mailboxes;
 using NEL.MESH.Models.Foundations.Mesh;
 using Xunit;
 
@@ -28,25 +28,15 @@ namespace NEL.MESH.Tests.Integration
             string mexContentChecksum = Guid.NewGuid().ToString();
             string contentType = "text/plain";
             string contentEncoding = "";
+            byte[] expectedBytes = Encoding.UTF8.GetBytes(content);
 
-            Message randomMessage = ComposeMessage.CreateStringMessage(
-                mexTo,
-                mexWorkflowId,
-                content,
-                mexSubject,
-                mexLocalId,
-                mexFileName,
-                mexContentChecksum,
-                contentType,
-                contentEncoding);
-
-            Message expectedMessage = randomMessage;
+            using MemoryStream sendStream = new MemoryStream(expectedBytes);
 
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    content,
+                    sendStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -54,13 +44,15 @@ namespace NEL.MESH.Tests.Integration
                     contentType,
                     contentEncoding);
 
+            using MemoryStream outputStream = new MemoryStream();
+
             // when
             Message retrievedMessage =
-                await this.meshClient.Mailbox.RetrieveMessageAsync(sendMessageResponse.MessageId);
+                await this.meshClient.Mailbox.RetrieveMessageAsync(sendMessageResponse.MessageId, outputStream);
 
             // then
             retrievedMessage.MessageId.Should().BeEquivalentTo(sendMessageResponse.MessageId);
-            retrievedMessage.FileContent.Should().BeEquivalentTo(expectedMessage.FileContent);
+            outputStream.ToArray().Should().BeEquivalentTo(expectedBytes);
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
         }
 
@@ -79,24 +71,13 @@ namespace NEL.MESH.Tests.Integration
             string contentType = "application/octet-stream";
             string contentEncoding = "";
 
-            Message randomMessage = ComposeMessage.CreateFileMessage(
-                mexTo,
-                mexWorkflowId,
-                fileContent,
-                mexSubject,
-                mexLocalId,
-                mexFileName,
-                mexContentChecksum,
-                contentType,
-                contentEncoding);
-
-            Message expectedMessage = randomMessage;
+            using MemoryStream sendStream = new MemoryStream(fileContent);
 
             Message sendMessageResponse =
                 await this.meshClient.Mailbox.SendMessageAsync(
                     mexTo,
                     mexWorkflowId,
-                    fileContent,
+                    sendStream,
                     mexSubject,
                     mexLocalId,
                     mexFileName,
@@ -104,13 +85,15 @@ namespace NEL.MESH.Tests.Integration
                     contentType,
                     contentEncoding);
 
+            using MemoryStream outputStream = new MemoryStream();
+
             // when
             Message retrievedMessage =
-                await this.meshClient.Mailbox.RetrieveMessageAsync(sendMessageResponse.MessageId);
+                await this.meshClient.Mailbox.RetrieveMessageAsync(sendMessageResponse.MessageId, outputStream);
 
             // then
             retrievedMessage.MessageId.Should().BeEquivalentTo(sendMessageResponse.MessageId);
-            retrievedMessage.FileContent.Should().BeEquivalentTo(expectedMessage.FileContent);
+            outputStream.ToArray().Should().BeEquivalentTo(fileContent);
             await this.meshClient.Mailbox.AcknowledgeMessageAsync(sendMessageResponse.MessageId);
         }
     }

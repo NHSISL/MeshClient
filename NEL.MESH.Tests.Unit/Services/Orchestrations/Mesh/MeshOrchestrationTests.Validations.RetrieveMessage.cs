@@ -1,7 +1,8 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -38,8 +39,10 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                 innerException: invalidMeshOrchestrationArgsException);
 
             // when
+            using MemoryStream outputStreamForMessageId = new MemoryStream();
+
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: invalidMessageId);
+                .RetrieveMessageAsync(messageId: invalidMessageId, outputStream: outputStreamForMessageId);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);
@@ -82,8 +85,10 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
                     .ReturnsAsync(invalidToken);
 
             // when
+            using MemoryStream outputStreamForToken = new MemoryStream();
+
             ValueTask<Message> messageTask = this.meshOrchestrationService
-                .RetrieveMessageAsync(messageId: randomMssageId);
+                .RetrieveMessageAsync(messageId: randomMssageId, outputStream: outputStreamForToken);
 
             MeshOrchestrationValidationException actualMeshOrchestrationValidationException =
                 await Assert.ThrowsAsync<MeshOrchestrationValidationException>(messageTask.AsTask);

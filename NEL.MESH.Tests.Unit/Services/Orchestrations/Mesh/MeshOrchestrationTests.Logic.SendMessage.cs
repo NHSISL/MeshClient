@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Force.DeepCloner;
@@ -22,17 +23,31 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             Message randomMessage = CreateRandomSendMessage();
             Message inputMessage = randomMessage;
             int randomChunkCount = GetRandomNumber();
-            List<Message> randomChunkedMessages = CreateRandomChunkedSendMessages(randomChunkCount);
-            List<Message> chunkedInputMessages = randomChunkedMessages;
-            List<Message> chunkedOutputMessages = chunkedInputMessages.DeepClone();
+            byte[] randomBytes = new byte[] { 1, 2, 3, 4 };
+            using MemoryStream inputStream = new MemoryStream(randomBytes);
+
+            List<(Message message, byte[] content)> chunkedInputMessages =
+                new List<(Message, byte[])>();
+
+            List<Message> chunkedOutputMessages = new List<Message>();
             string randomMessageId = GetRandomString();
-            chunkedOutputMessages[0].MessageId = randomMessageId;
-            Message outputMessage = chunkedOutputMessages[0].DeepClone();
-            outputMessage.FileContent = inputMessage.FileContent;
-            Message expectedMessage = outputMessage.DeepClone();
+
+            for (int i = 0; i < randomChunkCount; i++)
+            {
+                Message chunkMsg = CreateRandomSendMessage();
+                chunkMsg.Headers["mex-chunk-range"] = new List<string> { $"{{{i + 1}:{randomChunkCount}}}" };
+                byte[] chunkContent = new byte[] { (byte)i };
+                chunkedInputMessages.Add((chunkMsg, chunkContent));
+
+                Message outMsg = chunkMsg.DeepClone();
+                outMsg.MessageId = randomMessageId;
+                chunkedOutputMessages.Add(outMsg);
+            }
+
+            Message expectedMessage = chunkedOutputMessages[0].DeepClone();
 
             this.chunkServiceMock.Setup(service =>
-                service.SplitMessageIntoChunks(inputMessage))
+                service.SplitStreamIntoChunks(inputMessage, inputStream))
                     .Returns(chunkedInputMessages);
 
             this.tokenServiceMock.Setup(service =>
@@ -41,32 +56,28 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             for (int i = 0; i < chunkedInputMessages.Count; i++)
             {
-                if (i == 0)
-                {
-                    this.meshServiceMock.Setup(service =>
-                        service.SendMessageAsync(chunkedInputMessages[i], randomToken))
-                            .ReturnsAsync(chunkedOutputMessages[0]);
-                }
-                else
-                {
-                    Message chunk = chunkedInputMessages[i];
-                    chunk.MessageId = randomMessageId;
+                Message chunkMsg = chunkedInputMessages[i].message;
+                byte[] chunkContent = chunkedInputMessages[i].content;
 
-                    this.meshServiceMock.Setup(service =>
-                        service.SendMessageAsync(chunk, randomToken))
-                            .ReturnsAsync(chunkedOutputMessages[0]);
+                if (i > 0)
+                {
+                    chunkMsg.MessageId = randomMessageId;
                 }
+
+                this.meshServiceMock.Setup(service =>
+                    service.SendMessageAsync(chunkMsg, chunkContent, randomToken))
+                        .ReturnsAsync(chunkedOutputMessages[i]);
             }
 
             // when
             Message actualMessage = await this.meshOrchestrationService
-                .SendMessageAsync(message: inputMessage);
+                .SendMessageAsync(message: inputMessage, content: inputStream);
 
             // then
             actualMessage.Should().BeEquivalentTo(expectedMessage);
 
             this.chunkServiceMock.Verify(service =>
-                service.SplitMessageIntoChunks(inputMessage),
+                service.SplitStreamIntoChunks(inputMessage, inputStream),
                     Times.Once);
 
             this.tokenServiceMock.Verify(service =>
@@ -75,21 +86,12 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
 
             for (int i = 0; i < chunkedInputMessages.Count; i++)
             {
-                if (i == 0)
-                {
-                    this.meshServiceMock.Verify(service =>
-                        service.SendMessageAsync(chunkedInputMessages[i], randomToken),
-                            Times.Once);
-                }
-                else
-                {
-                    Message chunk = chunkedInputMessages[i];
-                    chunk.MessageId = randomMessageId;
+                Message chunkMsg = chunkedInputMessages[i].message;
+                byte[] chunkContent = chunkedInputMessages[i].content;
 
-                    this.meshServiceMock.Verify(service =>
-                        service.SendMessageAsync(chunk, randomToken),
-                            Times.Once);
-                }
+                this.meshServiceMock.Verify(service =>
+                    service.SendMessageAsync(chunkMsg, chunkContent, randomToken),
+                        Times.Once);
             }
 
             this.chunkServiceMock.VerifyNoOtherCalls();

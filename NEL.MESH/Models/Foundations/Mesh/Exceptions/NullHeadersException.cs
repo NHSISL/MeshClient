@@ -9,7 +9,7 @@ namespace NEL.MESH.Models.Foundations.Mesh.Exceptions
     public class NullHeadersException : Xeption
     {
         public NullHeadersException(string message)
-            : base(message) 
+            : base(message)
         { }
     }
 }

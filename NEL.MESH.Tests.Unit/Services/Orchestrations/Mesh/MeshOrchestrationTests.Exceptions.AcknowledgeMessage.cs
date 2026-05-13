@@ -3,6 +3,7 @@
 // ---------------------------------------------------------------
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -22,7 +23,7 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             // given
             string someMessageId = GetRandomString();
 
-            var expectedMeshOrchestrationDependencyValidationException = 
+            var expectedMeshOrchestrationDependencyValidationException =
                 new MeshOrchestrationDependencyValidationException(
                     message: "Mesh orchestration dependency validation error occurred, fix the errors and try again.",
                     innerException: dependencyValidationException.InnerException as Xeption);
@@ -118,6 +119,26 @@ namespace NEL.MESH.Tests.Unit.Services.Orchestrations.Mesh
             this.tokenServiceMock.Verify(service =>
                 service.GenerateTokenAsync(),
                     Times.Once);
+
+            this.chunkServiceMock.VerifyNoOtherCalls();
+            this.meshServiceMock.VerifyNoOtherCalls();
+            this.tokenServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowOperationCanceledExceptionOnAcknowledgeMessageIfCancellationRequestedAsync()
+        {
+            // given
+            string someMessageId = GetRandomString();
+            using var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.Cancel();
+
+            // when
+            ValueTask<bool> acknowledgeMessageTask =
+                this.meshOrchestrationService.AcknowledgeMessageAsync(someMessageId, cancellationTokenSource.Token);
+
+            // then
+            await Assert.ThrowsAsync<OperationCanceledException>(acknowledgeMessageTask.AsTask);
 
             this.chunkServiceMock.VerifyNoOtherCalls();
             this.meshServiceMock.VerifyNoOtherCalls();

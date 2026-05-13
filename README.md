@@ -66,13 +66,12 @@ This is also called digital on-boarding. You'll need to submit information that 
 
 |   Method                      | Description   | Links to NHS Digital Mesh Documentation |
 | --------                      | -----------   | --------------------------- |
-| ValidateMailboxAccess         | Use this endpoint to check that MESH can be reached and that the authentication you are using is correct. This endpoint only needs to be called once every 24 hours. This endpoint updates the details of the connection history held for your mailbox and is similar to a keep-alive or ping message, in that it allows monitoring on the Spine to be aware of the active use of a mailbox despite a lack of traffic.| [Validate](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#post-/messageexchange/-mailbox_id-)|
-| SendMessage                   | Use this endpoint to send a message via MESH. Use the POST command to your virtual outbox. Specify the message recipient in the request headers, with the message contained in the request body **Note**: If the file is too large the service will chunck this into smaller files.|[Send Message (String)](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#post-/messageexchange/-mailbox_id-/outbox)|
-| SendFile                      | Use this endpoint to send a message via MESH. Use the POST command to your virtual outbox. Specify the message recipient in the request headers, with the message contained in the request body. **Note**: If the file is too large the service will chunck this into smaller files|[Send File (Byte)](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#post-/messageexchange/-mailbox_id-/outbox)|
-| RetrieveTrackingStatusById    | Use this endpoint to inquire about the status of messages sent from your outbox. When determining the frequency of the calling of this endpoint consider that MESH is asynchronous, and it might be some hours until the recipient downloads your message. You must not poll this endpoint frequently.|   [Track By Id](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/-mailbox_id-/outbox/tracking)                |
-| RetrieveMessageIdsFromInbox   | Use this endpoint to retrieve a message based on the message identifier obtained from the 'Check Inbox' endpoint. Note: Headers should be treated case insensitively, most http clients will do this for you automatically, but please do not rely on explicit case. /messageexchange/{mailbox_id}/, if the file has been chunked the service will stitch back on retrieve. | [Get Messages](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/-mailbox_id-/inbox/-message_id-)|
-| RetrieveMessageById           | Use this endpoint to retrieve a message based on the message identifier obtained from the 'Check Inbox' endpoint. Note: Headers should be treated case insensitively, most http clients will do this for you automatically, but please do not rely on explicit case. /messageexchange/{mailbox_id}/inbox/{message_id},if the file has been chunked the service will stitch back on retrieve. | [Get Message By Id](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/-mailbox_id-/inbox/-message_id-)|
-| AcknowledgeMessageById        | Use this endpoint to acknowledge the successful download of a message.This operation: <ul><li>Closes the message transaction on Spine.</li><li>Removes the message from your mailbox inbox, which means that the message_id does not appear in subsequent calls to the 'Check inbox' endpoint and cannot be downloaded again Note: If you fail to acknowledge a message after five days in the inbox this sends a non-delivery report to the sender's inbox.</li></ul> | [Acknowledge](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#put-/messageexchange/-mailbox_id-/inbox/-message_id-/status/acknowledged)
+| HandshakeAsync                | Use this endpoint to check that MESH can be reached and that the authentication you are using is correct. This endpoint only needs to be called once every 24 hours. This endpoint updates the details of the connection history held for your mailbox and is similar to a keep-alive or ping message, in that it allows monitoring on the Spine to be aware of the active use of a mailbox despite a lack of traffic.| [Validate](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#post-/messageexchange/-mailbox_id-)|
+| SendMessageAsync              | Use this endpoint to send a message via MESH. Use the POST command to your virtual outbox. Specify the message recipient in the request headers, with the message content provided as a Stream. **Note**: If the file is too large the service will chunk this into smaller files automatically.|[Send Message](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#post-/messageexchange/-mailbox_id-/outbox)|
+| TrackMessageAsync             | Use this endpoint to inquire about the status of messages sent from your outbox. When determining the frequency of the calling of this endpoint consider that MESH is asynchronous, and it might be some hours until the recipient downloads your message. You must not poll this endpoint frequently.|   [Track By Id](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/-mailbox_id-/outbox/tracking)                |
+| RetrieveMessagesAsync         | Use this endpoint to retrieve a list of message identifiers from the inbox. Note: Headers should be treated case insensitively, most http clients will do this for you automatically, but please do not rely on explicit case. | [Get Messages](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/-mailbox_id-/inbox/-message_id-)|
+| RetrieveMessageAsync          | Use this endpoint to retrieve a message based on the message identifier obtained from the 'Check Inbox' endpoint. The message content is written to a provided output stream. If the file has been chunked the service will stitch back on retrieve. | [Get Message By Id](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#get-/messageexchange/-mailbox_id-/inbox/-message_id-)|
+| AcknowledgeMessageAsync       | Use this endpoint to acknowledge the successful download of a message. This operation: <ul><li>Closes the message transaction on Spine.</li><li>Removes the message from your mailbox inbox, which means that the message_id does not appear in subsequent calls to the 'Check inbox' endpoint and cannot be downloaded again. Note: If you fail to acknowledge a message after five days in the inbox this sends a non-delivery report to the sender's inbox.</li></ul> | [Acknowledge](https://digital.nhs.uk/developer/api-catalogue/message-exchange-for-social-care-and-health-api#put-/messageexchange/-mailbox_id-/inbox/-message_id-/status/acknowledged)
 
 # Development App Settings
 To run this package you will need to setup an **appsettings.Development.json** file with the following configuration items.  Certificates will need to be base64 encoded and the Intermediate can have multiples.
@@ -93,12 +92,82 @@ NOTE: The key value will have to be requested from NHS Digital as the version on
     "TlsRootCertificates": [""],
     "TlsIntermediateCertificates": [""],
     "ClientSigningCertificate": "",
-    "ClientSigningCertificatePassword": "",
-    "MaxChunkSizeInMegabytes": ""
+    "MaxChunkSizeInMegabytes": "",
+    "MaxRequestTimeoutInSeconds": 0
   }
 }
 
 ```
+# Example Implementation
+
+```csharp
+using System.IO;
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using NEL.MESH.Clients;
+using NEL.MESH.Models.Configurations;
+using Microsoft.Extensions.Logging;
+
+// Build configuration
+var meshConfiguration = new MeshConfiguration
+{
+    MailboxId = "YOUR_MAILBOX_ID",
+    Password = "YOUR_PASSWORD",
+    SharedKey = "YOUR_SHARED_KEY",
+    Url = "https://msg.int.spine2.ncrs.nhs.uk",
+    MexClientVersion = "ApiDocs==0.0.1",
+    MexOSName = "Windows",
+    MexOSVersion = "#11",
+    TlsRootCertificates = new X509Certificate2Collection(),
+    TlsIntermediateCertificates = new X509Certificate2Collection(),
+    ClientSigningCertificate = new X509Certificate2("path/to/cert.pfx", "cert-password"),
+    MaxChunkSizeInMegabytes = 20,
+
+    // Set to 0 for no timeout (infinite), which is recommended when sending very large files
+    // on slow connections. Set to any positive integer to limit the per-chunk request timeout
+    // in seconds (e.g. 300 for a 5-minute timeout).
+    MaxRequestTimeoutInSeconds = 0
+};
+
+// Optionally provide a logger factory
+ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
+// Create the client
+IMeshClient meshClient = new MeshClient(meshConfiguration, loggerFactory);
+
+// Validate mailbox access (handshake)
+bool isReachable = await meshClient.Mailbox.HandshakeAsync();
+
+// Send a message
+using FileStream fileToSend = File.OpenRead("path/to/file.csv");
+
+NEL.MESH.Models.Foundations.Mesh.Message sentMessage =
+    await meshClient.Mailbox.SendMessageAsync(
+        mexTo: "RECIPIENT_MAILBOX_ID",
+        mexWorkflowId: "YOUR_WORKFLOW_ID",
+        content: fileToSend,
+        mexSubject: "My subject",
+        mexFileName: "file.csv",
+        contentType: "text/csv");
+
+// Track a sent message
+NEL.MESH.Models.Foundations.Mesh.Message trackedMessage =
+    await meshClient.Mailbox.TrackMessageAsync(sentMessage.MessageId);
+
+// Retrieve message IDs from the inbox
+List<string> messageIds = await meshClient.Mailbox.RetrieveMessagesAsync();
+
+// Retrieve a specific message
+using MemoryStream outputStream = new MemoryStream();
+
+NEL.MESH.Models.Foundations.Mesh.Message receivedMessage =
+    await meshClient.Mailbox.RetrieveMessageAsync(messageIds[0], outputStream);
+
+// Acknowledge the message
+bool acknowledged = await meshClient.Mailbox.AcknowledgeMessageAsync(messageIds[0]);
+```
+
+---
 
 # How to Contribute
 If you want to contribute to this project please before hand review the following documents to gain an understanding of the patterns and practices used in building this package:
@@ -106,4 +175,4 @@ If you want to contribute to this project please before hand review the followin
 - [C# Coding Standard](https://github.com/hassanhabib/CSharpCodingStandard)
 - [The Team Standard](https://github.com/hassanhabib/The-Standard-Team)
 
-If you have a question make sure you open an issue.
+To report a bug, please [open a GitHub issue](https://github.com/NHSISL/MeshClient/issues) with as much detail as possible. If you'd like to contribute, feel free to pick up any open issue and submit a pull request with your changes.

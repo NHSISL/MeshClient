@@ -10,11 +10,13 @@ namespace NEL.MESH.Brokers.Mesh
     {
         public int MaxChunkSizeInBytes { get; }
         public string MexFrom { get; }
+        public int MaxRequestTimeoutInSeconds { get; }
 
         public MeshConfigurationBroker(MeshConfiguration MeshConfiguration)
         {
             MaxChunkSizeInBytes = MeshConfiguration.MaxChunkSizeInMegabytes * 1024 * 1024;
             MexFrom = MeshConfiguration.MailboxId;
+            MaxRequestTimeoutInSeconds = MeshConfiguration.MaxRequestTimeoutInSeconds;
         }
     }
 }

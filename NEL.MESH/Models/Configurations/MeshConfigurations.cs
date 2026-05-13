@@ -67,5 +67,12 @@ namespace NEL.MESH.Models.Configurations
         /// Gets or sets the maximum size of a message chunk in megabytes.
         /// </summary>
         public int MaxChunkSizeInMegabytes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the HTTP request timeout in seconds for sending message chunks.
+        /// Set to 0 for no timeout (recommended for very large files on slow connections).
+        /// Defaults to 0 (no timeout).
+        /// </summary>
+        public int MaxRequestTimeoutInSeconds { get; set; } = 0;
     }
 }

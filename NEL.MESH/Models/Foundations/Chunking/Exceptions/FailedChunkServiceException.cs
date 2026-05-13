@@ -10,7 +10,7 @@ namespace NEL.MESH.Models.Foundations.Chunking.Exceptions
     public class FailedChunkServiceException : Xeption
     {
         public FailedChunkServiceException(string message, Exception innerException)
-            : base(message, innerException) 
+            : base(message, innerException)
         { }
     }
 }

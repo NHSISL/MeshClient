@@ -10,7 +10,7 @@ namespace NEL.MESH.Models.Orchestrations.Mesh.Exceptions
     public class FailedMeshOrchestrationServiceException : Xeption
     {
         public FailedMeshOrchestrationServiceException(string message, Exception innerException)
-            : base(message, innerException) 
+            : base(message, innerException)
         { }
     }
 }

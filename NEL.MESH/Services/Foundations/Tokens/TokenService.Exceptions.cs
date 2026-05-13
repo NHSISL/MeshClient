@@ -27,7 +27,7 @@ namespace NEL.MESH.Services.Foundations.Tokens
             {
                 var failedTokenServiceException = new FailedTokenServiceException(
                         message: "Token service error occurred, contact support.",
-                        innerException: exception, 
+                        innerException: exception,
                         data: exception.Data);
 
                 throw CreateServiceException(failedTokenServiceException);
