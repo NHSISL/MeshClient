@@ -20,9 +20,27 @@ env:
   MESHCONFIGURATION__TLSINTERMEDIATECERTIFICATES__0: ${{ secrets.NEL_MESH_CLIENT_MESHCONFIGURATION__TLSINTERMEDIATECERTIFICATES__0 }}
   MESHCONFIGURATION__CLIENTSIGNINGCERTIFICATE: ${{ secrets.NEL_MESH_CLIENT_MESHCONFIGURATION__CLIENTSIGNINGCERTIFICATE }}
 jobs:
-  build:
-    name: Build
+  build_windows:
+    name: Build - Windows
     runs-on: windows-latest
+    steps:
+    - name: Check Out
+      uses: actions/checkout@v3
+    - name: Setup Dot Net Version
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 9.0.100
+    - name: Restore
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Unit Tests
+      run: dotnet test NEL.MESH.Tests.Unit/NEL.MESH.Tests.Unit.csproj --no-build --verbosity normal
+    - name: Acceptance Tests
+      run: dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --no-build --verbosity normal
+  build_ubuntu:
+    name: Build - Ubuntu
+    runs-on: ubuntu-latest
     steps:
     - name: Check Out
       uses: actions/checkout@v3

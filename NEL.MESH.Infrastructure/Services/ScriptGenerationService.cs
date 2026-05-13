@@ -47,11 +47,59 @@ namespace NEL.MESH.Infrastructure.Services
                 Jobs = new Dictionary<string, Job>
                 {
                     {
-                        "build",
+                        "build_windows",
                         new Job
                         {
-                            Name = "Build",
+                            Name = "Build - Windows",
                             RunsOn = BuildMachines.WindowsLatest,
+
+                            Steps = new List<GithubTask>
+                            {
+                                new CheckoutTaskV3
+                                {
+                                    Name = "Check Out"
+                                },
+
+                                new SetupDotNetTaskV3
+                                {
+                                    Name = "Setup Dot Net Version",
+
+                                    With = new TargetDotNetVersionV3
+                                    {
+                                        DotNetVersion = dotNetVersion
+                                    }
+                                },
+
+                                new RestoreTask
+                                {
+                                    Name = "Restore"
+                                },
+
+                                new DotNetBuildTask
+                                {
+                                    Name = "Build"
+                                },
+
+                                new TestTask
+                                {
+                                    Name = "Unit Tests",
+                                    Run = $"dotnet test {projectName}.Tests.Unit/{projectName}.Tests.Unit.csproj --no-build --verbosity normal"
+                                },
+
+                                new TestTask
+                                {
+                                    Name = "Acceptance Tests",
+                                    Run = $"dotnet test {projectName}.Tests.Acceptance/{projectName}.Tests.Acceptance.csproj --no-build --verbosity normal"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "build_ubuntu",
+                        new Job
+                        {
+                            Name = "Build - Ubuntu",
+                            RunsOn = BuildMachines.UbuntuLatest,
 
                             Steps = new List<GithubTask>
                             {
