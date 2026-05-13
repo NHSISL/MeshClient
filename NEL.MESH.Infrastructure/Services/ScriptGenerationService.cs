@@ -83,13 +83,17 @@ namespace NEL.MESH.Infrastructure.Services
                                 new TestTask
                                 {
                                     Name = "Unit Tests",
-                                    Run = $"dotnet test {projectName}.Tests.Unit/{projectName}.Tests.Unit.csproj --no-build --verbosity normal"
+
+                                    Run = $"dotnet test {projectName}.Tests.Unit/" +
+                                        $"{projectName}.Tests.Unit.csproj --verbosity normal"
                                 },
 
                                 new TestTask
                                 {
                                     Name = "Acceptance Tests",
-                                    Run = $"dotnet test {projectName}.Tests.Acceptance/{projectName}.Tests.Acceptance.csproj --no-build --verbosity normal"
+
+                                    Run = $"dotnet test {projectName}.Tests.Acceptance/" +
+                                        $"{projectName}.Tests.Acceptance.csproj --verbosity normal"
                                 }
                             }
                         }
@@ -131,13 +135,17 @@ namespace NEL.MESH.Infrastructure.Services
                                 new TestTask
                                 {
                                     Name = "Unit Tests",
-                                    Run = $"dotnet test {projectName}.Tests.Unit/{projectName}.Tests.Unit.csproj --no-build --verbosity normal"
+
+                                    Run = $"dotnet test {projectName}.Tests.Unit/" +
+                                        $"{projectName}.Tests.Unit.csproj --verbosity normal"
                                 },
 
                                 new TestTask
                                 {
                                     Name = "Acceptance Tests",
-                                    Run = $"dotnet test {projectName}.Tests.Acceptance/{projectName}.Tests.Acceptance.csproj --no-build --verbosity normal"
+
+                                    Run = $"dotnet test {projectName}.Tests.Acceptance/" +
+                                        $"{projectName}.Tests.Acceptance.csproj --verbosity normal"
                                 }
                             }
                         }

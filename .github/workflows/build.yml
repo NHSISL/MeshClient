@@ -35,9 +35,9 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Unit Tests
-      run: dotnet test NEL.MESH.Tests.Unit/NEL.MESH.Tests.Unit.csproj --no-build --verbosity normal
+      run: dotnet test NEL.MESH.Tests.Unit/NEL.MESH.Tests.Unit.csproj --verbosity normal
     - name: Acceptance Tests
-      run: dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --no-build --verbosity normal
+      run: dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --verbosity normal
   build_ubuntu:
     name: Build - Ubuntu
     runs-on: ubuntu-latest
@@ -53,9 +53,9 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Unit Tests
-      run: dotnet test NEL.MESH.Tests.Unit/NEL.MESH.Tests.Unit.csproj --no-build --verbosity normal
+      run: dotnet test NEL.MESH.Tests.Unit/NEL.MESH.Tests.Unit.csproj --verbosity normal
     - name: Acceptance Tests
-      run: dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --no-build --verbosity normal
+      run: dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --verbosity normal
   add_tag:
     name: Add Tag and Create Release
     runs-on: ubuntu-latest
