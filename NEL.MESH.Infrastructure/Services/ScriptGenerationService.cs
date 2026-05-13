@@ -47,63 +47,11 @@ namespace NEL.MESH.Infrastructure.Services
                 Jobs = new Dictionary<string, Job>
                 {
                     {
-                        "build_windows",
+                        "build",
                         new Job
                         {
-                            Name = "Build - Windows",
+                            Name = "Build",
                             RunsOn = BuildMachines.WindowsLatest,
-
-                            Steps = new List<GithubTask>
-                            {
-                                new CheckoutTaskV4
-                                {
-                                    Name = "Check Out"
-                                },
-
-                                new SetupDotNetTaskV4
-                                {
-                                    Name = "Setup Dot Net Version",
-
-                                    With = new TargetDotNetVersionV4
-                                    {
-                                        DotNetVersion = dotNetVersion
-                                    }
-                                },
-
-                                new RestoreTask
-                                {
-                                    Name = "Restore"
-                                },
-
-                                new DotNetBuildTask
-                                {
-                                    Name = "Build"
-                                },
-
-                                new TestTask
-                                {
-                                    Name = "Unit Tests",
-
-                                    Run = $"dotnet test {projectName}.Tests.Unit/" +
-                                        $"{projectName}.Tests.Unit.csproj --no-build --verbosity normal"
-                                },
-
-                                new TestTask
-                                {
-                                    Name = "Acceptance Tests",
-
-                                    Run = $"dotnet test {projectName}.Tests.Acceptance/" +
-                                        $"{projectName}.Tests.Acceptance.csproj --no-build --verbosity normal"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "build_ubuntu",
-                        new Job
-                        {
-                            Name = "Build - Ubuntu",
-                            RunsOn = BuildMachines.UbuntuLatest,
 
                             Steps = new List<GithubTask>
                             {
@@ -154,13 +102,12 @@ namespace NEL.MESH.Infrastructure.Services
                         "add_tag",
                         new TagJob(
                             runsOn: BuildMachines.UbuntuLatest,
-                            dependsOn: "build_windows",
+                            dependsOn: "build",
                             projectRelativePath: $"{projectName}/{projectName}.csproj",
                             githubToken: "${{ secrets.PAT_FOR_TAGGING }}",
                             branchName: branchName)
                         {
-                            Name = "Add Tag and Create Release",
-                            Needs = ["build_windows", "build_ubuntu"]
+                            Name = "Add Tag and Create Release"
                         }
                     },
                     {
