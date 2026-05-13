@@ -154,6 +154,14 @@ namespace NEL.MESH.Infrastructure.Services
 
                                     Run = $"dotnet test {projectName}.Tests.Acceptance/" +
                                         $"{projectName}.Tests.Acceptance.csproj --verbosity normal"
+                                },
+
+                                new TestTask
+                                {
+                                    Name = "Integration Tests",
+
+                                    Run = $"dotnet test {projectName}.Tests.Integration/" +
+                                        $"{projectName}.Tests.Integration.csproj --verbosity normal"
                                 }
                             }
                         }
