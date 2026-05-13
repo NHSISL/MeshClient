@@ -317,32 +317,28 @@ namespace NEL.MESH.Brokers.Mesh
                     return false;
                 }
 
-                if (chain == null)
+                if (cert == null)
                 {
                     return false;
                 }
 
+                using var newChain = new X509Chain();
+
                 if (hasRootCerts)
                 {
-                    chain.ChainPolicy.TrustMode =
-                        X509ChainTrustMode.CustomRootTrust;
-
-                    chain.ChainPolicy.CustomTrustStore
-                        .AddRange(this.MeshConfiguration.TlsRootCertificates);
+                    newChain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
+                    newChain.ChainPolicy.CustomTrustStore.AddRange(this.MeshConfiguration.TlsRootCertificates);
                 }
 
                 if (hasIntermediateCerts)
                 {
-                    chain.ChainPolicy.ExtraStore
-                        .AddRange(this.MeshConfiguration.TlsIntermediateCertificates);
+                    newChain.ChainPolicy.ExtraStore.AddRange(this.MeshConfiguration.TlsIntermediateCertificates);
                 }
 
-                chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+                newChain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+                newChain.ChainPolicy.VerificationFlags = X509VerificationFlags.IgnoreWrongUsage;
 
-                chain.ChainPolicy.VerificationFlags =
-                    X509VerificationFlags.IgnoreWrongUsage;
-
-                return cert != null && chain.Build(cert);
+                return newChain.Build(cert);
             };
 
             return handler;
