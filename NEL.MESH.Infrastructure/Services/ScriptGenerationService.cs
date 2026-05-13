@@ -1,11 +1,11 @@
-﻿// ---------------------------------------------------------------
+// ---------------------------------------------------------------
 // Copyright (c) North East London ICB. All rights reserved.
 // ---------------------------------------------------------------
 
 using ADotNet.Clients;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks;
-using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks.SetupDotNetTaskV3s;
+using NEL.MESH.Infrastructure.Models.SetupDotNetTaskV4s;
 
 namespace NEL.MESH.Infrastructure.Services
 {
@@ -35,36 +35,36 @@ namespace NEL.MESH.Infrastructure.Services
 
                 EnvironmentVariables = new Dictionary<string, string>
                 {
-                    { "MESHCONFIGURATION__URL", "${{ secrets.NEL_MESH_CLIENT_MESHCONFIGURATION__URL }}"},
-                    { "MESHCONFIGURATION__MAILBOXID", "${{ secrets.NEL_MESH_CLIENT_MESHCONFIGURATION__MAILBOXID }}"},
-                    { "MESHCONFIGURATION__PASSWORD", "${{ secrets.NEL_MESH_CLIENT_MESHCONFIGURATION__PASSWORD }}"},
-                    { "MESHCONFIGURATION__SHAREDKEY", "${{ secrets.NEL_MESH_CLIENT_MESHCONFIGURATION__SHAREDKEY }}"},
-                    { "MESHCONFIGURATION__TLSROOTCERTIFICATES__0", "${{ secrets.NEL_MESH_CLIENT_MESHCONFIGURATION__TLSROOTCERTIFICATES__0 }}"},
-                    { "MESHCONFIGURATION__TLSINTERMEDIATECERTIFICATES__0", "${{ secrets.NEL_MESH_CLIENT_MESHCONFIGURATION__TLSINTERMEDIATECERTIFICATES__0 }}"},
-                    { "MESHCONFIGURATION__CLIENTSIGNINGCERTIFICATE", "${{ secrets.NEL_MESH_CLIENT_MESHCONFIGURATION__CLIENTSIGNINGCERTIFICATE }}" },
+                    { "MESHCONFIGURATION__URL", "${{ secrets.MESHCONFIGURATION__URL }}"},
+                    { "MESHCONFIGURATION__MAILBOXID", "${{ secrets.MESHCONFIGURATION__MAILBOXID }}"},
+                    { "MESHCONFIGURATION__PASSWORD", "${{ secrets.MESHCONFIGURATION__PASSWORD }}"},
+                    { "MESHCONFIGURATION__SHAREDKEY", "${{ secrets.MESHCONFIGURATION__SHAREDKEY }}"},
+                    { "MESHCONFIGURATION__TLSROOTCERTIFICATES__0", "${{ secrets.MESHCONFIGURATION__TLSROOTCERTIFICATES__0 }}"},
+                    { "MESHCONFIGURATION__TLSINTERMEDIATECERTIFICATES__0", "${{ secrets.MESHCONFIGURATION__TLSINTERMEDIATECERTIFICATES__0 }}"},
+                    { "MESHCONFIGURATION__CLIENTSIGNINGCERTIFICATE", "${{ secrets.MESHCONFIGURATION__CLIENTSIGNINGCERTIFICATE }}" },
                 },
 
                 Jobs = new Dictionary<string, Job>
                 {
                     {
-                        "build",
+                        "build_windows",
                         new Job
                         {
-                            Name = "Build",
+                            Name = "Build - Windows",
                             RunsOn = BuildMachines.WindowsLatest,
 
                             Steps = new List<GithubTask>
                             {
-                                new CheckoutTaskV3
+                                new CheckoutTaskV4
                                 {
                                     Name = "Check Out"
                                 },
 
-                                new SetupDotNetTaskV3
+                                new SetupDotNetTaskV4
                                 {
                                     Name = "Setup Dot Net Version",
 
-                                    With = new TargetDotNetVersionV3
+                                    With = new TargetDotNetVersionV4
                                     {
                                         DotNetVersion = dotNetVersion
                                     }
@@ -83,45 +83,78 @@ namespace NEL.MESH.Infrastructure.Services
                                 new TestTask
                                 {
                                     Name = "Unit Tests",
-                                    Run = $"dotnet test {projectName}.Tests.Unit/{projectName}.Tests.Unit.csproj --no-build --verbosity normal"
+
+                                    Run = $"dotnet test {projectName}.Tests.Unit/" +
+                                        $"{projectName}.Tests.Unit.csproj --no-build --verbosity normal"
                                 },
 
                                 new TestTask
                                 {
                                     Name = "Acceptance Tests",
-                                    Run = $"dotnet test {projectName}.Tests.Acceptance/{projectName}.Tests.Acceptance.csproj --no-build --verbosity normal"
+
+                                    Run = $"dotnet test {projectName}.Tests.Acceptance/" +
+                                        $"{projectName}.Tests.Acceptance.csproj --no-build --verbosity normal"
                                 }
                             }
                         }
                     },
                     {
-                        "add_tag",
-                        new TagJob(
-                            runsOn: BuildMachines.UbuntuLatest,
-                            dependsOn: "build",
-                            projectRelativePath: $"{projectName}/{projectName}.csproj",
-                            githubToken: "${{ secrets.PAT_FOR_TAGGING }}",
-                            branchName: branchName)
+                        "build_ubuntu",
+                        new Job
                         {
-                            Name = "Add Tag and Create Release"
-                        }
-                    },
-                    {
-                        "publish",
-                        new PublishJobV2(
-                            runsOn: BuildMachines.UbuntuLatest,
-                            dependsOn: "add_tag",
-                            dotNetVersion: dotNetVersion,
-                            nugetApiKey: "${{ secrets.NUGET_ACCESS }}")
-                        {
-                            Name = "Publish to NuGet"
+                            Name = "Build - Ubuntu",
+                            RunsOn = BuildMachines.UbuntuLatest,
+
+                            Steps = new List<GithubTask>
+                            {
+                                new CheckoutTaskV4
+                                {
+                                    Name = "Check Out"
+                                },
+
+                                new SetupDotNetTaskV4
+                                {
+                                    Name = "Setup Dot Net Version",
+
+                                    With = new TargetDotNetVersionV4
+                                    {
+                                        DotNetVersion = dotNetVersion
+                                    }
+                                },
+
+                                new RestoreTask
+                                {
+                                    Name = "Restore"
+                                },
+
+                                new DotNetBuildTask
+                                {
+                                    Name = "Build"
+                                },
+
+                                new TestTask
+                                {
+                                    Name = "Unit Tests",
+
+                                    Run = $"dotnet test {projectName}.Tests.Unit/" +
+                                        $"{projectName}.Tests.Unit.csproj --no-build --verbosity normal"
+                                },
+
+                                new TestTask
+                                {
+                                    Name = "Acceptance Tests",
+
+                                    Run = $"dotnet test {projectName}.Tests.Acceptance/" +
+                                        $"{projectName}.Tests.Acceptance.csproj --no-build --verbosity normal"
+                                }
+                            }
                         }
                     }
                 }
             };
 
             string buildScriptPath = "../../../../.github/workflows/build.yml";
-            string directoryPath = Path.GetDirectoryName(buildScriptPath);
+            string directoryPath = Path.GetDirectoryName(buildScriptPath) ?? string.Empty;
 
             if (!Directory.Exists(directoryPath))
             {
@@ -168,7 +201,7 @@ namespace NEL.MESH.Infrastructure.Services
             };
 
             string buildScriptPath = "../../../../.github/workflows/prLinter.yml";
-            string directoryPath = Path.GetDirectoryName(buildScriptPath);
+            string directoryPath = Path.GetDirectoryName(buildScriptPath) ?? string.Empty;
 
             if (!Directory.Exists(directoryPath))
             {
