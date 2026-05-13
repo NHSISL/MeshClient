@@ -5,7 +5,7 @@
 using ADotNet.Clients;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks;
-using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks.SetupDotNetTaskV3s;
+using NEL.MESH.Infrastructure.Models.SetupDotNetTaskV4s;
 
 namespace NEL.MESH.Infrastructure.Services
 {
@@ -55,16 +55,16 @@ namespace NEL.MESH.Infrastructure.Services
 
                             Steps = new List<GithubTask>
                             {
-                                new CheckoutTaskV3
+                                new CheckoutTaskV4
                                 {
                                     Name = "Check Out"
                                 },
 
-                                new SetupDotNetTaskV3
+                                new SetupDotNetTaskV4
                                 {
                                     Name = "Setup Dot Net Version",
 
-                                    With = new TargetDotNetVersionV3
+                                    With = new TargetDotNetVersionV4
                                     {
                                         DotNetVersion = dotNetVersion
                                     }
@@ -103,16 +103,16 @@ namespace NEL.MESH.Infrastructure.Services
 
                             Steps = new List<GithubTask>
                             {
-                                new CheckoutTaskV3
+                                new CheckoutTaskV4
                                 {
                                     Name = "Check Out"
                                 },
 
-                                new SetupDotNetTaskV3
+                                new SetupDotNetTaskV4
                                 {
                                     Name = "Setup Dot Net Version",
 
-                                    With = new TargetDotNetVersionV3
+                                    With = new TargetDotNetVersionV4
                                     {
                                         DotNetVersion = dotNetVersion
                                     }
@@ -170,7 +170,7 @@ namespace NEL.MESH.Infrastructure.Services
             };
 
             string buildScriptPath = "../../../../.github/workflows/build.yml";
-            string directoryPath = Path.GetDirectoryName(buildScriptPath);
+            string directoryPath = Path.GetDirectoryName(buildScriptPath) ?? string.Empty;
 
             if (!Directory.Exists(directoryPath))
             {
@@ -217,7 +217,7 @@ namespace NEL.MESH.Infrastructure.Services
             };
 
             string buildScriptPath = "../../../../.github/workflows/prLinter.yml";
-            string directoryPath = Path.GetDirectoryName(buildScriptPath);
+            string directoryPath = Path.GetDirectoryName(buildScriptPath) ?? string.Empty;
 
             if (!Directory.Exists(directoryPath))
             {

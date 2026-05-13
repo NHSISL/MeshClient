@@ -25,9 +25,9 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Check Out
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Setup Dot Net Version
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 10.x
     - name: Restore
@@ -43,9 +43,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check Out
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Setup Dot Net Version
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 10.x
     - name: Restore
@@ -63,9 +63,14 @@ jobs:
     - build_windows
     - build_ubuntu
     if: >-
-      github.event.pull_request.merged == true &&
-      github.event.pull_request.base.ref == 'main' &&
-      startsWith(github.event.pull_request.title, 'RELEASES:') &&
+      needs.build_windows.result == 'success' && 
+
+      github.event.pull_request.merged && 
+
+      github.event.pull_request.base.ref == 'main' && 
+
+      startsWith(github.event.pull_request.title, 'RELEASES:') && 
+
       contains(github.event.pull_request.labels.*.name, 'RELEASES')
     steps:
     - name: Checkout code
