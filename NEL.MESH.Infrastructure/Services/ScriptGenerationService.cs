@@ -85,7 +85,7 @@ namespace NEL.MESH.Infrastructure.Services
                                     Name = "Unit Tests",
 
                                     Run = $"dotnet test {projectName}.Tests.Unit/" +
-                                        $"NEL.Mesh.Tests.Unit.csproj --verbosity normal"
+                                        $"{projectName}.Tests.Unit.csproj --no-build --verbosity normal"
                                 },
 
                                 new TestTask
@@ -93,7 +93,7 @@ namespace NEL.MESH.Infrastructure.Services
                                     Name = "Acceptance Tests",
 
                                     Run = $"dotnet test {projectName}.Tests.Acceptance/" +
-                                        $"{projectName}.Tests.Acceptance.csproj --verbosity normal"
+                                        $"{projectName}.Tests.Acceptance.csproj --no-build --verbosity normal"
                                 },
 
                                 new TestTask
@@ -101,7 +101,7 @@ namespace NEL.MESH.Infrastructure.Services
                                     Name = "Integration Tests",
 
                                     Run = $"dotnet test {projectName}.Tests.Integration/" +
-                                        $"{projectName}.Tests.Integration.csproj --verbosity normal"
+                                        $"{projectName}.Tests.Integration.csproj --no-build --verbosity normal"
                                 }
                             }
                         }
@@ -145,7 +145,7 @@ namespace NEL.MESH.Infrastructure.Services
                                     Name = "Unit Tests",
 
                                     Run = $"dotnet test {projectName}.Tests.Unit/" +
-                                        $"NEL.Mesh.Tests.Unit.csproj --verbosity normal"
+                                        $"{projectName}.Tests.Unit.csproj --no-build --verbosity normal"
                                 },
 
                                 new TestTask
@@ -153,7 +153,7 @@ namespace NEL.MESH.Infrastructure.Services
                                     Name = "Acceptance Tests",
 
                                     Run = $"dotnet test {projectName}.Tests.Acceptance/" +
-                                        $"{projectName}.Tests.Acceptance.csproj --verbosity normal"
+                                        $"{projectName}.Tests.Acceptance.csproj --no-build --verbosity normal"
                                 },
 
                                 new TestTask
@@ -161,7 +161,7 @@ namespace NEL.MESH.Infrastructure.Services
                                     Name = "Integration Tests",
 
                                     Run = $"dotnet test {projectName}.Tests.Integration/" +
-                                        $"{projectName}.Tests.Integration.csproj --verbosity normal"
+                                        $"{projectName}.Tests.Integration.csproj --no-build --verbosity normal"
                                 }
                             }
                         }
