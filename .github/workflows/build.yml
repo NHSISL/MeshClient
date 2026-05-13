@@ -25,9 +25,9 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Check Out
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
     - name: Setup Dot Net Version
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 10.x
     - name: Restore

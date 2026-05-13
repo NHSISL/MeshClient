@@ -5,7 +5,7 @@
 using ADotNet.Clients;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets;
 using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks;
-using NEL.MESH.Infrastructure.Models.SetupDotNetTaskV4s;
+using ADotNet.Models.Pipelines.GithubPipelines.DotNets.Tasks.SetupDotNetTaskV3s;
 
 namespace NEL.MESH.Infrastructure.Services
 {
@@ -55,16 +55,16 @@ namespace NEL.MESH.Infrastructure.Services
 
                             Steps = new List<GithubTask>
                             {
-                                new CheckoutTaskV4
+                                new CheckoutTaskV3
                                 {
                                     Name = "Check Out"
                                 },
 
-                                new SetupDotNetTaskV4
+                                new SetupDotNetTaskV3
                                 {
                                     Name = "Setup Dot Net Version",
 
-                                    With = new TargetDotNetVersionV4
+                                    With = new TargetDotNetVersionV3
                                     {
                                         DotNetVersion = dotNetVersion
                                     }
