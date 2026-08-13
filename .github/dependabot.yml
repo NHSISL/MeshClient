@@ -14,5 +14,5 @@ updates:
     labels:
       - "dependencies"
     ignore:
-        - dependency-name: "FluentAssertions"
-          update-types: ["version-update:semver-major"]
+      - dependency-name: "FluentAssertions"
+        update-types: ["version-update:semver-major"]
