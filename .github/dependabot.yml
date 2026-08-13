@@ -15,4 +15,4 @@ updates:
       - "dependencies"
     ignore:
         - dependency-name: "FluentAssertions"
-          versions: ["8.x", "9.x", "10.x", "*"]
+          update-types: ["version-update:semver-major"]
