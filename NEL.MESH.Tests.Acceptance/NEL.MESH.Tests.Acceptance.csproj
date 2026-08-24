@@ -17,7 +17,7 @@
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
 		<PackageReference Include="CleanMoq" Version="42.42.42" />
 		<PackageReference Include="Tynamix.ObjectFiller" Version="1.5.9" />
-		<PackageReference Include="WireMock.Net" Version="2.13.0" />
+		<PackageReference Include="WireMock.Net" Version="2.15.0" />
 		<PackageReference Include="Xeption" Version="2.9.0" />
 		<PackageReference Include="xunit.analyzers" Version="1.27.0">
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
