@@ -50,7 +50,7 @@ namespace NEL.MESH.Infrastructure.Services
                         new Job
                         {
                             Name = "Build",
-                            RunsOn = BuildMachines.WindowsLatest,
+                            RunsOn = BuildMachines.UbuntuLatest,
 
                             Steps = new List<GithubTask>
                             {
