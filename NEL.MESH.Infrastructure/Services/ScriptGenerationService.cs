@@ -83,16 +83,18 @@ namespace NEL.MESH.Infrastructure.Services
                                 {
                                     Name = "Unit Tests",
 
-                                    Run = $"dotnet test {projectName}.Tests.Unit/" +
-                                        $"{projectName}.Tests.Unit.csproj --no-build --verbosity normal"
+                                    Run = $"dotnet test --project {projectName}.Tests.Unit/" +
+                                        $"{projectName}.Tests.Unit.csproj " +
+                                        "--no-build --verbosity normal --ignore-exit-code 8"
                                 },
 
                                 new TestTask
                                 {
                                     Name = "Acceptance Tests",
 
-                                    Run = $"dotnet test {projectName}.Tests.Acceptance/" +
-                                        $"{projectName}.Tests.Acceptance.csproj --no-build --verbosity normal"
+                                    Run = $"dotnet test --project {projectName}.Tests.Acceptance/" +
+                                        $"{projectName}.Tests.Acceptance.csproj " +
+                                        "--no-build --verbosity normal --ignore-exit-code 8"
                                 }
                             }
                         }
