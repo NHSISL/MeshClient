@@ -33,9 +33,9 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Unit Tests
-      run: dotnet test NEL.MESH.Tests.Unit/NEL.MESH.Tests.Unit.csproj --no-build --verbosity normal
+      run: dotnet test --project NEL.MESH.Tests.Unit/NEL.MESH.Tests.Unit.csproj --no-build --verbosity normal --ignore-exit-code 8
     - name: Acceptance Tests
-      run: dotnet test NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --no-build --verbosity normal
+      run: dotnet test --project NEL.MESH.Tests.Acceptance/NEL.MESH.Tests.Acceptance.csproj --no-build --verbosity normal --ignore-exit-code 8
   add_tag:
     name: Add Tag and Create Release
     runs-on: ubuntu-latest
