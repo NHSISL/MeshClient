@@ -14,9 +14,9 @@
 		<PackageIcon>Mesh.png</PackageIcon>
 		<PackageIconUrl />
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<Version>3.3.0</Version>
-		<AssemblyVersion>3.3.0.0</AssemblyVersion>
-		<FileVersion>3.3.0.0</FileVersion>
+		<Version>3.3.1.0</Version>
+		<AssemblyVersion>3.3.1.0</AssemblyVersion>
+		<FileVersion>3.3.1.0</FileVersion>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageLicenseExpression></PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/TowerHamletsCCG/MeshClient</PackageProjectUrl>
@@ -24,7 +24,7 @@
 		<RepositoryUrl>https://github.com/TowerHamletsCCG/MeshClient</RepositoryUrl>
 		<RepositoryType>Github</RepositoryType>
 		<PackageTags>.NET Client MESH Messaging</PackageTags>
-		<PackageReleaseNotes>SSL Certificate Chain Validation Fix.</PackageReleaseNotes>
+		<PackageReleaseNotes>Dependency refresh of 3.3.0. Microsoft.Extensions.DependencyInjection and Microsoft.Extensions.Hosting move from 10.0.7 to 10.0.14. Newtonsoft.Json 13.0.4 and Xeption 2.9.0 are unchanged. No code or public API changes, and the target framework is still net10.0.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
